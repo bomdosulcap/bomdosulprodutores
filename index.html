@@ -1454,7 +1454,27 @@ function renderLancamentos(){
   const tipo=document.getElementById('lanc-filt-tipo')?.value||'';
   const mes=document.getElementById('lanc-filt-mes')?.value||'';
   const ano=document.getElementById('lanc-filt-ano')?.value||'';
-  let lista=[...lancamentosNovos];
+  // Montar lista combinada: DATA histórico + lançamentos novos do Supabase
+  const lancData = [];
+  producers.forEach(p => {
+    p.transacoes.forEach(t => {
+      lancData.push({
+        id: null,
+        fornecedor: p.nome,
+        tipo: t.total_producao > 0 ? 'producao' : 'pagamento',
+        data: t.data,
+        historico: t.historico,
+        cabecas: t.total_cabecas || 0,
+        vlCabeca: t.valor_cabeca || 0,
+        totalProducao: t.total_producao || 0,
+        valorPag: t.pagamento || 0,
+        ordem: null
+      });
+    });
+  });
+  // Usar lancData (já mescla DATA+Supabase via producers) e remover duplicatas com lancamentosNovos
+  const idsNovos = new Set(lancamentosNovos.map(l => l.id));
+  let lista = lancData;
   if(q) lista=lista.filter(l=>l.fornecedor.toLowerCase().includes(q)||l.historico.toLowerCase().includes(q));
   if(tipo) lista=lista.filter(l=>l.tipo===tipo);
   if(mes)  lista=lista.filter(l=>l.data&&l.data.split('-')[1]===mes);
@@ -1496,7 +1516,27 @@ function renderTodosLanc(){
   const mes=document.getElementById('tl-mes')?.value||'';
   const ano=document.getElementById('tl-ano')?.value||'';
   const forn=document.getElementById('tl-forn')?.value||'';
-  let lista=[...lancamentosNovos];
+  // Montar lista combinada: DATA histórico + lançamentos novos do Supabase
+  const lancData = [];
+  producers.forEach(p => {
+    p.transacoes.forEach(t => {
+      lancData.push({
+        id: null,
+        fornecedor: p.nome,
+        tipo: t.total_producao > 0 ? 'producao' : 'pagamento',
+        data: t.data,
+        historico: t.historico,
+        cabecas: t.total_cabecas || 0,
+        vlCabeca: t.valor_cabeca || 0,
+        totalProducao: t.total_producao || 0,
+        valorPag: t.pagamento || 0,
+        ordem: null
+      });
+    });
+  });
+  // Usar lancData (já mescla DATA+Supabase via producers) e remover duplicatas com lancamentosNovos
+  const idsNovos = new Set(lancamentosNovos.map(l => l.id));
+  let lista = lancData;
   if(q) lista=lista.filter(l=>l.fornecedor.toLowerCase().includes(q)||l.historico.toLowerCase().includes(q));
   if(tipo) lista=lista.filter(l=>l.tipo===tipo);
   if(mes)  lista=lista.filter(l=>l.data&&l.data.split('-')[1]===mes);
