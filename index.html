@@ -526,7 +526,7 @@
   <button class="tab" onclick="showPage('inadimplentes')">⚠️ Inadimplentes</button>
   <button class="tab" onclick="showPage('relatorio')">📋 Relatório</button>
   <button class="tab" onclick="showPage('resumo-anual')" style="border-left:1px solid var(--border);margin-left:8px;">📈 Resumo Anual</button>
-  <button class="tab" onclick="showPage('cad-fornecedor')">➕ Cadastro de Fornecedor</button>
+  <button class="tab" onclick="showPage('cad-fornecedor')">➕ Cadastro de Produtor</button>
   <button class="tab" onclick="showPage('lancamentos')">📝 Novo Lançamento</button>
   <button class="tab" onclick="showPage('todos-lancamentos')">📋 Todos os Lançamentos</button>
 </div>
@@ -714,8 +714,8 @@
     <div id="forn-form-wrap">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
         <div>
-          <h2 style="font-size:18px; font-weight:700;">➕ Cadastrar Novo Fornecedor</h2>
-          <p style="font-size:12px; color:var(--text2); margin-top:3px;">Preencha os dados do produtor/fornecedor</p>
+          <h2 style="font-size:18px; font-weight:700;">➕ Cadastrar Novo Produtor</h2>
+          <p style="font-size:12px; color:var(--text2); margin-top:3px;">Preencha os dados do produtor</p>
         </div>
         <button class="btn" onclick="toggleFornForm(false)" id="btn-cancelar-forn" style="display:none;">✕ Cancelar</button>
       </div>
@@ -725,7 +725,7 @@
         <div class="form-grid">
           <div>
             <label class="field-label">Nome Completo <span class="req">*</span></label>
-            <input class="form-input" id="fn-nome" placeholder="Nome do fornecedor" oninput="this.value=this.value.toUpperCase()">
+            <input class="form-input" id="fn-nome" placeholder="Nome do produtor" oninput="this.value=this.value.toUpperCase()">
           </div>
           <div>
             <label class="field-label">CPF / CNPJ</label>
@@ -741,7 +741,7 @@
           </div>
           <div class="form-full">
             <label class="field-label">Observações</label>
-            <input class="form-input" id="fn-obs" placeholder="Observações gerais sobre o fornecedor...">
+            <input class="form-input" id="fn-obs" placeholder="Observações gerais sobre o produtor...">
           </div>
         </div>
       </div>
@@ -824,7 +824,7 @@
     <!-- LISTA DE FORNECEDORES CADASTRADOS -->
     <div style="margin-top:32px;">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
-        <h3 style="font-size:15px; font-weight:700;">📋 Fornecedores Cadastrados</h3>
+        <h3 style="font-size:15px; font-weight:700;">📋 Produtores Cadastrados</h3>
         <div style="display:flex; gap:10px; align-items:center;">
           <input class="search-box" id="search-forn" placeholder="🔍 Buscar fornecedor..." oninput="renderFornecedores()" style="max-width:260px;">
           <button class="filter-btn active" onclick="setFornFilt('todos')" id="ffilt-todos">Todos</button>
@@ -848,7 +848,7 @@
             </tr>
           </thead>
           <tbody id="forn-table-body">
-            <tr><td colspan="8" style="text-align:center; padding:40px; color:var(--text2);">Nenhum fornecedor cadastrado ainda.</td></tr>
+            <tr><td colspan="8" style="text-align:center; padding:40px; color:var(--text2);">Nenhum produtor cadastrado ainda.</td></tr>
           </tbody>
         </table>
       </div>
@@ -882,7 +882,7 @@
             <div>
               <label class="field-label">Fornecedor <span class="req">*</span></label>
               <select class="form-input" id="lanc-forn" onchange="onLancFornChange()">
-                <option value="">— Selecione o fornecedor —</option>
+                <option value="">— Selecione o produtor —</option>
               </select>
             </div>
             <div>
@@ -985,7 +985,7 @@
       <div>
         <!-- SALDO DO FORNECEDOR -->
         <div class="form-section-box" id="lanc-saldo-panel" style="display:none; margin-bottom:16px;">
-          <div class="form-section-title">📊 Saldo do Fornecedor</div>
+          <div class="form-section-title">📊 Saldo do Produtor</div>
           <div id="lanc-saldo-content"></div>
         </div>
 
@@ -1273,7 +1273,7 @@ async function salvarFornecedor() {
     const t=await r.text(); if(!r.ok){let m=t;try{m=JSON.parse(t).message||t;}catch(e){}barNuvem(false);return notif('Erro: '+m,false);}
     const arr=JSON.parse(t); fornecedores.push(mapForn(Array.isArray(arr)?arr[0]:arr));
     fornecedores.sort((a,b)=>a.nome.localeCompare(b.nome));
-    atualizarSelectFornecedores(); renderFornecedores(); limparFormForn(); notif('✅ Fornecedor salvo!');
+    atualizarSelectFornecedores(); renderFornecedores(); limparFormForn(); notif('✅ Produtor salvo!');
   } catch(e){notif('Erro: '+e.message,false);} finally{barNuvem(false);}
 }
 function limparFormForn() {
@@ -1307,7 +1307,7 @@ async function salvarEditForn() {
     const arr=JSON.parse(t); const data=Array.isArray(arr)?arr[0]:arr;
     const idx=fornecedores.findIndex(f=>f.id==id); if(idx>=0&&data) fornecedores[idx]=mapForn(data);
     fornecedores.sort((a,b)=>a.nome.localeCompare(b.nome));
-    atualizarSelectFornecedores(); renderFornecedores(); fecharEditForn(); notif('✅ Fornecedor atualizado!');
+    atualizarSelectFornecedores(); renderFornecedores(); fecharEditForn(); notif('✅ Produtor atualizado!');
   } catch(e){notif('Erro: '+e.message,false);} finally{barNuvem(false);}
 }
 async function excluirFornecedor(id) {
@@ -1315,7 +1315,7 @@ async function excluirFornecedor(id) {
   try {
     const r=await supaFetch(SUPA_URL+'/rest/v1/fornecedores?id=eq.'+id,{method:'DELETE',headers:SUPA_H});
     if(!r.ok){let m=await r.text();try{m=JSON.parse(m).message||m;}catch(e){}return notif('Erro: '+m,false);}
-    fornecedores=fornecedores.filter(x=>x.id!=id); atualizarSelectFornecedores(); renderFornecedores(); notif('Fornecedor excluído.');
+    fornecedores=fornecedores.filter(x=>x.id!=id); atualizarSelectFornecedores(); renderFornecedores(); notif('Produtor excluído.');
   } catch(e){notif('Erro: '+e.message,false);}
 }
 function setFornFilt(f) {
@@ -1328,7 +1328,7 @@ function renderFornecedores() {
   if(q) lista=lista.filter(f=>f.nome.toLowerCase().includes(q)||(f.doc||'').includes(q)||(f.cidade||'').toLowerCase().includes(q));
   if(fornFiltAtual!=='todos') lista=lista.filter(f=>f.status===fornFiltAtual);
   const tbody=document.getElementById('forn-table-body'); if(!tbody) return;
-  if(!lista.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text2);">Nenhum fornecedor cadastrado ainda.</td></tr>';const ci=document.getElementById('forn-count-info');if(ci)ci.textContent='';return;}
+  if(!lista.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text2);">Nenhum produtor cadastrado ainda.</td></tr>';const ci=document.getElementById('forn-count-info');if(ci)ci.textContent='';return;}
   tbody.innerHTML=lista.map(f=>`<tr style="border-bottom:1px solid rgba(48,54,61,0.5);" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
     <td style="padding:12px 16px;font-size:11px;color:var(--text2);font-family:monospace;">${f.codigo||'—'}</td>
     <td style="padding:12px 16px;font-size:13px;font-weight:600;">${f.nome}</td>
@@ -1340,13 +1340,13 @@ function renderFornecedores() {
       <button onclick="editarFornecedor(${f.id})" style="padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:11px;cursor:pointer;" onmouseover="this.style.borderColor='var(--blue)';this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">✏️ Editar</button>
       <button onclick="excluirFornecedor(${f.id})" style="padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:11px;cursor:pointer;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">🗑️</button>
     </div></td></tr>`).join('');
-  const ci=document.getElementById('forn-count-info'); if(ci) ci.textContent=lista.length+' fornecedor(es) · '+fornecedores.filter(f=>f.status==='ativo').length+' ativo(s)';
+  const ci=document.getElementById('forn-count-info'); if(ci) ci.textContent=lista.length+' produtor(es) · '+fornecedores.filter(f=>f.status==='ativo').length+' ativo(s)';
 }
 function exportarFornecedores() {
   if(!fornecedores.length) return notif('Nenhum fornecedor!',false);
   const rows=[['Código','Nome','CPF/CNPJ','Telefone','E-mail','Cidade','UF','PIX','Status']];
   fornecedores.forEach(f=>rows.push([f.codigo,f.nome,f.doc,f.tel,f.email,f.cidade,f.uf,f.pix,f.status]));
-  downloadCSV(rows,'fornecedores.csv'); notif('CSV exportado!');
+  downloadCSV(rows,'produtores.csv'); notif('CSV exportado!');
 }
 
 async function salvarLanc() {
@@ -1354,7 +1354,7 @@ async function salvarLanc() {
   const tipo=document.getElementById('lanc-tipo')?.value||'';
   const data=document.getElementById('lanc-data')?.value||'';
   const hist=(document.getElementById('lanc-hist')?.value||'').trim();
-  if(!forn) return notif('Selecione o fornecedor!',false);
+  if(!forn) return notif('Selecione o produtor!',false);
   if(!tipo) return notif('Selecione o tipo!',false);
   if(!data) return notif('Informe a data!',false);
   if(!hist) return notif('Informe o histórico!',false);
@@ -2202,11 +2202,11 @@ function atualizarSelectFornecedores() {
   const baseProds = producers.map(p => ({ id: 'base_'+p.id, nome: p.nome, _base: true, _saldo: p.saldo, _sit: p.situacao }));
   const allForn = [...ativos, ...baseProds.filter(b => !ativos.find(a => a.nome === b.nome))];
 
-  const makeOpts = (selId) => {
+  const makeOpts = (selId, defaultLabel) => {
     const el = document.getElementById(selId);
     if (!el) return;
     const cur = el.value;
-    el.innerHTML = '<option value="">— Selecione o fornecedor —</option>' +
+    el.innerHTML = `<option value="">${defaultLabel}</option>` +
       (ativos.length ? '<optgroup label="Cadastrados">' + ativos.map(f =>
         `<option value="${f.nome}">${f.nome}${f.cidade ? ' · ' + f.cidade : ''}</option>`
       ).join('') + '</optgroup>' : '') +
@@ -2216,7 +2216,25 @@ function atualizarSelectFornecedores() {
       ).join('') + '</optgroup>';
     if (cur) el.value = cur;
   };
-  makeOpts('lanc-forn');
+  makeOpts('lanc-forn', '— Selecione o produtor —');
+
+  // Popular filtro de todos os lançamentos
+  const tlForn = document.getElementById('tl-forn');
+  if (tlForn) {
+    const cur = tlForn.value;
+    tlForn.innerHTML = '<option value="">Todos os produtores</option>' +
+      allForn.map(f => `<option value="${f.nome}">${f.nome}</option>`).join('');
+    if (cur) tlForn.value = cur;
+  }
+
+  // Popular filtro de resumo anual
+  const raProdutor = document.getElementById('ra-produtor');
+  if (raProdutor) {
+    const cur = raProdutor.value;
+    raProdutor.innerHTML = '<option value="">Todos os produtores</option>' +
+      allForn.map(f => `<option value="${f.nome}">${f.nome}</option>`).join('');
+    if (cur) raProdutor.value = cur;
+  }
 }
 
 // ══════════════════════════════════════════════════════
