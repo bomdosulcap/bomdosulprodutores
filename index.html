@@ -426,7 +426,16 @@
   <div class="l-right"><div class="l-form-box">
     <div class="l-form-title">Bem&#8209;vindo</div><div class="l-form-sub">Faça login para acessar o sistema</div>
     <div class="l-field"><label for="l-user">Usuário</label><input type="text" id="l-user" placeholder="Digite seu usuário" autocomplete="username"></div>
-    <div class="l-field"><label for="l-pass">Senha</label><input type="password" id="l-pass" placeholder="Digite sua senha" autocomplete="current-password"></div>
+    <div class="l-field"><label for="l-pass">Senha</label>
+      <div style="position:relative;">
+        <input type="password" id="l-pass" placeholder="Digite sua senha" autocomplete="current-password" style="padding-right:42px;">
+        <button type="button" id="l-eye-btn" onclick="toggleSenhaVisivel()" aria-label="Mostrar senha" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);width:30px;height:30px;border:none;background:transparent;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#5a5a4e;">👁️</button>
+      </div>
+    </div>
+    <div class="l-field" style="display:flex;align-items:center;gap:8px;margin-top:-6px;">
+      <input type="checkbox" id="l-remember" style="width:16px;height:16px;cursor:pointer;accent-color:#1e5959;">
+      <label for="l-remember" style="font-size:12px;font-weight:600;color:#5a5a4e;text-transform:none;letter-spacing:normal;margin:0;cursor:pointer;">Lembrar senha</label>
+    </div>
     <button class="l-btn-login" onclick="doLogin()">Entrar →</button>
     <div class="l-err" id="l-err">❌ Usuário ou senha incorretos.</div>
     <div class="l-foot">Sistema interno · Acesso restrito</div>
@@ -490,15 +499,38 @@
 <script>
 (function(){
   var USERS=[{user:'admin',pass:'bomdosul2025',nome:'Administrador'},{user:'gerente',pass:'gerente123',nome:'Gerente'},{user:'consulta',pass:'consulta',nome:'Consulta'}];
+  window.toggleSenhaVisivel=function(){
+    var inp=document.getElementById('l-pass'); var btn=document.getElementById('l-eye-btn');
+    if(!inp) return;
+    if(inp.type==='password'){inp.type='text'; if(btn){btn.textContent='🙈'; btn.setAttribute('aria-label','Ocultar senha');}}
+    else{inp.type='password'; if(btn){btn.textContent='👁️'; btn.setAttribute('aria-label','Mostrar senha');}}
+  };
   window.doLogin=function(){
     var u=(document.getElementById('l-user')?.value||'').trim().toLowerCase();
     var p=document.getElementById('l-pass')?.value||'';
+    var lembrar=document.getElementById('l-remember')?.checked;
     var err=document.getElementById('l-err');
     var found=USERS.find(function(x){return x.user===u&&x.pass===p;});
-    if(found){err.style.display='none';sessionStorage.setItem('bds_user',JSON.stringify({nome:found.nome}));var ls=document.getElementById('login-screen');ls.classList.add('hidden');setTimeout(function(){if(ls.parentNode)ls.parentNode.removeChild(ls);},500);}
+    if(found){
+      err.style.display='none';
+      sessionStorage.setItem('bds_user',JSON.stringify({nome:found.nome}));
+      try{
+        if(lembrar) localStorage.setItem('bds_lembrar',JSON.stringify({u:u,p:p}));
+        else localStorage.removeItem('bds_lembrar');
+      }catch(e){}
+      var ls=document.getElementById('login-screen');ls.classList.add('hidden');setTimeout(function(){if(ls.parentNode)ls.parentNode.removeChild(ls);},500);
+    }
     else{err.style.display='block';document.getElementById('l-pass').value='';document.getElementById('l-pass')?.focus();}
   };
   ['l-user','l-pass'].forEach(function(id){document.getElementById(id)?.addEventListener('keydown',function(e){if(e.key==='Enter')window.doLogin();});});
+  try{
+    var saved=JSON.parse(localStorage.getItem('bds_lembrar')||'null');
+    if(saved){
+      var uEl=document.getElementById('l-user'); if(uEl) uEl.value=saved.u;
+      var pEl=document.getElementById('l-pass'); if(pEl) pEl.value=saved.p;
+      var rEl=document.getElementById('l-remember'); if(rEl) rEl.checked=true;
+    }
+  }catch(e){}
   var s=sessionStorage.getItem('bds_user');if(s){var ls=document.getElementById('login-screen');if(ls)ls.style.display='none';}
 })();
 </script>
@@ -710,14 +742,23 @@
 <div class="page" id="page-cad-fornecedor">
   <div style="max-width:1100px;">
 
+    <!-- CABEÇALHO COM BOTÃO INCLUIR -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+      <div>
+        <h2 style="font-size:18px; font-weight:700;">👤 Produtores</h2>
+        <p style="font-size:12px; color:var(--text2); margin-top:3px;">Gerencie o cadastro de produtores</p>
+      </div>
+      <button class="btn-save" onclick="toggleFornForm(true)" id="btn-incluir-forn">➕ Incluir Produtor</button>
+    </div>
+
     <!-- FORM NOVO FORNECEDOR -->
-    <div id="forn-form-wrap">
+    <div id="forn-form-wrap" style="display:none;">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
         <div>
           <h2 style="font-size:18px; font-weight:700;">➕ Cadastrar Novo Produtor</h2>
           <p style="font-size:12px; color:var(--text2); margin-top:3px;">Preencha os dados do produtor</p>
         </div>
-        <button class="btn" onclick="toggleFornForm(false)" id="btn-cancelar-forn" style="display:none;">✕ Cancelar</button>
+        <button class="btn" onclick="toggleFornForm(false)" id="btn-cancelar-forn">✕ Cancelar</button>
       </div>
 
       <div class="form-section-box">
@@ -866,11 +907,16 @@
     <!-- FORM LANÇAMENTO -->
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
       <div>
-        <h2 style="font-size:18px; font-weight:700;">📝 Novo Lançamento</h2>
+        <h2 style="font-size:18px; font-weight:700;">📝 Lançamentos</h2>
         <p style="font-size:12px; color:var(--text2); margin-top:3px;">Registre produção ou pagamento de fornecedor</p>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn" onclick="toggleLancForm(false)" id="btn-cancelar-lanc" style="display:none;">✕ Cancelar</button>
+        <button class="btn-save green" onclick="toggleLancForm(true)" id="btn-incluir-lanc">➕ Incluir Lançamento</button>
       </div>
     </div>
 
+    <div id="lanc-form-wrap" style="display:none;">
     <div style="display:grid; grid-template-columns:1fr 380px; gap:24px; align-items:start;">
 
       <!-- CAMPOS DO LANÇAMENTO -->
@@ -1001,6 +1047,7 @@
           <div id="lanc-hist-content" style="max-height:320px; overflow-y:auto;"></div>
         </div>
       </div>
+    </div>
     </div>
 
     <!-- TABELA DE LANÇAMENTOS REGISTRADOS -->
@@ -1204,6 +1251,22 @@ function supaFetch(url, opts) {
 }
 let fornecedores = [], lancamentosNovos = [], fornFiltAtual = 'todos';
 
+let _notifTimer = null;
+function notif(msg, ok) {
+  if (ok === undefined) ok = true;
+  const el = document.getElementById('notif');
+  const ico = document.getElementById('notif-ico');
+  const txt = document.getElementById('notif-msg');
+  if (!el) return;
+  if (txt) txt.textContent = msg;
+  if (ico) ico.textContent = ok ? '✅' : '❌';
+  el.classList.remove('ok','err');
+  el.classList.add(ok ? 'ok' : 'err');
+  el.classList.add('show');
+  clearTimeout(_notifTimer);
+  _notifTimer = setTimeout(() => el.classList.remove('show'), 3500);
+}
+
 function barNuvem(show) { const b=document.getElementById('nuvem-bar'); if(b) b.className=show?'show':''; }
 function atualizarBadgeNuvem(ok) {
   const badge=document.getElementById('user-badge'); if(!badge) return;
@@ -1237,6 +1300,7 @@ async function carregarDados() {
     lancamentosNovos = (await lR.json()).map(mapLanc);
     recalcularProducers(); // ← sincroniza todas as telas com lançamentos do Supabase
     atualizarSelectFornecedores();
+    restaurarFiltrosUsuario(); // reaplica filtros salvos agora que os selects de produtor já têm opções
     renderFornecedores();
     renderLancamentos();
     renderTodosLanc();
@@ -1273,8 +1337,16 @@ async function salvarFornecedor() {
     const t=await r.text(); if(!r.ok){let m=t;try{m=JSON.parse(t).message||t;}catch(e){}barNuvem(false);return notif('Erro: '+m,false);}
     const arr=JSON.parse(t); fornecedores.push(mapForn(Array.isArray(arr)?arr[0]:arr));
     fornecedores.sort((a,b)=>a.nome.localeCompare(b.nome));
-    atualizarSelectFornecedores(); renderFornecedores(); limparFormForn(); notif('✅ Produtor salvo!');
+    atualizarSelectFornecedores(); renderFornecedores(); limparFormForn(); notif('✅ Produtor salvo!'); toggleFornForm(false);
   } catch(e){notif('Erro: '+e.message,false);} finally{barNuvem(false);}
+}
+function toggleFornForm(show){
+  const wrap=document.getElementById('forn-form-wrap');
+  const btnInc=document.getElementById('btn-incluir-forn');
+  if(wrap) wrap.style.display=show?'':'none';
+  if(btnInc) btnInc.style.display=show?'none':'';
+  if(!show) limparFormForn();
+  else document.getElementById('fn-nome')?.focus();
 }
 function limparFormForn() {
   ['fn-nome','fn-doc','fn-tel','fn-email','fn-obs','fn-end','fn-cidade','fn-banco','fn-agencia','fn-conta','fn-pix'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
@@ -1323,6 +1395,7 @@ function setFornFilt(f) {
   renderFornecedores();
 }
 function renderFornecedores() {
+  salvarFiltrosUsuario();
   const q=(document.getElementById('search-forn')?.value||'').toLowerCase();
   let lista=[...fornecedores];
   if(q) lista=lista.filter(f=>f.nome.toLowerCase().includes(q)||(f.doc||'').includes(q)||(f.cidade||'').toLowerCase().includes(q));
@@ -1385,8 +1458,18 @@ async function salvarLanc() {
     lancamentosNovos.unshift(mapLanc(saved));
     recalcularProducers(); // recalcula todos os totais e inadimplentes
     renderLancamentos();renderTodosLanc();renderDashboard();renderProdutores();renderInadimplentes();renderRelatorio();
-    limparLanc();notif('✅ Lançamento salvo!');
+    limparLanc();notif('✅ Lançamento salvo!');toggleLancForm(false);
   }catch(e){notif('Erro: '+e.message,false);}finally{barNuvem(false);}
+}
+function toggleLancForm(show){
+  const wrap=document.getElementById('lanc-form-wrap');
+  const btnInc=document.getElementById('btn-incluir-lanc');
+  const btnCanc=document.getElementById('btn-cancelar-lanc');
+  if(wrap) wrap.style.display=show?'':'none';
+  if(btnInc) btnInc.style.display=show?'none':'';
+  if(btnCanc) btnCanc.style.display=show?'':'none';
+  if(!show) limparLanc();
+  else document.getElementById('lanc-forn')?.focus();
 }
 function limparLanc(){
   ['lanc-forn','lanc-tipo','lanc-ordem','lanc-hist','lanc-forma-pag'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
@@ -1450,6 +1533,7 @@ async function excluirLanc(id){
   }catch(e){notif('Erro: '+e.message,false);}finally{barNuvem(false);}
 }
 function renderLancamentos(){
+  salvarFiltrosUsuario();
   const q=(document.getElementById('search-lanc')?.value||'').toLowerCase();
   const tipo=document.getElementById('lanc-filt-tipo')?.value||'';
   const mes=document.getElementById('lanc-filt-mes')?.value||'';
@@ -1459,7 +1543,7 @@ function renderLancamentos(){
   producers.forEach(p => {
     p.transacoes.forEach(t => {
       lancData.push({
-        id: null,
+        id: t.id || null,
         fornecedor: p.nome,
         tipo: t.total_producao > 0 ? 'producao' : 'pagamento',
         data: t.data,
@@ -1511,6 +1595,7 @@ function exportarLancamentos(){
   downloadCSV(rows,'lancamentos_'+new Date().toISOString().split('T')[0]+'.csv');notif('CSV exportado!');
 }
 function renderTodosLanc(){
+  salvarFiltrosUsuario();
   const q=(document.getElementById('tl-search')?.value||'').toLowerCase();
   const tipo=document.getElementById('tl-tipo')?.value||'';
   const mes=document.getElementById('tl-mes')?.value||'';
@@ -1521,7 +1606,7 @@ function renderTodosLanc(){
   producers.forEach(p => {
     p.transacoes.forEach(t => {
       lancData.push({
-        id: null,
+        id: t.id || null,
         fornecedor: p.nome,
         tipo: t.total_producao > 0 ? 'producao' : 'pagamento',
         data: t.data,
@@ -1672,6 +1757,7 @@ function recalcularProducers() {
       p.total_producao  += val;
       p.saldo           -= val;
       p.transacoes.push({
+        id: l.id,
         data: l.data, historico: l.historico,
         total_cabecas: l.cabecas || 0, valor_cabeca: l.vlCabeca || 0,
         total_producao: val, pagamento: 0, total_saida: val, saldo: 0
@@ -1681,6 +1767,7 @@ function recalcularProducers() {
       p.total_pagamento += val;
       p.saldo           += val;
       p.transacoes.push({
+        id: l.id,
         data: l.data, historico: l.historico,
         total_cabecas: 0, valor_cabeca: 0,
         total_producao: 0, pagamento: val, total_saida: 0, saldo: 0
@@ -1714,6 +1801,42 @@ function fmtNum(v) {
 
 let currentFilter = 'todos';
 let currentRelFilter = 'todos';
+
+// ── PERSISTÊNCIA DE FILTROS POR USUÁRIO ─────────────────────
+function _filtrosKey() {
+  let nome = 'default';
+  try { nome = JSON.parse(sessionStorage.getItem('bds_user')||'{}').nome || 'default'; } catch(e){}
+  return 'bds_filtros_' + nome;
+}
+function salvarFiltrosUsuario() {
+  const g = id => { const el=document.getElementById(id); return el ? el.value : undefined; };
+  const estado = {
+    searchProd: g('search-prod'), filtroProd: currentFilter,
+    searchRel: g('search-rel'), relMes: g('rel-mes'), relAno: g('rel-ano'), filtroRel: currentRelFilter,
+    searchForn: g('search-forn'), filtroForn: fornFiltAtual,
+    searchLanc: g('search-lanc'), lancTipo: g('lanc-filt-tipo'), lancMes: g('lanc-filt-mes'), lancAno: g('lanc-filt-ano'),
+    tlSearch: g('tl-search'), tlTipo: g('tl-tipo'), tlMes: g('tl-mes'), tlAno: g('tl-ano'), tlForn: g('tl-forn'),
+    raAno: g('ra-ano'), raProdutor: g('ra-produtor'),
+    dashMes: g('dash-mes'), dashAno: g('dash-ano')
+  };
+  try { localStorage.setItem(_filtrosKey(), JSON.stringify(estado)); } catch(e){}
+}
+function restaurarFiltrosUsuario() {
+  let estado = null;
+  try { estado = JSON.parse(localStorage.getItem(_filtrosKey()) || 'null'); } catch(e){}
+  if (!estado) return;
+  const set = (id,v) => { const el=document.getElementById(id); if(el && v!==undefined && v!==null) el.value=v; };
+  set('search-prod', estado.searchProd);
+  set('search-rel', estado.searchRel); set('rel-mes', estado.relMes); set('rel-ano', estado.relAno);
+  set('search-forn', estado.searchForn);
+  set('search-lanc', estado.searchLanc); set('lanc-filt-tipo', estado.lancTipo); set('lanc-filt-mes', estado.lancMes); set('lanc-filt-ano', estado.lancAno);
+  set('tl-search', estado.tlSearch); set('tl-tipo', estado.tlTipo); set('tl-mes', estado.tlMes); set('tl-ano', estado.tlAno); set('tl-forn', estado.tlForn);
+  set('ra-ano', estado.raAno); set('ra-produtor', estado.raProdutor);
+  set('dash-mes', estado.dashMes); set('dash-ano', estado.dashAno);
+  if (estado.filtroProd) { currentFilter = estado.filtroProd; ['todos','credito','debito','ativos'].forEach(x=>document.getElementById('filt-'+x)?.classList.toggle('active', x===currentFilter)); }
+  if (estado.filtroRel) { currentRelFilter = estado.filtroRel; ['todos','credito','debito'].forEach(x=>document.getElementById('rel-filt-'+x)?.classList.toggle('active', x===currentRelFilter)); }
+  if (estado.filtroForn) { fornFiltAtual = estado.filtroForn; ['todos','ativo','inativo'].forEach(x=>document.getElementById('ffilt-'+x)?.classList.toggle('active', x===fornFiltAtual)); }
+}
 
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -1766,6 +1889,7 @@ function filterTxDash(txs, mes, ano) {
 }
 
 function renderDashboard() {
+  salvarFiltrosUsuario();
   const { mes, ano } = getDashFilter();
   const mesesNome = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   const hasFilt = mes || ano;
@@ -1893,6 +2017,7 @@ function renderDashboard() {
 
 // PRODUTORES TABLE
 function renderProdutores() {
+  salvarFiltrosUsuario();
   const q = document.getElementById('search-prod').value.toLowerCase();
   let filtered = producers.filter(p => p.nome.toLowerCase().includes(q));
   if (currentFilter === 'credito') filtered = filtered.filter(p => p.situacao === 'CRÉDITO');
@@ -2082,6 +2207,7 @@ function buildRelatorioHTML(filtered, forPrint) {
 }
 
 function renderRelatorio() {
+  salvarFiltrosUsuario();
   const q = document.getElementById('search-rel').value.toLowerCase();
   let filtered = producers.filter(p => p.nome.toLowerCase().includes(q) && p.transacoes.length > 0);
   if (currentRelFilter === 'credito') filtered = filtered.filter(p => p.situacao === 'CRÉDITO');
@@ -2429,6 +2555,7 @@ function calcLanc() {
 const MESES_NOMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 function renderResumoAnual() {
+  salvarFiltrosUsuario();
   const ano      = document.getElementById('ra-ano')?.value || '';
   const filtProd = document.getElementById('ra-produtor')?.value || '';
 
@@ -2688,6 +2815,7 @@ atualizarSelectResumoProdutor();
     }
   })();
   const ldEl=document.getElementById('lanc-data');if(ldEl)ldEl.value=new Date().toISOString().split('T')[0];
+  restaurarFiltrosUsuario();
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){fecharEditLanc();fecharEditForn();}});
   document.getElementById('edit-lanc-modal')?.addEventListener('click',e=>{if(e.target===document.getElementById('edit-lanc-modal'))fecharEditLanc();});
   document.getElementById('edit-forn-modal')?.addEventListener('click',e=>{if(e.target===document.getElementById('edit-forn-modal'))fecharEditForn();});
