@@ -63,6 +63,26 @@
   }
   .tab:hover:not(.active) { color: var(--text); background: var(--surface2); }
 
+  /* CONNECTION STATUS (no menu) */
+  .conn-status {
+    margin-left: auto;
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 14px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface2);
+    cursor: pointer; font-size: 12px; font-weight: 600;
+    font-family: 'Sora', sans-serif; color: var(--text2);
+    transition: all 0.2s; white-space: nowrap; align-self: center;
+  }
+  .conn-status:hover { border-color: var(--text2); color: var(--text); }
+  .conn-status .conn-dot { font-size: 12px; line-height: 1; }
+  .conn-status.ok       { border-color: rgba(63,185,80,0.4);  color: var(--green); }
+  .conn-status.ok .conn-dot { color: var(--green); }
+  .conn-status.off      { border-color: rgba(248,81,73,0.4);  color: var(--red); }
+  .conn-status.off .conn-dot { color: var(--red); }
+  .conn-status.checking { border-color: rgba(210,153,34,0.4); color: var(--orange); }
+  .conn-status.checking .conn-dot { color: var(--orange); animation: pulseDot 0.9s ease-in-out infinite; }
+  @keyframes pulseDot { 0%,100%{opacity:1;} 50%{opacity:0.25;} }
+
   /* MAIN */
   .main { padding: 28px 32px; max-width: 1600px; }
 
@@ -561,6 +581,9 @@
   <button class="tab" onclick="showPage('cad-fornecedor')">➕ Cadastro de Produtor</button>
   <button class="tab" onclick="showPage('lancamentos')">📝 Novo Lançamento</button>
   <button class="tab" onclick="showPage('todos-lancamentos')">📋 Todos os Lançamentos</button>
+  <button id="conn-status" class="conn-status checking" onclick="verificarConexao(true)" title="Clique para testar a conexão com o Supabase">
+    <span class="conn-dot">●</span> <span id="conn-text">Verificando...</span>
+  </button>
 </div>
 
 <div class="main">
@@ -1272,6 +1295,51 @@ function atualizarBadgeNuvem(ok) {
   const badge=document.getElementById('user-badge'); if(!badge) return;
   let nome='Admin'; try{nome=JSON.parse(sessionStorage.getItem('bds_user')||'{}').nome||'Admin';}catch(e){}
   badge.innerHTML='<span style="color:'+(ok?'var(--green)':'var(--orange)')+';font-size:14px">'+(ok?'☁️':'⚠️')+'</span> <strong style="color:var(--text)">'+nome+'</strong>';
+  // Reflete o mesmo estado no indicador do menu
+  setConnState(ok ? 'ok' : 'off');
+}
+
+// ── Indicador de conexão no menu ─────────────────────────────
+// estado: 'ok' | 'off' | 'checking'
+function setConnState(estado) {
+  const btn = document.getElementById('conn-status');
+  const txt = document.getElementById('conn-text');
+  if (!btn || !txt) return;
+  btn.classList.remove('ok','off','checking');
+  btn.classList.add(estado);
+  if (estado === 'ok')       { txt.textContent = 'Conectado';    btn.title = 'Conectado ao Supabase — clique para testar novamente'; }
+  else if (estado === 'off') { txt.textContent = 'Desconectado'; btn.title = 'Sem conexão com o Supabase — clique para tentar novamente'; }
+  else                       { txt.textContent = 'Verificando...'; btn.title = 'Verificando conexão com o Supabase...'; }
+}
+
+// Testa a conexão sob demanda. manual=true mostra notificação ao usuário.
+let _verificandoConexao = false;
+async function verificarConexao(manual) {
+  if (_verificandoConexao) return;
+  _verificandoConexao = true;
+  setConnState('checking');
+  const inicio = Date.now();
+  try {
+    const r = await supaFetch(SUPA_URL + '/rest/v1/lancamentos?select=id&limit=1');
+    if (r.ok) {
+      atualizarBadgeNuvem(true); // atualiza badge do canto + indicador do menu
+      if (manual) {
+        const ms = Date.now() - inicio;
+        notif('✅ Conexão OK com o Supabase (' + ms + ' ms)', true);
+      }
+    } else {
+      const txt = await r.text();
+      atualizarBadgeNuvem(false);
+      if (manual) notif('❌ Supabase respondeu erro ' + r.status, false);
+      console.error('Supabase erro HTTP', r.status, txt);
+    }
+  } catch (e) {
+    atualizarBadgeNuvem(false);
+    if (manual) notif('❌ Sem conexão. Verifique a internet e o status do Supabase.', false);
+    console.error('Falha ao verificar conexão:', e.name, e.message);
+  } finally {
+    _verificandoConexao = false;
+  }
 }
 function mapForn(r) {
   return {id:r.id,codigo:r.codigo||'',nome:r.nome,doc:r.doc||'',tel:r.tel||'',
@@ -2787,33 +2855,11 @@ atualizarSelectResumoProdutor();
 (function initSistema() {
   const session=sessionStorage.getItem('bds_user');
   if(session){const ls=document.getElementById('login-screen');if(ls)ls.style.display='none';}
-  atualizarBadgeNuvem(false);
+  atualizarBadgeNuvem(false); // mostra o nome no canto imediatamente
+  setConnState('checking');    // menu mostra "Verificando..." até o teste terminar
 
-  // Teste de conexão com diagnóstico detalhado
-  (async () => {
-    try {
-      const r = await fetch(SUPA_URL + '/rest/v1/lancamentos?select=id&limit=1', {
-        mode: 'cors',
-        credentials: 'omit',
-        headers: SUPA_H
-      });
-      if (r.ok) {
-        console.log('✅ Supabase OK! Status:', r.status);
-        atualizarBadgeNuvem(true);
-      } else {
-        const txt = await r.text();
-        console.error('❌ Supabase erro HTTP', r.status, txt);
-        notif('❌ Supabase erro ' + r.status + ': ' + txt.substring(0,80), false);
-      }
-    } catch(e) {
-      console.error('❌ Fetch falhou:', e.name, e.message);
-      if (e.message.includes('fetch')) {
-        notif('❌ Sem acesso ao Supabase. Verifique: 1) Internet ativa 2) Supabase online em status.supabase.com', false);
-      } else {
-        notif('❌ Erro: ' + e.message, false);
-      }
-    }
-  })();
+  // Teste de conexão inicial (atualiza o indicador do menu e o badge do canto)
+  verificarConexao(false);
   const ldEl=document.getElementById('lanc-data');if(ldEl)ldEl.value=new Date().toISOString().split('T')[0];
   restaurarFiltrosUsuario();
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){fecharEditLanc();fecharEditForn();}});
