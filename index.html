@@ -6,7 +6,24 @@
 <title>Sistema de Controle de Produtores</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
+  /* TEMA CLARO (padrão do sistema) */
   :root {
+    --bg: #ffffff;
+    --surface: #f6f8fa;
+    --surface2: #eaeef2;
+    --border: #d0d7de;
+    --text: #1f2328;
+    --text2: #59636e;
+    --green: #1a7f37;
+    --red: #cf222e;
+    --orange: #9a6700;
+    --blue: #0969da;
+    --purple: #8250df;
+    --accent: #0969da;
+    --header-grad: linear-gradient(135deg, #ffffff 0%, #f6f8fa 50%, #eef2f6 100%);
+  }
+  /* TEMA ESCURO (ativado via toggle, opcional) */
+  html.theme-dark {
     --bg: #0d1117;
     --surface: #161b22;
     --surface2: #1c2128;
@@ -19,13 +36,14 @@
     --blue: #58a6ff;
     --purple: #bc8cff;
     --accent: #1f6feb;
+    --header-grad: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a2332 100%);
   }
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Sora',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  body { font-family:'Sora',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; transition:background .2s,color .2s; }
 
   /* HEADER */
   .header { 
-    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a2332 100%);
+    background: var(--header-grad);
     border-bottom: 1px solid var(--border);
     padding: 20px 32px;
     display: flex; align-items: center; justify-content: space-between;
@@ -352,7 +370,7 @@
     background-repeat: no-repeat; background-position: right 12px center;
     padding-right: 32px; cursor: pointer; appearance: none;
   }
-  select.form-input option { background: #1c2128; }
+  select.form-input option { background: var(--surface2); color: var(--text); }
   .input-prefix-wrap { position: relative; }
   .input-prefix-wrap .prefix {
     position: absolute; left: 0; top: 0; bottom: 0;
@@ -495,6 +513,17 @@
   .edit-modal-body{padding:24px;}
   .edit-modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
 </style>
+<script>
+// Aplica o tema salvo (se houver) antes da renderização, evitando "flash".
+// Padrão do sistema: SEMPRE CLARO, a menos que o usuário já tenha escolhido escuro antes.
+(function(){
+  try {
+    if (localStorage.getItem('bds_tema') === 'escuro') {
+      document.documentElement.classList.add('theme-dark');
+    }
+  } catch(e) {}
+})();
+</script>
 </head>
 <body>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
@@ -627,6 +656,7 @@
   </div>
   <div class="header-right">
     <span id="user-badge" style="font-size:12px; color:var(--text2); display:flex; align-items:center; gap:6px; padding:0 8px;"></span>
+    <button class="btn" id="btn-tema" onclick="toggleTema()" title="Alternar tema claro/escuro">🌙 Escuro</button>
     <button class="btn" onclick="window.print()">🖨️ Imprimir</button>
     <button class="btn primary" onclick="exportarRelatorio()">📊 Exportar CSV</button>
     <button class="btn" id="btn-backup" onclick="fazerBackup()" title="Baixar backup completo (JSON) de fornecedores e lançamentos">💾 Backup</button>
@@ -1350,6 +1380,21 @@ function supaFetch(url, opts) {
 let fornecedores = [], lancamentosNovos = [], fornFiltAtual = 'todos';
 
 let _notifTimer = null;
+// ── TEMA CLARO/ESCURO ─────────────────────────────────────────
+// Padrão do sistema: sempre CLARO. O usuário pode alternar para escuro,
+// e a escolha fica salva no navegador (localStorage) até ser trocada de novo.
+function atualizarBotaoTema() {
+  const btn = document.getElementById('btn-tema');
+  if (!btn) return;
+  const escuro = document.documentElement.classList.contains('theme-dark');
+  btn.innerHTML = escuro ? '☀️ Claro' : '🌙 Escuro';
+}
+function toggleTema() {
+  const escuro = document.documentElement.classList.toggle('theme-dark');
+  try { localStorage.setItem('bds_tema', escuro ? 'escuro' : 'claro'); } catch(e) {}
+  atualizarBotaoTema();
+}
+
 function notif(msg, ok) {
   if (ok === undefined) ok = true;
   const el = document.getElementById('notif');
@@ -1996,6 +2041,7 @@ function ajustarAlturaHeader() {
 window.addEventListener('resize', ajustarAlturaHeader);
 document.addEventListener('DOMContentLoaded', function() {
   ajustarAlturaHeader();
+  atualizarBotaoTema();
   try { if (localStorage.getItem('bds_menu_mini') === '1') toggleMenu(true); } catch(e) {}
 });
 
