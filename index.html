@@ -1077,9 +1077,8 @@
           <div class="form-grid">
             <div>
               <label class="field-label">Fornecedor <span class="req">*</span></label>
-              <select class="form-input" id="lanc-forn" onchange="onLancFornChange()">
-                <option value="">— Selecione o produtor —</option>
-              </select>
+              <input class="form-input" id="lanc-forn" list="lanc-forn-lista" autocomplete="off" placeholder="🔍 Digite para buscar o produtor..." oninput="onLancFornChange()">
+              <datalist id="lanc-forn-lista"></datalist>
             </div>
             <div>
               <label class="field-label">Tipo de Lançamento <span class="req">*</span></label>
@@ -1638,11 +1637,11 @@ function exportarFornecedores() {
 }
 
 async function salvarLanc() {
-  const forn=document.getElementById('lanc-forn')?.value||'';
+  const forn=nomeFornValido(document.getElementById('lanc-forn')?.value);
   const tipo=document.getElementById('lanc-tipo')?.value||'';
   const data=document.getElementById('lanc-data')?.value||'';
   const hist=(document.getElementById('lanc-hist')?.value||'').trim();
-  if(!forn) return notif('Selecione o produtor!',false);
+  if(!forn) return notif('Selecione um produtor da lista!',false);
   if(!tipo) return notif('Selecione o tipo!',false);
   if(!data) return notif('Informe a data!',false);
   if(!hist) return notif('Informe o histórico!',false);
@@ -2759,7 +2758,9 @@ function atualizarSelectFornecedores() {
       ).join('') + '</optgroup>';
     if (cur) el.value = cur;
   };
-  makeOpts('lanc-forn', '— Selecione o produtor —');
+  const dl = document.getElementById('lanc-forn-lista');
+  if (dl) dl.innerHTML = allForn.map(f =>
+    `<option value="${f.nome}">${f.cidade || ''}</option>`).join('');
 
   // Popular filtro de todos os lançamentos
   const tlForn = document.getElementById('tl-forn');
@@ -2785,8 +2786,17 @@ function atualizarSelectFornecedores() {
 // ══════════════════════════════════════════════════════
 const HIST_SUGESTOES = ['CARGA PUPUNHA','CARGA JUÇARA','CARGA P.REAL','CARGA PALMITO','CARGA IMPERIAL','PALMITO PRONTO','PAGAMENTO','PAGAMENTO SEMANAL','PAGAMENTO CHEQUE','ADIANTAMENTO','DIVIDA ANTIGA'];
 
+function nomeFornValido(txt) {
+  const alvo = (txt || '').trim().toUpperCase();
+  if (!alvo) return '';
+  return [...document.querySelectorAll('#lanc-forn-lista option')]
+    .map(o => o.value).find(v => v.toUpperCase() === alvo) || '';
+}
+
 function onLancFornChange() {
-  const nome = document.getElementById('lanc-forn').value;
+  const elForn = document.getElementById('lanc-forn');
+  const nome = nomeFornValido(elForn.value);
+  if (nome && elForn.value !== nome) elForn.value = nome;
   const saldoPanel = document.getElementById('lanc-saldo-panel');
   const histPanel  = document.getElementById('lanc-hist-panel');
 
