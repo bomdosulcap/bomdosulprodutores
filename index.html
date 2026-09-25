@@ -1403,6 +1403,20 @@ function supaFetch(url, opts) {
     headers: Object.assign({}, SUPA_H, (opts && opts.headers) || {})
   }));
 }
+// Busca TODAS as linhas paginando de 1000 em 1000 (o Supabase limita cada resposta a 1000 linhas).
+// Devolve um objeto compatível com Response (ok, status, json(), text()).
+async function supaFetchTodos(url) {
+  const PAG = 1000; let todos = [], offset = 0;
+  while (true) {
+    const r = await supaFetch(url + (url.includes('?') ? '&' : '?') + 'limit=' + PAG + '&offset=' + offset);
+    if (!r.ok) return r;
+    const lote = await r.json();
+    todos = todos.concat(lote);
+    if (lote.length < PAG) break;
+    offset += PAG;
+  }
+  return { ok: true, status: 200, json: async () => todos, text: async () => JSON.stringify(todos) };
+}
 let fornecedores = [], lancamentosNovos = [], fornFiltAtual = 'todos';
 
 let _notifTimer = null;
@@ -1506,7 +1520,7 @@ async function carregarDados() {
   try {
     const [fR,lR] = await Promise.all([
       supaFetch(SUPA_URL+'/rest/v1/fornecedores?select=*&order=nome.asc'),
-      supaFetch(SUPA_URL+'/rest/v1/lancamentos?select=*&order=data.desc')
+      supaFetchTodos(SUPA_URL+'/rest/v1/lancamentos?select=*&order=data.desc,id.desc')
     ]);
     if(!fR.ok) throw new Error('Fornecedores: '+(await fR.text()));
     if(!lR.ok) throw new Error('Lancamentos: '+(await lR.text()));
@@ -1957,6 +1971,7 @@ function recalcularProducers() {
     // Verificar duplicidade: mesma data + histórico + valor de produção ou pagamento
     const valRef = l.tipo === 'producao' ? (l.totalProducao || 0) : (l.valorPag || 0);
     const jaExiste = p.transacoes.some(t => {
+      if (t.id) return false; // compara só com o histórico embutido (DATA), nunca com outro lançamento do Supabase
       const tVal = t.total_producao > 0 ? t.total_producao : t.pagamento;
       return t.data === l.data &&
              t.historico.trim().toUpperCase() === (l.historico || '').trim().toUpperCase() &&
@@ -2599,7 +2614,7 @@ async function fazerBackup() {
   try {
     const [fR, lR] = await Promise.all([
       supaFetch(SUPA_URL + '/rest/v1/fornecedores?select=*&order=nome.asc'),
-      supaFetch(SUPA_URL + '/rest/v1/lancamentos?select=*&order=data.desc')
+      supaFetchTodos(SUPA_URL + '/rest/v1/lancamentos?select=*&order=data.desc,id.desc')
     ]);
     if (!fR.ok) throw new Error('Fornecedores: ' + (await fR.text()));
     if (!lR.ok) throw new Error('Lancamentos: ' + (await lR.text()));
@@ -3196,7 +3211,7 @@ atualizarSelectResumoProdutor();
     try {
       const [fR, lR] = await Promise.all([
         supaFetch(SUPA_URL+'/rest/v1/fornecedores?select=*&order=nome.asc'),
-        supaFetch(SUPA_URL+'/rest/v1/lancamentos?select=*&order=data.desc')
+        supaFetchTodos(SUPA_URL+'/rest/v1/lancamentos?select=*&order=data.desc,id.desc')
       ]);
       if (!fR.ok || !lR.ok) return;
       const novosForn = (await fR.json()).map(mapForn);
