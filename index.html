@@ -692,6 +692,15 @@
   .pd-fer .a { display:flex; gap:4px; }
   .pd-fer .a button { border:1px solid var(--border); background:var(--surface2); border-radius:5px; cursor:pointer; padding:2px 6px; font-size:11px; }
 
+  /* combo de produto + botão de cadastro rápido */
+  .pd-lbl-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .pd-lbl-row .field-label { margin-bottom:7px; }
+  .pd-add-btn { border:1px solid var(--border); background:var(--surface2); color:var(--blue); border-radius:6px; padding:1px 8px; font-size:11px; font-weight:700; cursor:pointer; margin-bottom:6px; font-family:'Sora',sans-serif; }
+  .pd-add-btn:hover { border-color:var(--blue); }
+  #pd-cad-modal { z-index:600; }
+  .pd-pdf-opts { display:grid; gap:16px; }
+  .pd-pdf-opts .pd-seg button { padding:8px 16px; }
+
   @media (max-width:1300px){
     .pd-hero-row { grid-template-columns:1fr 1fr; }
     .pd-meta-bar { grid-template-columns:repeat(3,1fr); }
@@ -1636,12 +1645,14 @@
     <div class="pd-head">
       <div><h2>🎯 Indicador de Produção de Vidro</h2><p>Meta x produção dia a dia, com acumulado do mês</p></div>
       <div class="pd-head-actions">
+        <select id="pm-prod" class="search-box" style="max-width:260px;" onchange="pdRenderMeta()" title="Ver total ou por produto"><option value="">Todos os produtos (total)</option></select>
         <div class="pd-month-nav">
           <button class="pd-act" onclick="pdMetaNav(-1)" title="Mês anterior">‹</button>
           <span class="lbl" id="pm-mes-lbl"></span>
           <button class="pd-act" onclick="pdMetaNav(1)" title="Próximo mês">›</button>
         </div>
         <button class="btn" onclick="pdMetaHoje()">Mês atual</button>
+        <button class="btn primary" onclick="pdAbrirPdf()" title="Gerar PDF do indicador">📄 Gerar PDF</button>
       </div>
     </div>
     <div class="pd-meta-bar" id="pm-resumo"></div>
@@ -1735,9 +1746,17 @@
       <div class="pd-form-grid">
         <div><label class="field-label">Ordem</label><input class="form-input" id="pf-ordem" type="number" step="1"></div>
         <div><label class="field-label">Data produção <span class="req">*</span></label><input class="form-input" id="pf-data" type="date"></div>
-        <div class="span2"><label class="field-label">Produto <span class="req">*</span></label><select class="form-input" id="pf-produto" onchange="pdOnProdutoForm()"></select></div>
-        <div class="span2"><label class="field-label">Matéria-prima</label><select class="form-input" id="pf-mp"></select></div>
-        <div class="span2"><label class="field-label">Vidro <span class="req">*</span></label><select class="form-input" id="pf-vidro" onchange="pdCalcLanc()"></select></div>
+        <div class="span2"><div class="pd-lbl-row"><label class="field-label">Produto <span class="req">*</span></label><button type="button" class="pd-add-btn" onclick="pdCadRapido('produto')" title="Cadastrar novo produto">➕ Novo</button></div>
+          <select id="pf-produto" onchange="pdOnProdutoForm()" style="display:none;"></select>
+          <div class="rel-combo" id="pf-prod-combo" style="max-width:none;">
+            <input class="form-input" id="pf-produto-busca" placeholder="🔍 Digite para buscar o produto..." autocomplete="off" style="padding-right:60px;"
+                   oninput="pdProdComboAbrir(true)" onfocus="pdProdComboAbrir(false)" onkeydown="pdProdComboTecla(event)">
+            <button type="button" class="rel-combo-btn rel-combo-x" title="Limpar" onclick="pdProdComboSel('')">✕</button>
+            <button type="button" class="rel-combo-btn" title="Abrir lista de produtos" onclick="pdProdComboToggle()">▾</button>
+            <div class="rel-combo-list" id="pf-prod-lista"></div>
+          </div></div>
+        <div class="span2"><div class="pd-lbl-row"><label class="field-label">Matéria-prima</label><button type="button" class="pd-add-btn" onclick="pdCadRapido('materia')" title="Cadastrar nova matéria-prima">➕ Nova</button></div><select class="form-input" id="pf-mp"></select></div>
+        <div class="span2"><div class="pd-lbl-row"><label class="field-label">Vidro <span class="req">*</span></label><button type="button" class="pd-add-btn" onclick="pdCadRapido('vidro')" title="Cadastrar novo vidro">➕ Novo</button></div><select class="form-input" id="pf-vidro" onchange="pdCalcLanc()"></select></div>
         <div><label class="field-label">Caixa com</label><input class="form-input" id="pf-caixa-com" type="number" step="any" min="0" oninput="pdCalcLanc()"></div>
         <div><label class="field-label">Prod. caixas</label><input class="form-input" id="pf-prod-caixas" type="number" step="any" min="0" oninput="pdCalcLanc()"></div>
         <div><label class="field-label">Vidro avulso</label><input class="form-input" id="pf-avulso" type="number" step="any" min="0" oninput="pdCalcLanc()"></div>
@@ -1772,6 +1791,26 @@
     <div class="edit-modal-header"><h3 style="font-size:16px; font-weight:700;" id="pd-cad-titulo"></h3><button class="modal-close" onclick="pdFecharCad()">✕</button></div>
     <div class="edit-modal-body" id="pd-cad-body"></div>
     <div class="edit-modal-footer"><button class="btn-cancel" onclick="pdFecharCad()">Cancelar</button><button class="btn-save green" onclick="pdSalvarCad()">💾 Salvar</button></div>
+  </div>
+</div>
+
+<!-- MODAL: GERAR PDF DO INDICADOR -->
+<div id="pd-pdf-modal" class="edit-modal-overlay">
+  <div class="edit-modal" style="max-width:480px;">
+    <div class="edit-modal-header"><h3 style="font-size:16px; font-weight:700;">📄 Gerar PDF — Indicador de Produção</h3><button class="modal-close" onclick="pdFecharPdf()">✕</button></div>
+    <div class="edit-modal-body">
+      <div class="pd-pdf-opts">
+        <div><label class="field-label">Tamanho do papel</label>
+          <div class="pd-seg" id="pdf-tam"><button data-v="A4" class="active" onclick="pdPdfSeg('pdf-tam',this)">A4</button><button data-v="A3" onclick="pdPdfSeg('pdf-tam',this)">A3</button></div></div>
+        <div><label class="field-label">Orientação</label>
+          <div class="pd-seg" id="pdf-ori"><button data-v="portrait" class="active" onclick="pdPdfSeg('pdf-ori',this)">Retrato</button><button data-v="landscape" onclick="pdPdfSeg('pdf-ori',this)">Paisagem</button></div></div>
+        <div><label class="field-label">Visualização</label>
+          <div id="pdf-vis-txt" style="font-size:13px; font-weight:600;"></div>
+          <div style="font-size:11px; color:var(--text2); margin-top:4px;">Segue o filtro de produto da tela.</div></div>
+        <div style="font-size:12px; color:var(--text2);">O relatório traz somente a tabela de produção, ajustada para caber em uma única folha. Na janela de impressão, escolha <b>Salvar como PDF</b>.</div>
+      </div>
+    </div>
+    <div class="edit-modal-footer"><button class="btn-cancel" onclick="pdFecharPdf()">Cancelar</button><button class="btn-save" onclick="pdGerarPdf()">📄 Gerar PDF</button></div>
   </div>
 </div>
 
@@ -4071,8 +4110,9 @@ function pdAbrirLanc(id){
   document.getElementById('pf-titulo').textContent = l ? '✏️ Editar Lançamento de Produção' : '➕ Novo Lançamento de Produção';
   document.getElementById('pf-btn-novo').style.display = l ? 'none' : '';
   pdCalcLanc();
+  pdProdComboSync();
   document.getElementById('pd-lanc-modal').classList.add('open');
-  setTimeout(()=>document.getElementById(l?'pf-prod-caixas':'pf-produto').focus(), 50);
+  setTimeout(()=>document.getElementById(l?'pf-prod-caixas':'pf-produto-busca').focus(), 50);
 }
 function pdFecharLanc(){ document.getElementById('pd-lanc-modal').classList.remove('open'); }
 function pdOnProdutoForm(){
@@ -4144,8 +4184,8 @@ async function pdSalvarLanc(eNovo){
     if(eNovo && !pdLancEdit.id){
       document.getElementById('pf-ordem').value = pdProxOrdem();
       ['pf-produto','pf-prod-caixas','pf-avulso','pf-obs','pf-prod-vidro'].forEach(k=>document.getElementById(k).value='');
-      pdLancEdit.manual = false; pdCalcLanc();
-      document.getElementById('pf-produto').focus();
+      pdLancEdit.manual = false; pdCalcLanc(); pdProdComboSync();
+      document.getElementById('pf-produto-busca').focus();
     } else pdFecharLanc();
     pdRenderAtual();
   }catch(e){ notif('❌ Erro ao salvar: '+e.message.slice(0,140), false); }
@@ -4174,7 +4214,9 @@ function pdRenderMeta(){
   if(!pdMetaRef){ const h=new Date(); pdMetaRef={ ano:h.getFullYear(), mes:h.getMonth()+1 }; }
   if(!document.getElementById('pm-tbody')) return;
   const { ano, mes } = pdMetaRef;
-  const info = pdInfoMes(ano, mes), real = pdRealPorDia(ano, mes);
+  pdFillProdutos('pm-prod','Todos os produtos (total)', false);
+  const pmProd = document.getElementById('pm-prod')?.value || '';
+  const info = pdInfoMes(ano, mes), real = pdRealPorDia(ano, mes, pmProd||null);
   const realTotal = Object.values(real).reduce((a,b)=>a+b,0);
   const hoje = pdHoje();
   document.getElementById('pm-mes-lbl').textContent = PD_MESES[mes-1]+' / '+ano;
@@ -4191,11 +4233,11 @@ function pdRenderMeta(){
       '<input class="form-input pd-meta-input" id="pm-meta-diaria" type="number" step="any" min="0" value="'+(info.reg?info.metaDiaria:'')+'" placeholder="0" onchange="pdSalvarMetaDiaria(this.value)"></div>'+
     k('Dias úteis', info.uteis, info.sab+' sáb · '+info.dom+' dom · '+info.fer+' feriado(s)') +
     k('Meta do mês', pdN(info.metaTotal), 'produção em vidro', 'var(--blue)') +
-    k('Realizado', pdN(realTotal), pdN(pct,1)+'% da meta', pct>=100?'var(--green)':'') +
+    k(pmProd?'Realizado (produto)':'Realizado', pdN(realTotal), pdN(pct,1)+'% da meta'+(pmProd?' geral':''), pct>=100?'var(--green)':'') +
     k('Ritmo até hoje', metaAteHoje>0 ? pdN(realAteHoje/metaAteHoje*100,1)+'%' : '—', 'meta até hoje: '+pdN(metaAteHoje), metaAteHoje>0 && realAteHoje<metaAteHoje ? 'var(--orange)' : 'var(--green)') +
     k('Falta produzir', pdN(falta), uteisRest>0 && falta>0 ? pdN(falta/uteisRest,1)+' / dia nos '+uteisRest+' dias restantes' : (falta>0?'sem dias com meta restantes':'meta atingida 🎉'), falta>0?'var(--orange)':'var(--green)');
 
-  document.getElementById('pm-tit').textContent = 'INDICADOR DE PRODUÇÃO DE VIDRO — '+PD_MESES[mes-1].toUpperCase()+' / '+ano;
+  document.getElementById('pm-tit').textContent = 'INDICADOR DE PRODUÇÃO DE VIDRO — '+PD_MESES[mes-1].toUpperCase()+' / '+ano+(pmProd && pdProd(pmProd)?' — '+pdProd(pmProd).descricao:'');
   const pctCls = p => p>=100 ? 'ok' : (p>=80 ? 'med' : 'bad');
   let acR = 0, acM = 0, linhas = '';
   info.dias.forEach(d=>{
@@ -4419,6 +4461,7 @@ async function pdSalvarCad(){
   }
   if(cfg.lista().some(x=>x.codigo==body.codigo && x.id!=id)) return notif('Já existe um registro com o código '+body.codigo, false);
   barNuvem(true);
+  let novoId = null;
   try{
     const lista = cfg.lista().slice();
     if(id){
@@ -4426,10 +4469,12 @@ async function pdSalvarCad(){
       const i = lista.findIndex(x=>x.id==id); if(r && r[0] && i>=0) lista[i] = r[0];
     }else{
       const r = await pdApi(cfg.tabela, { method:'POST', headers:SUPA_H, body:JSON.stringify(body) });
-      if(r && r[0]) lista.push(r[0]);
+      if(r && r[0]){ lista.push(r[0]); novoId = r[0].id; }
     }
     cfg.set(pdNorm(lista,['codigo','vidro','fator']).sort((a,b)=>a.codigo-b.codigo));
+    const retorno = pdCadEdit.retorno;
     notif('✅ '+cfg.nome+' salvo(a)'); pdFecharCad(); pdRenderCad(tipo);
+    if(retorno && novoId) pdCadRetornoLanc(tipo, novoId);
   }catch(e){ notif('❌ Erro ao salvar: '+e.message.slice(0,140), false); }
   finally{ barNuvem(false); }
 }
@@ -4629,9 +4674,176 @@ function pdRenderAcumulado(){
           footer:it=> it.length>1 ? 'Total acumulado: '+pdN(it.reduce((s,c)=>s+(c.parsed.y||0),0)) : '' } }) } } });
 }
 
+// ═══════════════ LANÇAMENTO: busca de produto + cadastro rápido ═══════════════
+let pdProdComboIdx = -1;
+function pdProdComboSync(){
+  const sel = document.getElementById('pf-produto'), inp = document.getElementById('pf-produto-busca');
+  if(!sel || !inp) return;
+  const o = sel.options[sel.selectedIndex];
+  inp.value = (sel.value && o) ? o.textContent : '';
+  document.getElementById('pf-prod-combo')?.classList.toggle('tem-valor', !!sel.value);
+}
+function pdProdComboAbrir(digitando){
+  const w = document.getElementById('pf-prod-combo'), lista = document.getElementById('pf-prod-lista');
+  const inp = document.getElementById('pf-produto-busca'), sel = document.getElementById('pf-produto');
+  if(!w || !lista) return;
+  const v = inp.value.trim().toLowerCase();
+  const opts = [...sel.options].filter(o=>o.value);
+  const atual = sel.value && sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].textContent.toLowerCase() : '';
+  const itens = (!v || (!digitando && v===atual)) ? opts : opts.filter(o=>o.textContent.toLowerCase().includes(v));
+  if(digitando && sel.value && v!==atual){ sel.value=''; }
+  pdProdComboIdx = -1;
+  lista.innerHTML = itens.length
+    ? itens.map(o=>'<div class="rel-combo-opt'+(o.value===sel.value?' sel':'')+'" data-v="'+o.value+'" onmousedown="event.preventDefault(); pdProdComboSel(this.dataset.v)"><span>'+pdEsc(o.textContent)+'</span></div>').join('')
+    : '<div class="rel-combo-vazio">Nenhum produto encontrado — use ➕ Novo para cadastrar</div>';
+  w.classList.add('aberto');
+  const s = lista.querySelector('.rel-combo-opt.sel'); if(s) s.scrollIntoView({block:'nearest'});
+}
+function pdProdComboFechar(){ document.getElementById('pf-prod-combo')?.classList.remove('aberto'); }
+function pdProdComboToggle(){
+  const w = document.getElementById('pf-prod-combo');
+  if(w.classList.contains('aberto')) pdProdComboFechar();
+  else { pdProdComboAbrir(false); document.getElementById('pf-produto-busca').focus(); }
+}
+function pdProdComboSel(v){
+  const sel = document.getElementById('pf-produto');
+  sel.value = v; pdOnProdutoForm(); pdProdComboSync(); pdProdComboFechar();
+}
+function pdProdComboTecla(e){
+  const w = document.getElementById('pf-prod-combo');
+  const opts = [...document.querySelectorAll('#pf-prod-lista .rel-combo-opt')];
+  if(e.key==='ArrowDown' || e.key==='ArrowUp'){
+    e.preventDefault();
+    if(!w.classList.contains('aberto')){ pdProdComboAbrir(false); return; }
+    if(!opts.length) return;
+    pdProdComboIdx = e.key==='ArrowDown' ? Math.min(opts.length-1, pdProdComboIdx+1) : Math.max(0, pdProdComboIdx-1);
+    opts.forEach((o,i)=>o.classList.toggle('ativo', i===pdProdComboIdx));
+    opts[pdProdComboIdx].scrollIntoView({block:'nearest'});
+  }else if(e.key==='Enter'){
+    e.preventDefault();
+    const alvo = pdProdComboIdx>=0 ? opts[pdProdComboIdx] : (opts.length===1 ? opts[0] : null);
+    if(w.classList.contains('aberto') && alvo) pdProdComboSel(alvo.dataset.v); else pdProdComboFechar();
+  }else if(e.key==='Escape'){
+    if(w.classList.contains('aberto')){ e.stopPropagation(); pdProdComboFechar(); }
+  }else if(e.key==='Tab') pdProdComboFechar();
+}
+document.addEventListener('mousedown', e=>{ const w=document.getElementById('pf-prod-combo'); if(w && !w.contains(e.target)){ pdProdComboFechar(); if(!document.getElementById('pf-produto').value) pdProdComboSync(); } });
+
+function pdCadRapido(tipo){
+  pdAbrirCad(tipo, null);
+  pdCadEdit.retorno = true;
+}
+function pdCadRetornoLanc(tipo, novoId){
+  if(!document.getElementById('pd-lanc-modal').classList.contains('open')) return;
+  const vals = { p:document.getElementById('pf-produto').value, m:document.getElementById('pf-mp').value, v:document.getElementById('pf-vidro').value };
+  pdFillFormSelects();
+  document.getElementById('pf-produto').value = vals.p;
+  document.getElementById('pf-mp').value = vals.m;
+  document.getElementById('pf-vidro').value = vals.v;
+  if(tipo==='produto'){ document.getElementById('pf-produto').value = novoId; pdOnProdutoForm(); }
+  else if(tipo==='materia') document.getElementById('pf-mp').value = novoId;
+  else if(tipo==='vidro'){ document.getElementById('pf-vidro').value = novoId; pdCalcLanc(); }
+  pdProdComboSync();
+}
+
+// ═══════════════ PDF DO INDICADOR DE PRODUÇÃO ═══════════════
+function pdPdfSeg(grupo, btn){
+  document.querySelectorAll('#'+grupo+' button').forEach(b=>b.classList.toggle('active', b===btn));
+}
+function pdPdfVal(grupo){ return document.querySelector('#'+grupo+' button.active')?.dataset.v; }
+function pdAbrirPdf(){
+  if(!pdMetaRef) pdMetaHoje();
+  const pid = document.getElementById('pm-prod')?.value || '', p = pdProd(pid);
+  document.getElementById('pdf-vis-txt').textContent = p ? 'Por produto: '+p.codigo+' — '+p.descricao : 'Total (todos os produtos)';
+  document.getElementById('pd-pdf-modal').classList.add('open');
+}
+function pdFecharPdf(){ document.getElementById('pd-pdf-modal')?.classList.remove('open'); }
+function pdGerarPdf(){
+  const tam = pdPdfVal('pdf-tam')||'A4', ori = pdPdfVal('pdf-ori')||'portrait';
+  const prodId = document.getElementById('pm-prod')?.value || '';
+  const { ano, mes } = pdMetaRef;
+  const info = pdInfoMes(ano, mes), real = pdRealPorDia(ano, mes, prodId||null);
+  const prodNome = prodId ? (pdProd(prodId)?.codigo+' — '+pdProd(prodId)?.descricao) : '';
+  const hoje = pdHoje();
+  const realTotal = Object.values(real).reduce((a,b)=>a+b,0);
+  const pct = info.metaTotal>0 ? realTotal/info.metaTotal*100 : 0;
+  const pctCls = p => p>=100 ? 'ok' : (p>=80 ? 'med' : 'bad');
+
+  let acR=0, acM=0, linhas='';
+  info.dias.forEach(d=>{
+    const r = real[d.data]||0, futuro = d.data>hoje;
+    acR += r; acM += d.meta;
+    const tag = d.tipo==='fer' ? 'Fer.' : PD_DOW[d.dow];
+    const ativo = d.meta>0 || r>0;
+    const metaTxt = pdN(d.meta)+(d.ajustado?' *':'');
+    let cols;
+    if(futuro && !r) cols = '<td class="n mut">—</td><td class="n">'+metaTxt+'</td><td class="n mut">—</td><td class="n mut">—</td><td class="n"></td>';
+    else if(!ativo) cols = '<td class="n">0</td><td class="n">'+metaTxt+'</td><td class="n mut">—</td><td class="n mut">—</td><td class="n"></td>';
+    else{
+      const p = acM>0 ? acR/acM*100 : null;
+      cols = '<td class="n b">'+pdN(r)+'</td><td class="n">'+metaTxt+'</td><td class="n">'+pdN(acR)+'</td><td class="n">'+pdN(acM)+'</td><td class="n">'+(p==null?'':'<span class="pc '+pctCls(p)+'">'+pdN(p,2)+'%</span>')+'</td>';
+    }
+    linhas += '<tr class="'+(d.tipo!=='util'?d.tipo:'')+(d.data===hoje?' hoje':'')+'"><td class="dia"><b>'+d.dia+'</b> <small>'+tag+(d.feriado?' · '+pdEsc(d.feriado.descricao):'')+'</small></td>'+cols+'</tr>';
+  });
+  const pT = info.metaTotal>0 ? realTotal/info.metaTotal*100 : null;
+  const rodape = '<tr class="tot"><td>TOTAL</td><td class="n">'+pdN(realTotal)+'</td><td class="n">'+pdN(info.metaTotal)+'</td><td class="n">'+pdN(realTotal)+'</td><td class="n">'+pdN(info.metaTotal)+'</td><td class="n">'+(pT==null?'':'<span class="pc '+pctCls(pT)+'">'+pdN(pT,2)+'%</span>')+'</td></tr>';
+
+  const logo = document.querySelector('.header .logo img')?.src || '';
+  const dim = tam==='A3' ? [297,420] : [210,297];
+  const W = ori==='landscape' ? dim[1] : dim[0], H = ori==='landscape' ? dim[0] : dim[1], M = 8;
+  const titulo = 'INDICADOR DE PRODUÇÃO DE VIDRO — '+PD_MESES[mes-1].toUpperCase()+' / '+ano;
+  const emitido = new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const visTxt = prodId ? '<b>'+pdEsc(prodNome)+'</b><br><span>meta geral como referência</span>' : '<b>Total — todos os produtos</b>';
+
+  const html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Indicador de Produção — '+PD_MESES[mes-1]+' '+ano+(prodId?' — '+pdEsc(prodNome):'')+'</title><style>'+
+    '@page{size:'+tam+' '+ori+';margin:'+M+'mm}*{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+    'body{font-family:Arial,Helvetica,sans-serif;color:#1f2328;background:#fff;font-size:11px}'+
+    '.bar{padding:12px;display:flex;gap:10px;background:#f6f8fa;border-bottom:1px solid #d0d7de}.bar button{padding:8px 16px;border-radius:7px;border:1px solid #d0d7de;background:#fff;font-weight:700;cursor:pointer}.bar .p{background:#0969da;color:#fff;border-color:#0969da}'+
+    '@media print{.bar{display:none}}'+
+    '.pg{width:'+(W-2*M)+'mm;padding:0;margin:0 auto;transform-origin:top left}'+
+    '.hd{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;border:1px solid #d0d7de;border-top:5px solid #1e5959;border-radius:8px;padding:8px 14px;margin-bottom:8px;background:#fbf7ee}'+
+    '.hd img{height:54px;width:auto;display:block}.hd .emp{font-size:9px;color:#5a5a4e;letter-spacing:2px;text-transform:uppercase;font-weight:700}'+
+    '.hd h1{font-size:17px;color:#1e5959;margin-top:1px}.hd .per{font-size:11px;color:#1f2328;margin-top:2px}'+
+    '.hd .r{text-align:right;font-size:9.5px;color:#59636e;line-height:1.45;border-left:1px solid #e2d9c4;padding-left:12px}.hd .r b{color:#1f2328;font-size:10.5px}.hd .r .lb{font-size:8px;text-transform:uppercase;letter-spacing:.5px;font-weight:700}'+
+    'table{width:100%;border-collapse:collapse;border:1px solid #c9d8d5}th{background:#e3eeec;font-size:9px;text-transform:uppercase;color:#1e5959;padding:4px 6px;text-align:right;border-bottom:1px solid #c9d8d5}th:first-child{text-align:left}'+
+    'th.tit{text-align:center;font-size:10.5px;color:#fbf7ee;background:#1e5959;letter-spacing:.5px}'+
+    'td{padding:2.5px 6px;border-bottom:1px solid #ece6d6;font-size:10px}td.n{text-align:right;font-family:Consolas,monospace}td.b{font-weight:700;color:#1e5959}td.mut{color:#a59c86}'+
+    'td.dia small{color:#59636e;font-size:8.5px}tr.sab td{background:#fbf7ee}tr.dom td{background:#f2ead8}tr.sab td.dia small,tr.dom td.dia small{color:#8a7440;font-weight:700}'+
+    'tr.fer td{background:#dcebe8}tr.fer td.dia small{color:#1e5959;font-weight:700}tr.hoje td{border-top:1.5px solid #1e5959;border-bottom:1.5px solid #1e5959}'+
+    'tr.tot td{background:#1e5959;color:#fbf7ee;font-weight:800;font-size:10.5px}'+
+    '.pc{display:inline-block;padding:0 5px;border-radius:8px;font-weight:700}.pc.ok{color:#fbf7ee;background:#1e5959}.pc.med{color:#1e5959;background:#dcebe8}.pc.bad{color:#7a6233;background:#f2ead8}'+
+    'tr.tot .pc.ok{background:#fbf7ee;color:#1e5959}'+
+    '.leg{display:flex;flex-wrap:wrap;gap:8px;font-size:9px;color:#59636e;margin-top:6px}.leg span{display:inline-flex;align-items:center;gap:4px}.leg i{width:10px;height:10px;border-radius:2px;display:inline-block;border:1px solid #d0d7de}'+
+    '</style></head><body>'+
+    '<div class="bar"><button class="p" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button><button onclick="window.close()">✕ Fechar</button><span style="align-self:center;font-size:12px;color:#59636e;">'+tam+' · '+(ori==='landscape'?'Paisagem':'Retrato')+' · página única</span></div>'+
+    '<div class="pg" id="pg">'+
+      '<div class="hd">'+(logo?'<img src="'+logo+'" alt="Bom do Sul">':'')+
+        '<div><div class="emp">Bom do Sul · Controle de Produção</div><h1>Indicador de Produção de Vidro</h1><div class="per">Meta x produção dia a dia · <b>'+PD_MESES[mes-1]+' / '+ano+'</b></div></div>'+
+        '<div class="r"><div class="lb">Visão</div>'+visTxt+'<div class="lb" style="margin-top:4px;">Emitido em</div><b>'+emitido+'</b></div></div>'+
+        '<table><thead><tr><th colspan="6" class="tit">'+titulo+(prodId?' — '+pdEsc(prodNome).toUpperCase():'')+'</th></tr>'+
+        '<tr><th>Dia</th><th>Produção em vidro</th><th>Meta dia</th><th>Acumulado</th><th>Acumulado (meta)</th><th>%</th></tr></thead>'+
+        '<tbody>'+linhas+'</tbody><tfoot>'+rodape+'</tfoot></table>'+
+        '<div class="leg" id="leg"><span><i style="background:#fbf7ee"></i>Sábado</span><span><i style="background:#f2ead8"></i>Domingo</span><span><i style="background:#dcebe8"></i>Feriado</span><span><i style="border-color:#1e5959;border-width:2px"></i>Hoje</span><span><b class="pc ok">≥100%</b> <b class="pc med">80–99%</b> <b class="pc bad">&lt;80%</b></span><span>* Meta do dia ajustada manualmente</span></div>'+
+    '</div>'+
+    '<script>'+
+    'function ajustar(){var pg=document.getElementById("pg"),tb=pg.querySelector("table");pg.style.zoom=1;tb.style.height="";'+
+    'var px=96/25.4,aH=('+(H-2*M)+'-2)*px,h=pg.scrollHeight;'+
+    'if(h<aH){tb.style.height=(tb.offsetHeight+(aH-h))+"px";h=pg.scrollHeight;}'+
+    'if(h>aH){pg.style.zoom=aH/h;}}'+
+    'window.addEventListener("load",ajustar);window.addEventListener("beforeprint",ajustar);'+
+    'window.addEventListener("load",function(){setTimeout(function(){window.print();},350);});'+
+    '<\/script></body></html>';
+  const win = window.open('', '_blank');
+  if(!win) return notif('Permita pop-ups para gerar o PDF', false);
+  win.document.write(html); win.document.close();
+  pdFecharPdf();
+}
+
 // ── eventos gerais ───────────────────────────────────────────
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ pdFecharLanc(); pdFecharCad(); pdFecharFeriado(); } });
-['pd-cad-modal','pd-fer-modal'].forEach(id=>{
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){
+  if(document.getElementById('pd-cad-modal')?.classList.contains('open')){ pdFecharCad(); return; }
+  pdFecharLanc(); pdFecharCad(); pdFecharFeriado(); pdFecharPdf(); } });
+['pd-cad-modal','pd-fer-modal','pd-pdf-modal'].forEach(id=>{
   const el = document.getElementById(id);
   if(el) el.addEventListener('mousedown', e=>{ if(e.target===el) el.classList.remove('open'); });
 });
