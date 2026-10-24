@@ -698,6 +698,29 @@
   .pd-add-btn { border:1px solid var(--border); background:var(--surface2); color:var(--blue); border-radius:6px; padding:1px 8px; font-size:11px; font-weight:700; cursor:pointer; margin-bottom:6px; font-family:'Sora',sans-serif; }
   .pd-add-btn:hover { border-color:var(--blue); }
   #pd-cad-modal { z-index:600; }
+  #pd-lanc-modal { z-index:560; }
+
+  /* drill-down: lançamentos do gráfico */
+  #pd-drill-modal { z-index:520; }
+  .pd-drill { width:100%; max-width:1180px; max-height:92vh; display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:0 24px 70px rgba(0,0,0,.35); animation:slideUp .22s; }
+  .pd-drill-h { display:flex; align-items:flex-start; gap:14px; padding:18px 22px; border-bottom:1px solid var(--border); background:linear-gradient(135deg, rgba(9,105,218,.07), rgba(26,127,55,.05)); }
+  .pd-drill-ico { width:42px; height:42px; border-radius:11px; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+  .pd-drill-h h3 { font-size:17px; font-weight:700; }
+  .pd-drill-h p { font-size:12px; color:var(--text2); margin-top:3px; }
+  .pd-drill-kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:14px 22px; border-bottom:1px solid var(--border); }
+  .pd-drill-kpis .pd-kpi { padding:10px 14px; background:var(--bg); }
+  .pd-drill-kpis .pd-kpi-v { font-size:18px; margin-top:4px; }
+  .pd-drill-tools { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:12px 22px 0; }
+  .pd-drill-chip { font-size:11px; font-weight:600; padding:4px 10px; border-radius:20px; background:var(--surface2); border:1px solid var(--border); color:var(--text2); white-space:nowrap; }
+  .pd-drill-chip b { color:var(--text); font-family:'JetBrains Mono',monospace; margin-left:4px; }
+  .pd-drill-body { padding:12px 22px 4px; overflow:auto; flex:1; min-height:120px; }
+  .pd-drill-body .table-wrap { overflow:visible; }
+  .pd-drill-body thead th { position:sticky; top:0; z-index:1; }
+  .pd-drill-body tbody tr:hover { background:rgba(9,105,218,.06); }
+  .pd-drill-body .pd-act { padding:5px 10px; font-weight:600; }
+  .pd-drill-f { display:flex; align-items:center; gap:10px; justify-content:space-between; padding:14px 22px; border-top:1px solid var(--border); background:var(--surface2); flex-wrap:wrap; }
+  .pd-drill-hint { font-size:11px; color:var(--text2); }
+  @media (max-width:800px){ .pd-drill-kpis { grid-template-columns:repeat(2,1fr); } }
   .pd-pdf-opts { display:grid; gap:16px; }
   .pd-pdf-opts .pd-seg button { padding:8px 16px; }
 
@@ -1731,6 +1754,41 @@
       </div>
     </div>
     <div class="table-wrap"><table class="pd-table"><thead id="pcad-materia-thead"></thead><tbody id="pcad-materia-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- MODAL: LANÇAMENTOS DO GRÁFICO (drill-down) -->
+<div id="pd-drill-modal" class="edit-modal-overlay">
+  <div class="pd-drill" role="dialog" aria-modal="true" aria-labelledby="pdr-titulo">
+    <div class="pd-drill-h">
+      <div class="pd-drill-ico">🧾</div>
+      <div style="flex:1; min-width:0;"><h3 id="pdr-titulo">Lançamentos</h3><p id="pdr-sub"></p></div>
+      <button class="modal-close" onclick="pdDrillFechar()" title="Fechar (Esc)">✕</button>
+    </div>
+    <div class="pd-drill-kpis" id="pdr-kpis"></div>
+    <div class="pd-drill-tools">
+      <input class="search-box" id="pdr-busca" placeholder="🔍 Filtrar por produto, matéria-prima, ordem..." oninput="pdDrillRender()" style="max-width:320px; padding:8px 12px;">
+      <div id="pdr-chips" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+    </div>
+    <div class="pd-drill-body">
+      <div class="table-wrap">
+        <table class="pd-table">
+          <thead><tr>
+            <th class="c">Ordem</th><th class="c">Data</th><th>Produto</th><th>Matéria-prima</th><th class="num">Vidro</th>
+            <th class="num">Caixa com</th><th class="num">Prod. caixas</th><th class="num">Avulso</th><th class="num">Produção em vidro</th><th class="c">Ações</th>
+          </tr></thead>
+          <tbody id="pdr-tbody"></tbody>
+          <tfoot id="pdr-tfoot"></tfoot>
+        </table>
+      </div>
+    </div>
+    <div class="pd-drill-f">
+      <span class="pd-drill-hint">✏️ Editar abre o formulário completo · 🗑️ Excluir pede confirmação · os gráficos são atualizados na hora</span>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-cancel" onclick="pdDrillFechar()">Fechar</button>
+        <button class="btn-save green" id="pdr-btn-novo" onclick="pdDrillNovo()">➕ Novo lançamento</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -4090,7 +4148,7 @@ function pdFillFormSelects(){
   document.getElementById('pf-mp').innerHTML = '<option value="">— Selecione —</option>' + PD.materias.filter(m=>m.ativo!==false || m.id==pdLancEdit.mpAtual).map(m=>'<option value="'+m.id+'">'+pdEsc(m.nome)+'</option>').join('');
   document.getElementById('pf-vidro').innerHTML = '<option value="">— Selecione o vidro —</option>' + PD.vidros.filter(v=>v.ativo!==false || v.id==pdLancEdit.vidroAtual).map(v=>'<option value="'+v.id+'">'+pdN(v.vidro,3)+' — fator '+pdN(v.fator,4)+(v.descricao?' ('+pdEsc(v.descricao)+')':'')+'</option>').join('');
 }
-function pdAbrirLanc(id){
+function pdAbrirLanc(id, preset){
   if(!PD.ok){ notif('Módulo de produção indisponível — verifique as tabelas no Supabase', false); return; }
   const l = id ? PD.lancs.find(x=>x.id==id) : null;
   pdLancEdit = { id: l?l.id:null, manual: l?!!l.producao_manual:false, produtoAtual:l?l.produto_id:null, mpAtual:l?l.materia_prima_id:null, vidroAtual:l?l.vidro_id:null };
@@ -4106,6 +4164,8 @@ function pdAbrirLanc(id){
     set('pf-ordem', pdProxOrdem()); set('pf-data', pdHoje()); set('pf-produto',''); set('pf-mp','');
     set('pf-vidro', ult?ult.vidro_id:''); set('pf-caixa-com', ult?ult.caixa_com:'');
     set('pf-prod-caixas',''); set('pf-avulso',''); set('pf-obs',''); set('pf-prod-vidro','');
+    if(preset && preset.data) set('pf-data', preset.data);
+    if(preset && preset.produto){ set('pf-produto', preset.produto); pdOnProdutoForm(); }
   }
   document.getElementById('pf-titulo').textContent = l ? '✏️ Editar Lançamento de Produção' : '➕ Novo Lançamento de Produção';
   document.getElementById('pf-btn-novo').style.display = l ? 'none' : '';
@@ -4187,7 +4247,7 @@ async function pdSalvarLanc(eNovo){
       pdLancEdit.manual = false; pdCalcLanc(); pdProdComboSync();
       document.getElementById('pf-produto-busca').focus();
     } else pdFecharLanc();
-    pdRenderAtual();
+    pdRenderAtual(); pdDrillRender();
   }catch(e){ notif('❌ Erro ao salvar: '+e.message.slice(0,140), false); }
   finally{ barNuvem(false); }
 }
@@ -4198,7 +4258,7 @@ async function pdExcluirLanc(id){
   try{
     await pdApi('prod_lancamentos?id=eq.'+id, {method:'DELETE', headers:SUPA_H});
     PD.lancs = PD.lancs.filter(x=>x.id!=id);
-    notif('🗑️ Lançamento excluído'); pdRenderAtual();
+    notif('🗑️ Lançamento excluído'); pdRenderAtual(); pdDrillRender();
   }catch(e){ notif('❌ Erro ao excluir: '+e.message.slice(0,140), false); }
   finally{ barNuvem(false); }
 }
@@ -4557,7 +4617,7 @@ function pdRenderDashboard(){
   const porProd = {};
   rows.forEach(l=>{
     const key = String(l.produto_id||'x:'+pdLancProdNome(l));
-    if(!porProd[key]) porProd[key] = { id:l.produto_id, nome:pdLancProdNome(l), codigo:pdProd(l.produto_id)?.codigo||'', vidro:0, cx:0 };
+    if(!porProd[key]) porProd[key] = { key, id:l.produto_id, nome:pdLancProdNome(l), codigo:pdProd(l.produto_id)?.codigo||'', vidro:0, cx:0 };
     porProd[key].vidro += Number(l.producao_vidro)||0; porProd[key].cx += Number(l.prod_caixas)||0;
   });
   const prods = Object.values(porProd).sort((a,b)=>b.vidro-a.vidro);
@@ -4572,21 +4632,25 @@ function pdRenderDashboard(){
   if(!pdChartBase()){ ['pdd-pie','pdd-dia','pdd-acum'].forEach(id=>pdChartVazio(id,'Biblioteca de gráficos não carregou (verifique a internet)')); return; }
 
   // ── pizza por produto (top 7 + Outros)
-  document.getElementById('pdd-pie-st').textContent = periodo+' · produção em vidro';
+  document.getElementById('pdd-pie-st').textContent = periodo+' · produção em vidro · clique numa fatia para ver os lançamentos';
   if(!prods.length) pdChartVazio('pdd-pie','Sem produção no período');
   else{
     const top = prods.slice(0,7), resto = prods.slice(7);
     const labels = top.map(p=>p.nome), vals = top.map(p=>p.vidro), cores = top.map((p,i)=>pdCor(i));
-    if(resto.length){ labels.push('Outros ('+resto.length+')'); vals.push(resto.reduce((a,p)=>a+p.vidro,0)); cores.push(pdDark()?'#6e7681':'#a8aeb5'); }
+    const chaves = top.map(p=>[p.key]);
+    if(resto.length){ labels.push('Outros ('+resto.length+')'); vals.push(resto.reduce((a,p)=>a+p.vidro,0)); cores.push(pdDark()?'#6e7681':'#a8aeb5'); chaves.push(resto.map(p=>p.key)); }
     const centro = { id:'pdCentro', afterDraw(ch){ const m=ch.getDatasetMeta(0).data[0]; if(!m) return; const c=ch.ctx; c.save(); c.textAlign='center'; c.textBaseline='middle';
       c.fillStyle=pdVar('--text'); c.font="700 18px 'JetBrains Mono', monospace"; c.fillText(pdN(total,0), m.x, m.y-7);
       c.fillStyle=pdVar('--text2'); c.font="600 10px 'Sora', sans-serif"; c.fillText('VIDROS', m.x, m.y+12); c.restore(); } };
     pdChart('pdd-pie', { type:'doughnut', data:{ labels, datasets:[{ data:vals, backgroundColor:cores, borderColor:pdVar('--surface'), borderWidth:2, hoverOffset:6 }] },
       options:{ responsive:true, maintainAspectRatio:false, cutout:'58%',
+        ...pdClique(i=>{ const ks=new Set(chaves[i]); pdDrillAbrir({ titulo:labels[i], sub:periodo+' · participação por produto',
+          filtro:l=>String(l.data).startsWith(ano) && (!mes || String(l.data).slice(5,7)===mes) && ks.has(String(l.produto_id||'x:'+pdLancProdNome(l))),
+          preset:{ produto: ks.size===1 && top[i] ? top[i].id : null } }); }),
         plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, boxHeight:10, usePointStyle:true, pointStyle:'rectRounded', padding:10, color:pdVar('--text'),
                     generateLabels(ch){ const ds=ch.data.datasets[0]; return ch.data.labels.map((l,i)=>({ text:(l.length>22?l.slice(0,21)+'…':l)+'  '+pdN(ds.data[i]/total*100,1)+'%', fillStyle:ds.backgroundColor[i], strokeStyle:ds.backgroundColor[i], fontColor:pdVar('--text'), index:i, hidden:!ch.getDataVisibility(i), pointStyle:'rectRounded' })); } } },
                   tooltip:Object.assign(pdTooltip(),{ callbacks:{ label:c=>' '+c.label+': '+pdN(c.parsed)+' ('+pdN(c.parsed/total*100,1)+'%)' } }) } },
-      plugins:[centro] });
+      plugins:[centro, pdRotulos] });
   }
 
   // ── barras por dia (ou por mês quando "Ano inteiro")
@@ -4598,14 +4662,18 @@ function pdRenderDashboard(){
     const labels = info.dias.map(d=>String(d.dia)), vals = info.dias.map(d=>real[d.data]||0);
     const tot = vals.reduce((x,y)=>x+y,0);
     document.getElementById('pdd-dia-t').textContent = 'Produção diária — '+PD_MESES[m-1]+' / '+a;
-    document.getElementById('pdd-dia-st').textContent = prodNome+' · sábados, domingos e feriados em tom mais claro';
+    document.getElementById('pdd-dia-st').textContent = prodNome+' · fins de semana e feriados em tom mais claro · clique num dia para ver os lançamentos';
     document.getElementById('pdd-dia-total').textContent = 'Total produzido: '+pdN(tot);
     const ds = [{ type:'bar', label:'Produção em vidro', data:vals, order:2,
       backgroundColor: info.dias.map(d=>d.tipo==='util'?corBar:corBar+'66'), borderRadius:4, borderSkipped:'start', maxBarThickness:26 }];
     if(!prodSel && info.reg) ds.push({ type:'line', label:'Meta do dia', data:info.dias.map(d=>d.meta), order:1, stepped:'middle',
       borderColor:pdCor(1), borderWidth:2, borderDash:[5,4], pointRadius:0, pointHoverRadius:4, fill:false });
-    pdChart('pdd-dia', { data:{ labels, datasets:ds }, options:{ responsive:true, maintainAspectRatio:false, interaction:{ mode:'index', intersect:false },
-      scales:{ x:{ grid:{ display:false } }, y:{ beginAtZero:true, grid:{ color:pdVar('--border')+'80' }, ticks:{ callback:v=>pdN(v,0) } } },
+    pdChart('pdd-dia', { data:{ labels, datasets:ds }, plugins:[pdRotulos], options:{ responsive:true, maintainAspectRatio:false, interaction:{ mode:'index', intersect:false },
+      layout:{ padding:{ top:8 } },
+      ...pdClique(i=>{ const d=info.dias[i]; pdDrillAbrir({ titulo:PD_DOW[d.dow]+', '+pdDataBR(d.data)+(d.feriado?' — '+d.feriado.descricao:''), sub:prodNome+' · lançamentos do dia',
+        filtro:l=>String(l.data).slice(0,10)===d.data && (!prodSel || String(l.produto_id)===prodSel), meta: prodSel?null:(info.reg?d.meta:null),
+        preset:{ data:d.data, produto:prodSel||null } }); }),
+      scales:{ x:{ grid:{ display:false } }, y:{ beginAtZero:true, grace:'24%', grid:{ color:pdVar('--border')+'80' }, ticks:{ callback:v=>pdN(v,0) } } },
       plugins:{ legend:{ display:ds.length>1, position:'top', align:'end', labels:{ boxWidth:10, boxHeight:10, usePointStyle:true, color:pdVar('--text') } },
         tooltip:Object.assign(pdTooltip(),{ callbacks:{ title:it=>{ const d=info.dias[it[0].dataIndex]; return PD_DOW[d.dow]+', '+pdDataBR(d.data)+(d.feriado?' — '+d.feriado.descricao:''); },
           label:c=>' '+c.dataset.label+': '+pdN(c.parsed.y) } }) } } });
@@ -4613,10 +4681,13 @@ function pdRenderDashboard(){
     const vals = PD_MES_ABR.map((_,i)=>PD.lancs.filter(l=>String(l.data).startsWith(ano+'-'+pdPad(i+1)) && (!prodSel || String(l.produto_id)===prodSel)).reduce((a,l)=>a+(Number(l.producao_vidro)||0),0));
     const tot = vals.reduce((x,y)=>x+y,0);
     document.getElementById('pdd-dia-t').textContent = 'Produção mensal — '+ano;
-    document.getElementById('pdd-dia-st').textContent = prodNome+' · selecione um mês para ver dia a dia';
+    document.getElementById('pdd-dia-st').textContent = prodNome+' · selecione um mês para ver dia a dia · clique numa barra para ver os lançamentos';
     document.getElementById('pdd-dia-total').textContent = 'Total produzido: '+pdN(tot);
-    pdChart('pdd-dia', { type:'bar', data:{ labels:PD_MES_ABR, datasets:[{ label:'Produção em vidro', data:vals, backgroundColor:corBar, borderRadius:4, borderSkipped:'start', maxBarThickness:42 }] },
-      options:{ responsive:true, maintainAspectRatio:false, scales:{ x:{ grid:{ display:false } }, y:{ beginAtZero:true, grid:{ color:pdVar('--border')+'80' }, ticks:{ callback:v=>pdN(v,0) } } },
+    pdChart('pdd-dia', { type:'bar', data:{ labels:PD_MES_ABR, datasets:[{ label:'Produção em vidro', data:vals, backgroundColor:corBar, borderRadius:4, borderSkipped:'start', maxBarThickness:42 }] }, plugins:[pdRotulos],
+      options:{ responsive:true, maintainAspectRatio:false, interaction:{ mode:'index', intersect:false }, layout:{ padding:{ top:8 } },
+        ...pdClique(i=>{ const pref=ano+'-'+pdPad(i+1); pdDrillAbrir({ titulo:PD_MESES[i]+' / '+ano, sub:prodNome+' · lançamentos do mês',
+          filtro:l=>String(l.data).startsWith(pref) && (!prodSel || String(l.produto_id)===prodSel), preset:{ produto:prodSel||null } }); }),
+        scales:{ x:{ grid:{ display:false } }, y:{ beginAtZero:true, grace:'12%', grid:{ color:pdVar('--border')+'80' }, ticks:{ callback:v=>pdN(v,0) } } },
         plugins:{ legend:{ display:false }, tooltip:Object.assign(pdTooltip(),{ callbacks:{ label:c=>' '+pdN(c.parsed.y)+' vidros' } }) } } });
   }
   pdRenderAcumulado();
@@ -4635,15 +4706,15 @@ function pdRenderAcumulado(){
   const mensal = filtro => PD_MES_ABR.map((_,i)=>rowsAno.filter(l=>String(l.data).slice(5,7)===pdPad(i+1) && filtro(l)).reduce((s,l)=>s+(Number(l.producao_vidro)||0),0));
   const acumular = arr => { let s=0; return arr.map((v,i)=>{ s+=v; return i<ultimoMes ? Math.round(s*1000)/1000 : null; }); };
   let datasets = [], sub = '', empilhar = false;
-  document.getElementById('pdd-acum-t').textContent = 'Produção acumulada — Jan a Dez / '+ano;
+  document.getElementById('pdd-acum-t').textContent = 'Produção mensal e acumulada — Jan a Dez / '+ano;
   if(pdAcumModo==='vidro'){
     empilhar = true;
     const tipos = PD.vidros.filter(v=>rowsAno.some(l=>l.vidro_id==v.id));
     const semTipo = rowsAno.some(l=>!pdVid(l.vidro_id));
     tipos.slice(0,7).forEach((v,i)=>{ const m = mensal(l=>l.vidro_id==v.id);
-      datasets.push({ label:'Vidro '+pdN(v.vidro,3), data:acumular(m), mensal:m, backgroundColor:pdCor(i) }); });
+      datasets.push({ label:'Vidro '+pdN(v.vidro,3), data:acumular(m), mensal:m, backgroundColor:pdCor(i), filtro:l=>l.vidro_id==v.id }); });
     if(tipos.length>7 || semTipo){ const ids=new Set(tipos.slice(0,7).map(v=>String(v.id))); const m = mensal(l=>!ids.has(String(l.vidro_id)));
-      datasets.push({ label:'Outros', data:acumular(m), mensal:m, backgroundColor:pdDark()?'#6e7681':'#a8aeb5' }); }
+      datasets.push({ label:'Outros', data:acumular(m), mensal:m, backgroundColor:pdDark()?'#6e7681':'#a8aeb5', filtro:l=>!ids.has(String(l.vidro_id)) }); }
     sub = 'Empilhado por tipo de vidro · produção em vidro-padrão';
   }else if(pdAcumModo==='produto'){
     const sel = document.getElementById('pdd-acum-prod');
@@ -4653,25 +4724,153 @@ function pdRenderAcumulado(){
     }
     const pid = sel.value, nome = pdProd(pid)?.descricao || 'Produto';
     const m = mensal(l=>String(l.produto_id)===pid);
-    datasets.push({ label:nome, data:acumular(m), mensal:m, backgroundColor:pdCor(2) });
+    datasets.push({ label:nome, data:acumular(m), mensal:m, backgroundColor:pdCor(2), filtro:l=>String(l.produto_id)===pid, produto:pid });
     sub = nome+' · produção em vidro-padrão';
   }else{
     const m = mensal(()=>true);
-    datasets.push({ label:'Total', data:acumular(m), mensal:m, backgroundColor:pdCor(0) });
+    datasets.push({ label:'Total', data:acumular(m), mensal:m, backgroundColor:pdCor(0), filtro:()=>true });
     sub = 'Todos os produtos · produção em vidro-padrão';
   }
-  datasets.forEach(d=>Object.assign(d, { borderRadius:4, borderSkipped:'start', maxBarThickness:46, borderColor:pdVar('--surface'), borderWidth: empilhar?{top:2}:0 }));
-  const totalAno = datasets.reduce((s,d)=>s+d.mensal.reduce((x,y)=>x+y,0),0);
-  document.getElementById('pdd-acum-st').textContent = sub;
+  // barras = produção do mês; linha = acumulado (eixo da direita)
+  datasets.forEach(d=>Object.assign(d, { type:'bar', data:d.mensal.map((v,i)=>i<ultimoMes?v:null), order:2, yAxisID:'y',
+    borderRadius:4, borderSkipped:'start', maxBarThickness:46, borderColor:pdVar('--surface'), borderWidth: empilhar?{top:2}:0 }));
+  const mensalTotal = PD_MES_ABR.map((_,i)=>datasets.reduce((s,d)=>s+(d.mensal[i]||0),0));
+  const corLinha = pdVar('--text');
+  datasets.push({ type:'line', label:'Acumulado', data:acumular(mensalTotal), yAxisID:'y2', order:1, rotulo:true, linha:true,
+    borderColor:corLinha, backgroundColor:corLinha, borderWidth:2.5, tension:0.25, pointRadius:4, pointHoverRadius:6,
+    pointBackgroundColor:pdVar('--surface'), pointBorderColor:corLinha, pointBorderWidth:2, spanGaps:false, fill:false });
+  const totalAno = mensalTotal.reduce((x,y)=>x+y,0);
+  document.getElementById('pdd-acum-st').textContent = sub+' · clique num mês para ver os lançamentos';
   document.getElementById('pdd-acum-total').textContent = 'Acumulado '+ano+': '+pdN(totalAno);
   if(!rowsAno.length){ pdChartVazio('pdd-acum','Sem produção lançada em '+ano); return; }
-  pdChart('pdd-acum', { type:'bar', data:{ labels:PD_MES_ABR, datasets },
-    options:{ responsive:true, maintainAspectRatio:false, interaction:{ mode:'index', intersect:false },
-      scales:{ x:{ stacked:empilhar, grid:{ display:false } }, y:{ stacked:empilhar, beginAtZero:true, grid:{ color:pdVar('--border')+'80' }, ticks:{ callback:v=>pdN(v,0) } } },
-      plugins:{ legend:{ display:datasets.length>1, position:'top', align:'end', labels:{ boxWidth:10, boxHeight:10, usePointStyle:true, pointStyle:'rectRounded', color:pdVar('--text') } },
+  pdChart('pdd-acum', { type:'bar', data:{ labels:PD_MES_ABR, datasets }, plugins:[pdRotulos],
+    options:{ responsive:true, maintainAspectRatio:false, interaction:{ mode:'index', intersect:false }, layout:{ padding:{ top:8 } },
+      ...pdClique((i, els)=>{ const pref=ano+'-'+pdPad(i+1); const barrasDs=datasets.filter(d=>!d.linha); const filtros=barrasDs.map(d=>d.filtro);
+        const um = barrasDs.length===1 ? barrasDs[0] : null;
+        pdDrillAbrir({ titulo:PD_MESES[i]+' / '+ano, sub:sub+' · lançamentos do mês (não acumulado)',
+          filtro:l=>String(l.data).startsWith(pref) && filtros.some(f=>f(l)), preset:{ produto: um && um.produto ? um.produto : null } }); }),
+      scales:{ x:{ stacked:empilhar, grid:{ display:false } },
+        y:{ stacked:empilhar, beginAtZero:true, suggestedMax: Math.max(...mensalTotal)*1.7, position:'left', grid:{ color:pdVar('--border')+'80' }, ticks:{ callback:v=>pdN(v,0) },
+            title:{ display:true, text:'Produção no mês', color:pdVar('--text2'), font:{ size:10, weight:'600' } } },
+        y2:{ beginAtZero:true, grace:'10%', position:'right', grid:{ drawOnChartArea:false }, ticks:{ callback:v=>pdN(v,0) },
+             title:{ display:true, text:'Acumulado', color:pdVar('--text2'), font:{ size:10, weight:'600' } } } },
+      plugins:{ legend:{ display:true, position:'top', align:'end', labels:{ boxWidth:10, boxHeight:10, usePointStyle:true, color:pdVar('--text'),
+                  generateLabels(ch){ return Chart.defaults.plugins.legend.labels.generateLabels(ch).map(l=>{ const d=ch.data.datasets[l.datasetIndex]; l.pointStyle = d&&d.linha ? 'line' : 'rectRounded'; return l; }); } } },
         tooltip:Object.assign(pdTooltip(),{ filter:c=>c.parsed.y!=null, callbacks:{
-          label:c=>' '+c.dataset.label+': '+pdN(c.parsed.y)+' acumulado · '+pdN(c.dataset.mensal[c.dataIndex])+' no mês',
-          footer:it=> it.length>1 ? 'Total acumulado: '+pdN(it.reduce((s,c)=>s+(c.parsed.y||0),0)) : '' } }) } } });
+          label:c=> c.dataset.linha ? ' Acumulado: '+pdN(c.parsed.y) : ' '+c.dataset.label+': '+pdN(c.parsed.y)+' no mês',
+          footer:it=>{ const b=it.filter(c=>!c.dataset.linha); return b.length>1 ? 'Total do mês: '+pdN(b.reduce((s,c)=>s+(c.parsed.y||0),0)) : ''; } } }) } } });
+}
+
+// ═══════════════ RÓTULOS NOS GRÁFICOS ═══════════════
+const pdRotulos = { id:'pdRotulos', afterDatasetsDraw(ch){
+  const c = ch.ctx, area = ch.chartArea; if(!area) return;
+  c.save();
+  if(ch.config.type==='doughnut'){
+    const ds = ch.data.datasets[0], meta = ch.getDatasetMeta(0);
+    const tot = ds.data.reduce((a,v,i)=>a+(ch.getDataVisibility(i)?(Number(v)||0):0),0);
+    c.textAlign='center'; c.textBaseline='middle'; c.font="700 11px 'Sora', sans-serif";
+    meta.data.forEach((arc,i)=>{ const v=Number(ds.data[i])||0; if(!ch.getDataVisibility(i) || !tot || v/tot<0.04) return;
+      const pos = arc.tooltipPosition(); const txt = pdN(v/tot*100,1)+'%';
+      c.lineWidth=3; c.strokeStyle='rgba(0,0,0,.28)'; c.strokeText(txt,pos.x,pos.y); c.fillStyle='#fff'; c.fillText(txt,pos.x,pos.y); });
+    c.restore(); return;
+  }
+  const empilhado = !!(ch.options.scales && ch.options.scales.y && ch.options.scales.y.stacked);
+  const barras = ch.data.datasets.map((d,i)=>({ d, meta:ch.getDatasetMeta(i), i })).filter(o=>o.meta.type==='bar' && ch.isDatasetVisible(o.i));
+  const n = ch.data.labels.length, esp = (area.right-area.left)/Math.max(1,n);
+  const rotBarra = {}; // área ocupada pelo rótulo do topo de cada barra (para a linha desviar)
+  for(let j=0; j<n && barras.length; j++){
+    let total=0, topo=null, x=null, tem=false;
+    barras.forEach(o=>{ const v=o.d.data[j], el=o.meta.data[j]; if(v==null || !el) return;
+      tem=true; total+=Number(v)||0; x=el.x; if(topo==null || el.y<topo) topo=el.y;
+      // rótulo interno de cada camada (só empilhado com mais de uma série)
+      if(empilhado && barras.length>1 && v>0){ const h=Math.abs(el.base-el.y), t=pdN(v,0);
+        c.font="600 9.5px 'JetBrains Mono', monospace"; if(h>15 && c.measureText(t).width<el.width-4){ c.fillStyle='#fff'; c.textAlign='center'; c.textBaseline='middle'; c.fillText(t, el.x, (el.y+el.base)/2); } }
+    });
+    if(!tem || !total || topo==null) continue;
+    const txt = pdN(total,0); c.font="700 10px 'JetBrains Mono', monospace"; c.fillStyle=pdVar('--text');
+    const tw = c.measureText(txt).width;
+    if(tw > esp-3){ c.save(); c.translate(x, topo-4); c.rotate(-Math.PI/2); c.textAlign='left'; c.textBaseline='middle'; c.fillText(txt,0,0); c.restore(); rotBarra[j]={ y1:topo-4-tw, y2:topo }; }
+    else { c.textAlign='center'; c.textBaseline='bottom'; c.fillText(txt, x, topo-3); rotBarra[j]={ y1:topo-15, y2:topo }; }
+  }
+  // rótulos das linhas marcadas com rotulo:true (ex.: acumulado) — em "pílula" para ler sobre as barras
+  ch.data.datasets.forEach((d,i)=>{
+    if(!d.rotulo || !ch.isDatasetVisible(i)) return;
+    const meta = ch.getDatasetMeta(i), cor = d.borderColor;
+    c.font="700 10px 'JetBrains Mono', monospace"; c.textAlign='center'; c.textBaseline='middle';
+    meta.data.forEach((pt,j)=>{ const v=d.data[j]; if(v==null || !pt || !v) return;
+      const t = pdN(v,0), w = c.measureText(t).width+10, h = 16, px = pt.x;
+      let py = Math.max(area.top-6, pt.y-14);
+      const rb = rotBarra[j];
+      if(rb && py-h/2 < rb.y2 && py+h/2 > rb.y1) py = pt.y+16; // colide com o rótulo da barra → vai para baixo do ponto
+      if(rb && py-h/2 < rb.y2 && py+h/2 > rb.y1) py = rb.y1-h/2-2; // ainda colide → acima do rótulo da barra
+      c.beginPath(); if(c.roundRect) c.roundRect(px-w/2, py-h/2, w, h, 8); else c.rect(px-w/2, py-h/2, w, h);
+      c.fillStyle=cor; c.fill(); c.fillStyle=pdVar('--surface'); c.fillText(t, px, py+0.5); });
+  });
+  c.restore();
+} };
+// opções de clique (cursor de mão + callback com o índice clicado)
+function pdClique(fn){
+  return {
+    onHover:(e,els)=>{ const t=e.native&&e.native.target; if(t) t.style.cursor = els.length ? 'pointer' : 'default'; },
+    onClick:(e,els)=>{ if(!els.length) return; fn(els[0].index, els); }
+  };
+}
+
+// ═══════════════ DRILL-DOWN: LANÇAMENTOS DO GRÁFICO ═══════════════
+let pdDrill = null;
+function pdDrillAbrir(cfg){
+  pdDrill = cfg;
+  document.getElementById('pdr-busca').value = '';
+  document.getElementById('pd-drill-modal').classList.add('open');
+  pdDrillRender();
+}
+function pdDrillFechar(){ document.getElementById('pd-drill-modal')?.classList.remove('open'); pdDrill = null; }
+function pdDrillNovo(){ if(pdDrill) pdAbrirLanc(null, pdDrill.preset||{}); }
+function pdDrillRender(){
+  if(!pdDrill || !document.getElementById('pd-drill-modal')?.classList.contains('open')) return;
+  const base = PD.lancs.filter(pdDrill.filtro)
+    .sort((a,b)=> String(a.data).localeCompare(String(b.data)) || (a.ordem||0)-(b.ordem||0));
+  const q = (document.getElementById('pdr-busca')?.value||'').trim().toLowerCase();
+  const rows = q ? base.filter(l=>[l.ordem, pdLancProdNome(l), pdLancMatNome(l), pdDataBR(l.data), l.obs].join(' ').toLowerCase().includes(q)) : base;
+  const tot = rows.reduce((t,l)=>{ t.v+=Number(l.producao_vidro)||0; t.cx+=Number(l.prod_caixas)||0; t.av+=Number(l.vidro_avulso)||0; return t; }, {v:0,cx:0,av:0});
+  document.getElementById('pdr-titulo').textContent = pdDrill.titulo;
+  document.getElementById('pdr-sub').textContent = pdDrill.sub + (q ? ' · filtro: "'+q+'"' : '');
+  const k = (l,v,s,cor)=>'<div class="pd-kpi"><div class="pd-kpi-l">'+l+'</div><div class="pd-kpi-v" style="'+(cor?'color:'+cor:'')+'">'+v+'</div><div class="pd-kpi-s">'+s+'</div></div>';
+  const temMeta = pdDrill.meta!=null && pdDrill.meta>0;
+  const pctMeta = temMeta ? tot.v/pdDrill.meta*100 : 0;
+  document.getElementById('pdr-kpis').innerHTML =
+    k('Produção em vidro', pdN(tot.v), 'vidros-padrão', 'var(--green)') +
+    (temMeta ? k('Meta do dia', pdN(pdDrill.meta), pdN(pctMeta,1)+'% atingido', pctMeta>=100?'var(--green)':'var(--orange)')
+             : k('Caixas produzidas', pdN(tot.cx), 'soma de Prod. caixas')) +
+    k(temMeta?'Caixas produzidas':'Vidros avulsos', temMeta?pdN(tot.cx):pdN(tot.av), temMeta?'soma de Prod. caixas':'unidades') +
+    k('Lançamentos', rows.length, new Set(rows.map(l=>l.produto_id)).size+' produto(s)');
+  // resumo por produto
+  const porP = {}; rows.forEach(l=>{ const n=pdLancProdNome(l); porP[n]=(porP[n]||0)+(Number(l.producao_vidro)||0); });
+  const lst = Object.entries(porP).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('pdr-chips').innerHTML = lst.length>1
+    ? lst.slice(0,6).map(([n,v])=>'<span class="pd-drill-chip" title="'+pdEsc(n)+'">'+pdEsc(n.length>26?n.slice(0,25)+'…':n)+'<b>'+pdN(v)+'</b></span>').join('')+(lst.length>6?'<span class="pd-drill-chip">+'+(lst.length-6)+'</span>':'')
+    : '';
+  const tb = document.getElementById('pdr-tbody');
+  if(!rows.length){
+    tb.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:40px; color:var(--text2);">'+(base.length?'Nenhum lançamento corresponde ao filtro':'Nenhum lançamento neste ponto do gráfico')+'</td></tr>';
+    document.getElementById('pdr-tfoot').innerHTML = ''; return;
+  }
+  tb.innerHTML = rows.map(l=>{
+    const vd = pdLancVidro(l);
+    return '<tr>'+
+      '<td class="c" style="font-family:JetBrains Mono,monospace;">'+(l.ordem??'')+'</td>'+
+      '<td class="c" style="white-space:nowrap;">'+pdDataBR(l.data)+'</td>'+
+      '<td style="font-weight:600;">'+pdEsc(pdLancProdNome(l))+(l.obs?' <span title="'+pdEsc(l.obs)+'" style="cursor:help;">💬</span>':'')+'</td>'+
+      '<td>'+pdEsc(pdLancMatNome(l))+'</td>'+
+      '<td class="num" style="white-space:nowrap;">'+(vd!=null?pdN(vd,3):'—')+' <span style="color:var(--text2); font-size:10.5px;">×'+pdN(l.fator,4)+'</span></td>'+
+      '<td class="num">'+pdN(l.caixa_com)+'</td>'+
+      '<td class="num">'+pdN(l.prod_caixas)+'</td>'+
+      '<td class="num">'+pdN(l.vidro_avulso)+'</td>'+
+      '<td class="num" style="font-weight:700; color:var(--green);">'+pdN(l.producao_vidro)+(l.producao_manual?' <span class="pd-tag man" title="Valor editado manualmente">MANUAL</span>':'')+'</td>'+
+      '<td class="c" style="white-space:nowrap;"><button class="pd-act" onclick="pdAbrirLanc('+l.id+')" title="Editar lançamento">✏️ Editar</button> <button class="pd-act del" onclick="pdExcluirLanc('+l.id+')" title="Excluir lançamento">🗑️ Excluir</button></td>'+
+    '</tr>';
+  }).join('');
+  document.getElementById('pdr-tfoot').innerHTML = '<tr><td colspan="6">TOTAL ('+rows.length+' lançamento'+(rows.length>1?'s':'')+')</td><td class="num">'+pdN(tot.cx)+'</td><td class="num">'+pdN(tot.av)+'</td><td class="num" style="color:var(--green);">'+pdN(tot.v)+'</td><td></td></tr>';
 }
 
 // ═══════════════ LANÇAMENTO: busca de produto + cadastro rápido ═══════════════
@@ -4842,8 +5041,9 @@ function pdGerarPdf(){
 // ── eventos gerais ───────────────────────────────────────────
 document.addEventListener('keydown', e=>{ if(e.key==='Escape'){
   if(document.getElementById('pd-cad-modal')?.classList.contains('open')){ pdFecharCad(); return; }
-  pdFecharLanc(); pdFecharCad(); pdFecharFeriado(); pdFecharPdf(); } });
-['pd-cad-modal','pd-fer-modal','pd-pdf-modal'].forEach(id=>{
+  if(document.getElementById('pd-lanc-modal')?.classList.contains('open')){ pdFecharLanc(); return; }
+  pdFecharLanc(); pdFecharCad(); pdFecharFeriado(); pdFecharPdf(); pdDrillFechar(); } });
+['pd-cad-modal','pd-fer-modal','pd-pdf-modal','pd-drill-modal'].forEach(id=>{
   const el = document.getElementById(id);
   if(el) el.addEventListener('mousedown', e=>{ if(e.target===el) el.classList.remove('open'); });
 });
