@@ -740,6 +740,57 @@
     .pd-day { min-height:84px; padding:5px; }
     .pd-day-tag { display:none; }
   }
+
+  /* ═══════════ MÓDULO CONTROLE DE ESTOQUE ═══════════ */
+  #es-mov-modal { z-index:560; }
+  #es-prod-modal { z-index:610; }
+  #es-sub-modal { z-index:620; }
+  .es-mov { width:100%; max-width:860px; background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:visible; box-shadow:0 24px 70px rgba(0,0,0,.35); animation:slideUp .22s; }
+  .es-mov-h { display:flex; align-items:center; gap:14px; padding:18px 22px; border-bottom:1px solid var(--border); border-radius:16px 16px 0 0; }
+  .es-mov.entrada .es-mov-h { background:linear-gradient(135deg, rgba(26,127,55,.13), rgba(26,127,55,.03)); }
+  .es-mov.saida .es-mov-h { background:linear-gradient(135deg, rgba(207,34,46,.11), rgba(207,34,46,.02)); }
+  .es-mov-ico { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; color:#fff; flex-shrink:0; }
+  .es-mov.entrada .es-mov-ico { background:var(--green); }
+  .es-mov.saida .es-mov-ico { background:var(--red); }
+  .es-mov-h h3 { font-size:17px; font-weight:700; }
+  .es-mov-h p { font-size:12px; color:var(--text2); margin-top:3px; }
+  .es-mov-b { padding:18px 22px 20px; }
+  .es-mov-f { display:flex; gap:10px; justify-content:flex-end; align-items:center; padding:14px 22px; border-top:1px solid var(--border); background:var(--surface2); flex-wrap:wrap; border-radius:0 0 16px 16px; }
+  .es-sec { font-size:11px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.6px; margin:16px 0 10px; display:flex; align-items:center; gap:10px; }
+  .es-sec:first-child { margin-top:0; }
+  .es-sec::after { content:''; flex:1; height:1px; background:var(--border); }
+  .es-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .es-prod-row { display:grid; grid-template-columns:150px 1fr; gap:12px; align-items:end; }
+  .es-info { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:12px; }
+  .es-info > div { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:10px 12px; min-width:0; }
+  .es-info .l { font-size:10px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.4px; }
+  .es-info .v { font-size:15px; font-weight:700; margin-top:4px; font-family:'JetBrains Mono',monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .es-info-vazio { margin-top:12px; padding:14px; border:1px dashed var(--border); border-radius:10px; color:var(--text2); font-size:12.5px; text-align:center; }
+  .es-val-row { display:grid; grid-template-columns:1fr 1fr 1.25fr; gap:12px; align-items:end; }
+  .es-total { border-radius:12px; padding:9px 14px; border:1.5px solid var(--border); background:var(--bg); text-align:right; }
+  .es-mov.entrada .es-total { border-color:rgba(26,127,55,.5); }
+  .es-mov.saida .es-total { border-color:rgba(207,34,46,.45); }
+  .es-total .l { font-size:10px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; }
+  .es-total .v { font-size:24px; font-weight:700; font-family:'JetBrains Mono',monospace; line-height:1.25; }
+  .es-mov.entrada .es-total .v { color:var(--green); }
+  .es-mov.saida .es-total .v { color:var(--red); }
+  .es-total .f { font-size:10.5px; color:var(--text2); font-family:'JetBrains Mono',monospace; }
+  .es-custo-info { font-size:11px; color:var(--text2); margin-top:5px; min-height:16px; }
+  .es-custo-info button { border:1px solid var(--border); background:var(--surface2); border-radius:5px; padding:0 6px; font-size:11px; cursor:pointer; color:var(--text); margin-left:4px; }
+  .es-warn { display:none; margin-top:12px; padding:10px 14px; border-radius:10px; font-size:12.5px; border:1px solid rgba(154,103,0,.4); background:rgba(154,103,0,.08); color:var(--orange); }
+  .es-warn.show { display:block; }
+  .es-opt-cod { font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--blue); min-width:54px; display:inline-block; }
+  .es-combo-list .rel-combo-opt { align-items:center; }
+  .es-combo-list .rel-combo-opt span:first-child { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .es-sel-row { display:flex; gap:6px; align-items:center; }
+  .es-sel-row select { flex:1; min-width:0; }
+  .es-sel-row .pd-act { padding:8px 10px; }
+  .es-mut td { color:var(--text2); }
+  .es-mais { display:block; margin:12px auto 0; }
+  @media (max-width:760px){
+    .es-prod-row, .es-val-row, .es-grid2 { grid-template-columns:1fr; }
+    .es-info { grid-template-columns:repeat(2,1fr); }
+  }
 </style>
 <script>
 // Aplica o tema salvo (se houver) antes da renderização, evitando "flash".
@@ -911,6 +962,13 @@
   <button class="tab" data-page="cad-fornecedor" onclick="showPage('cad-fornecedor')" title="Cadastro de Produtor"><span class="tab-ico">➕</span><span class="tab-txt">Cadastro de Produtor</span></button>
   <button class="tab" data-page="lancamentos" onclick="showPage('lancamentos')" title="Novo Lançamento"><span class="tab-ico">📝</span><span class="tab-txt">Novo Lançamento</span></button>
   <button class="tab" data-page="todos-lancamentos" onclick="showPage('todos-lancamentos')" title="Todos os Lançamentos"><span class="tab-ico">📋</span><span class="tab-txt">Todos os Lançamentos</span></button>
+  <div class="tabs-sep" role="separator"></div>
+  <div class="tabs-group-label">Controle de Estoque</div>
+  <button class="tab" data-page="est-produtos" onclick="showPage('est-produtos')" title="Cadastro de Produto (Estoque)"><span class="tab-ico">🏷️</span><span class="tab-txt">Cadastro de Produto</span></button>
+  <button class="tab" data-page="est-subgrupos" onclick="showPage('est-subgrupos')" title="Cadastro de Subgrupo"><span class="tab-ico">🗂️</span><span class="tab-txt">Cadastro de Subgrupo</span></button>
+  <button class="tab" data-page="est-saidas" onclick="showPage('est-saidas')" title="Saída de Estoque"><span class="tab-ico">📤</span><span class="tab-txt">Saída de Estoque</span></button>
+  <button class="tab" data-page="est-entradas" onclick="showPage('est-entradas')" title="Entrada de Estoque"><span class="tab-ico">📥</span><span class="tab-txt">Entrada de Estoque</span></button>
+  <button class="tab" data-page="est-variacao" onclick="showPage('est-variacao')" title="Variação de Estoque"><span class="tab-ico">📊</span><span class="tab-txt">Variação de Estoque</span></button>
   <div class="tabs-sep" role="separator"></div>
   <div class="tabs-group-label">Produção</div>
   <button class="tab" data-page="prod-dashboard" onclick="showPage('prod-dashboard')" title="Dashboard de Produção"><span class="tab-ico">🏭</span><span class="tab-txt">Dashboard Produção</span></button>
@@ -1887,6 +1945,233 @@
   </div>
 </div>
 <!-- ═══════════════════ FIM MÓDULO PRODUÇÃO ═══════════════════ -->
+<!-- ═══════════════════ MÓDULO CONTROLE DE ESTOQUE ═══════════════════ -->
+
+<!-- CADASTRO DE PRODUTO (ESTOQUE) -->
+<div class="page" id="page-est-produtos">
+  <div style="max-width:1600px;">
+    <div class="pd-alert" data-es-alert></div>
+    <div class="pd-head">
+      <div><h2>🏷️ Cadastro de Produto — Estoque</h2><p>Código, descrição, custo, subgrupo e estoque inicial</p></div>
+      <div class="pd-head-actions">
+        <input class="search-box" id="esp-busca" placeholder="🔍 Código ou descrição..." oninput="esProdLimite=200; esRenderProdutos()" style="max-width:240px;">
+        <select id="esp-sub" class="search-box" style="max-width:200px;" onchange="esProdLimite=200; esRenderProdutos()"></select>
+        <button class="btn" onclick="showPage('est-subgrupos')" title="Abrir cadastro de subgrupos">🗂️ Subgrupos</button>
+        <button class="btn" onclick="esCarregar(false)" title="Recarregar dados do estoque">🔄</button>
+        <button class="btn-save green" onclick="esProdAbrir(null)">➕ Novo Produto</button>
+      </div>
+    </div>
+    <div class="pd-kpis" id="esp-kpis"></div>
+    <div class="table-wrap" style="overflow-x:auto;">
+      <table class="pd-table">
+        <thead><tr>
+          <th class="c">Código</th><th>Descrição</th><th>Subgrupo</th><th class="num">Custo</th>
+          <th class="num">Est. inicial (qtd)</th><th class="num">Est. inicial (valor)</th><th class="num">Saldo atual (qtd)</th>
+          <th class="c">Status</th><th class="c">Ações</th>
+        </tr></thead>
+        <tbody id="esp-tbody"></tbody>
+      </table>
+    </div>
+    <div id="esp-rodape" style="font-size:12px; color:var(--text2); margin-top:10px; text-align:center;"></div>
+  </div>
+</div>
+
+<!-- CADASTRO DE SUBGRUPO -->
+<div class="page" id="page-est-subgrupos">
+  <div style="max-width:1100px;">
+    <div class="pd-alert" data-es-alert></div>
+    <div class="pd-head">
+      <div><h2>🗂️ Cadastro de Subgrupo</h2><p>Subgrupos usados no cadastro de produtos e no filtro da variação de estoque</p></div>
+      <div class="pd-head-actions">
+        <input class="search-box" id="ess-busca" placeholder="🔍 Buscar..." oninput="esRenderSubgrupos()" style="max-width:220px;">
+        <button class="btn-save green" onclick="esSubAbrir(null)">➕ Novo Subgrupo</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="pd-table">
+        <thead><tr><th>Subgrupo</th><th class="num">Produtos</th><th class="num">Saldo atual (valor)</th><th class="c">Status</th><th class="c">Ações</th></tr></thead>
+        <tbody id="ess-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SAÍDA DE ESTOQUE -->
+<div class="page" id="page-est-saidas">
+  <div style="max-width:1600px;">
+    <div class="pd-alert" data-es-alert></div>
+    <div class="pd-head">
+      <div><h2>📤 Saída de Estoque</h2><p>Saídas de produtos — valor total = quantidade × custo</p></div>
+      <div class="pd-head-actions">
+        <input class="search-box" id="esa-busca" placeholder="🔍 Código, produto ou NF..." oninput="esRenderMov('saida')" style="max-width:220px;">
+        <select id="esa-mes" class="search-box" style="max-width:160px;" onchange="esRenderMov('saida')"></select>
+        <select id="esa-ano" class="search-box" style="max-width:110px;" onchange="esRenderMov('saida')"></select>
+        <select id="esa-sub" class="search-box" style="max-width:190px;" onchange="esRenderMov('saida')"></select>
+        <button class="btn-save" style="background:linear-gradient(135deg,#cf222e,#f85149);" onclick="esMovAbrir('saida',null)">➕ Nova Saída</button>
+      </div>
+    </div>
+    <div class="pd-kpis" id="esa-kpis"></div>
+    <div class="table-wrap" style="overflow-x:auto;">
+      <table class="pd-table">
+        <thead><tr>
+          <th class="c">Data</th><th class="c">Código</th><th>Descrição do produto</th><th>Subgrupo</th>
+          <th class="num">Quantidade</th><th class="num">Custo unit.</th><th class="num">Valor total</th><th>Nota fiscal</th><th class="c">Ações</th>
+        </tr></thead>
+        <tbody id="esa-tbody"></tbody>
+        <tfoot id="esa-tfoot"></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ENTRADA DE ESTOQUE -->
+<div class="page" id="page-est-entradas">
+  <div style="max-width:1600px;">
+    <div class="pd-alert" data-es-alert></div>
+    <div class="pd-head">
+      <div><h2>📥 Entrada de Estoque</h2><p>Entradas de produtos — valor total = quantidade × custo</p></div>
+      <div class="pd-head-actions">
+        <input class="search-box" id="een-busca" placeholder="🔍 Código, produto ou NF..." oninput="esRenderMov('entrada')" style="max-width:220px;">
+        <select id="een-mes" class="search-box" style="max-width:160px;" onchange="esRenderMov('entrada')"></select>
+        <select id="een-ano" class="search-box" style="max-width:110px;" onchange="esRenderMov('entrada')"></select>
+        <select id="een-sub" class="search-box" style="max-width:190px;" onchange="esRenderMov('entrada')"></select>
+        <button class="btn-save green" onclick="esMovAbrir('entrada',null)">➕ Nova Entrada</button>
+      </div>
+    </div>
+    <div class="pd-kpis" id="een-kpis"></div>
+    <div class="table-wrap" style="overflow-x:auto;">
+      <table class="pd-table">
+        <thead><tr>
+          <th class="c">Data</th><th class="c">Código</th><th>Descrição do produto</th><th>Subgrupo</th>
+          <th class="num">Quantidade</th><th class="num">Custo unit.</th><th class="num">Valor total</th><th>NF de entrada</th><th class="c">Ações</th>
+        </tr></thead>
+        <tbody id="een-tbody"></tbody>
+        <tfoot id="een-tfoot"></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- VARIAÇÃO DE ESTOQUE -->
+<div class="page" id="page-est-variacao">
+  <div style="max-width:1300px;">
+    <div class="pd-alert" data-es-alert></div>
+    <div class="pd-head">
+      <div><h2>📊 Variação de Estoque</h2><p>Estoque inicial + Entradas − Saídas = Estoque final · Variação = Estoque final − Estoque inicial</p></div>
+      <div class="pd-head-actions">
+        <select id="ev-ano" class="search-box" style="max-width:110px;" onchange="esRenderVariacao()"></select>
+        <select id="ev-sub" class="search-box" style="max-width:210px;" onchange="esRenderVariacao()"></select>
+        <div class="pd-seg" id="ev-modo">
+          <button data-m="valor" class="active" onclick="esSetVarModo('valor')">Valor (R$)</button>
+          <button data-m="qtd" onclick="esSetVarModo('qtd')">Quantidade</button>
+        </div>
+      </div>
+    </div>
+    <div class="pd-kpis" id="ev-kpis" style="grid-template-columns:repeat(5,1fr);"></div>
+    <div class="table-wrap" style="overflow-x:auto;">
+      <table class="pd-table">
+        <thead><tr>
+          <th>Mês</th><th class="num">Estoque inicial</th><th class="num">(+) Entradas</th><th class="num">(−) Saídas</th>
+          <th class="num">(=) Estoque final</th><th class="num">Variação</th><th class="num">Var. %</th>
+        </tr></thead>
+        <tbody id="ev-tbody"></tbody>
+        <tfoot id="ev-tfoot"></tfoot>
+      </table>
+    </div>
+    <div style="font-size:11.5px; color:var(--text2); margin-top:10px;">O estoque inicial de janeiro considera o estoque inicial do cadastro + todas as entradas e saídas dos anos anteriores. Meses futuros aparecem em tom mais claro.</div>
+  </div>
+</div>
+
+<!-- MODAL: ENTRADA / SAÍDA DE ESTOQUE -->
+<div id="es-mov-modal" class="form-modal-overlay">
+  <div class="es-mov entrada" id="es-mov-box" role="dialog" aria-modal="true">
+    <div class="es-mov-h">
+      <div class="es-mov-ico" id="em-ico">📥</div>
+      <div style="flex:1; min-width:0;"><h3 id="em-titulo">Nova Entrada de Estoque</h3><p id="em-sub">Busque o produto pelo código ou pela descrição</p></div>
+      <button class="modal-close" onclick="esMovFechar()" title="Fechar (Esc)">✕</button>
+    </div>
+    <div class="es-mov-b">
+      <div class="es-sec">📋 Dados do lançamento</div>
+      <div class="es-grid2">
+        <div><label class="field-label">Data <span class="req">*</span></label><input class="form-input" id="em-data" type="date"></div>
+        <div><label class="field-label" id="em-nf-lbl">Nota fiscal (opcional)</label><input class="form-input" id="em-nf" placeholder="Nº da nota fiscal" oninput="this.value=this.value.toUpperCase()"></div>
+      </div>
+
+      <div class="es-sec">🏷️ Produto</div>
+      <div class="es-prod-row">
+        <div><label class="field-label">Código</label><input class="form-input" id="em-codigo" type="number" step="1" placeholder="Ex.: 1000" oninput="esMovOnCodigo()" onkeydown="if(event.key==='Enter'){event.preventDefault(); if(esMovEdit.produtoId) document.getElementById('em-qtd').focus();}" style="font-family:'JetBrains Mono',monospace; font-weight:700;"></div>
+        <div>
+          <div class="pd-lbl-row"><label class="field-label">Descrição do produto <span class="req">*</span></label><button type="button" class="pd-add-btn" onclick="esProdAbrir(null,'mov')" title="Cadastrar novo produto sem sair desta tela">➕ Incluir produto</button></div>
+          <div class="rel-combo" id="em-combo" style="max-width:none;">
+            <input class="form-input" id="em-busca" placeholder="🔍 Digite o código ou parte da descrição..." autocomplete="off" style="padding-right:60px;"
+                   oninput="esComboAbrir(true)" onfocus="esComboAbrir(false)" onkeydown="esComboTecla(event)">
+            <button type="button" class="rel-combo-btn rel-combo-x" title="Limpar" onclick="esMovSelProd(null); document.getElementById('em-busca').focus();">✕</button>
+            <button type="button" class="rel-combo-btn" title="Abrir lista de produtos" onclick="esComboToggle()">▾</button>
+            <div class="rel-combo-list es-combo-list" id="em-lista"></div>
+          </div>
+        </div>
+      </div>
+      <div id="em-info"></div>
+
+      <div class="es-sec">💲 Valores</div>
+      <div class="es-val-row">
+        <div><label class="field-label">Custo unitário (R$)</label><input class="form-input" id="em-custo" type="number" step="any" min="0" oninput="esMovOnCusto()" style="font-family:'JetBrains Mono',monospace;"><div class="es-custo-info" id="em-custo-info"></div></div>
+        <div><label class="field-label">Quantidade <span class="req">*</span></label><input class="form-input" id="em-qtd" type="number" step="any" min="0" oninput="esMovCalc()" style="font-family:'JetBrains Mono',monospace; font-weight:700;"><div class="es-custo-info">&nbsp;</div></div>
+        <div class="es-total"><div class="l">Valor total</div><div class="v" id="em-total">R$ 0,00</div><div class="f" id="em-formula">0 × R$ 0,00</div></div>
+      </div>
+      <div class="es-warn" id="em-warn"></div>
+      <div style="margin-top:14px;"><label class="field-label">Observação</label><input class="form-input" id="em-obs" placeholder="Opcional"></div>
+    </div>
+    <div class="es-mov-f">
+      <span style="font-size:11px; color:var(--text2); margin-right:auto;">Enter no código vai para a quantidade · Esc fecha</span>
+      <button class="btn-cancel" onclick="esMovFechar()">Cancelar</button>
+      <button class="btn-save" id="em-btn-novo" onclick="esMovSalvar(true)">💾 Salvar e lançar outro</button>
+      <button class="btn-save green" onclick="esMovSalvar(false)">✅ Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: PRODUTO DO ESTOQUE -->
+<div id="es-prod-modal" class="edit-modal-overlay">
+  <div class="edit-modal" style="max-width:720px;">
+    <div class="edit-modal-header"><div><h3 style="font-size:16px; font-weight:700;" id="esf-titulo">Produto</h3><div style="font-size:12px; color:var(--text2); margin-top:3px;">Código, descrição, custo, subgrupo e estoque inicial</div></div><button class="modal-close" onclick="esProdFechar()">✕</button></div>
+    <div class="edit-modal-body">
+      <div class="form-grid">
+        <div><label class="field-label">Código <span class="req">*</span></label><input class="form-input" id="esf-codigo" type="number" step="1"><div style="font-size:10.5px; color:var(--text2); margin-top:4px;">Preenchido automaticamente (pode alterar)</div></div>
+        <div><label class="field-label">Custo (R$)</label><input class="form-input" id="esf-custo" type="number" step="any" min="0" oninput="esProdCalcValor()"></div>
+        <div class="form-full"><label class="field-label">Descrição <span class="req">*</span></label><input class="form-input" id="esf-desc" placeholder="Descrição do produto"></div>
+        <div class="form-full"><label class="field-label">Subgrupo</label>
+          <div class="es-sel-row">
+            <select class="form-input" id="esf-sub"></select>
+            <button type="button" class="pd-act" onclick="esSubAbrir(null,'prod')" title="Incluir novo subgrupo">➕ Incluir</button>
+            <button type="button" class="pd-act" onclick="esSubEditarSel()" title="Editar o subgrupo selecionado">✏️ Editar</button>
+            <button type="button" class="pd-act del" onclick="esSubExcluirSel()" title="Excluir o subgrupo selecionado">🗑️ Excluir</button>
+          </div>
+        </div>
+        <div><label class="field-label">Estoque inicial — quantidade</label><input class="form-input" id="esf-qtd" type="number" step="any" oninput="esProdCalcValor()"></div>
+        <div><label class="field-label">Estoque inicial — valor (R$)</label><input class="form-input" id="esf-valor" type="number" step="any" oninput="esProdOnValor()"><div id="esf-valor-info" class="es-custo-info"></div></div>
+        <div class="form-full"><label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;"><input type="checkbox" id="esf-ativo" checked> Ativo para novos lançamentos</label></div>
+      </div>
+    </div>
+    <div class="edit-modal-footer"><button class="btn-cancel" onclick="esProdFechar()">Cancelar</button><button class="btn-save green" onclick="esProdSalvar()">💾 Salvar</button></div>
+  </div>
+</div>
+
+<!-- MODAL: SUBGRUPO -->
+<div id="es-sub-modal" class="edit-modal-overlay">
+  <div class="edit-modal" style="max-width:440px;">
+    <div class="edit-modal-header"><h3 style="font-size:16px; font-weight:700;" id="ess-titulo">Subgrupo</h3><button class="modal-close" onclick="esSubFechar()">✕</button></div>
+    <div class="edit-modal-body">
+      <div style="display:grid; gap:14px;">
+        <div><label class="field-label">Nome do subgrupo <span class="req">*</span></label><input class="form-input" id="ess-nome" placeholder="Ex.: ACABADO" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter') esSubSalvar()"></div>
+        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;"><input type="checkbox" id="ess-ativo" checked> Ativo</label>
+      </div>
+    </div>
+    <div class="edit-modal-footer"><button class="btn-cancel" onclick="esSubFechar()">Cancelar</button><button class="btn-save green" onclick="esSubSalvar()">💾 Salvar</button></div>
+  </div>
+</div>
+<!-- ═══════════════════ FIM MÓDULO CONTROLE DE ESTOQUE ═══════════════════ -->
+
 <!-- MODAL PRODUTOR -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
@@ -2723,6 +3008,7 @@ function showPage(id) {
   if (id === 'dashboard') renderDashboard();
   if (id === 'todos-lancamentos') renderTodosLanc();
   if (typeof pdOnShowPage === 'function') pdOnShowPage(id); // módulo Produção
+  if (typeof esOnShowPage === 'function') esOnShowPage(id); // módulo Controle de Estoque
 }
 
 function setFilter(f) {
@@ -5052,5 +5338,635 @@ new MutationObserver(()=>{ if(pdPaginaAtiva()==='prod-dashboard') pdRenderDashbo
   .observe(document.documentElement, { attributes:true, attributeFilter:['class'] });
 pdCarregar(true);
 </script>
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  MÓDULO CONTROLE DE ESTOQUE — produtos, subgrupos, entradas, saídas, variação
+//  Tabelas Supabase: est_subgrupos, est_produtos, est_entradas, est_saidas
+//  (ver estoque_supabase.sql)
+// ═══════════════════════════════════════════════════════════════════
+const ES = { subgrupos:[], produtos:[], entradas:[], saidas:[], ok:false, erro:null, carregando:false, carregou:false };
+const ES_MOV = {
+  entrada: { tabela:'est_entradas', lista:()=>ES.entradas, set:v=>ES.entradas=v, nome:'Entrada', ico:'📥', pre:'een', sinal:1, nf:'Nota fiscal de entrada (opcional)' },
+  saida:   { tabela:'est_saidas',   lista:()=>ES.saidas,   set:v=>ES.saidas=v,   nome:'Saída',   ico:'📤', pre:'esa', sinal:-1, nf:'Nota fiscal (opcional)' }
+};
+const ES_NUM_P = ['codigo','custo','estoque_inicial_qtd','estoque_inicial_valor'];
+const ES_NUM_M = ['produto_codigo','quantidade','custo_unit','valor_total'];
+let esProdLimite = 200;
+let esProdEdit = { id:null, valorManual:false, retorno:null };
+let esSubEdit = { id:null, retorno:null };
+let esMovEdit = { tipo:'entrada', id:null, produtoId:null, custoManual:false, orig:null };
+let esVarModo = 'valor';
+let esComboIdx = -1;
+
+function esProd(id){ return ES.produtos.find(p=>p.id==id); }
+function esSub(id){ return ES.subgrupos.find(s=>s.id==id); }
+function esSubNome(id){ const s=esSub(id); return s?s.nome:''; }
+function esNorm(s){ return String(s==null?'':s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); }
+function esQ(v){ return pdN(v,3); }
+function esR(v){ return fmt(Math.round((Number(v)||0)*100)/100); }
+function esNumEl(id){ const el=document.getElementById(id); if(!el||el.value==='') return 0; const v=parseFloat(String(el.value).replace(',','.')); return isNaN(v)?0:v; }
+function esR2(v){ return Math.round((Number(v)||0)*100)/100; }
+function esMovProdSub(l){ const p=esProd(l.produto_id); return p?esSubNome(p.subgrupo_id):''; }
+function esMovProdCod(l){ const p=esProd(l.produto_id); return p?p.codigo:(l.produto_codigo??''); }
+function esMovProdDesc(l){ const p=esProd(l.produto_id); return p?p.descricao:(l.produto_desc||'—'); }
+
+// ── Supabase ─────────────────────────────────────────────────
+async function esCarregar(silencioso){
+  if(ES.carregando) return;
+  ES.carregando = true;
+  if(!silencioso) barNuvem(true);
+  try{
+    const [s,p,e,sa] = await Promise.all([
+      pdGetAll('est_subgrupos','nome.asc'),
+      pdGetAll('est_produtos','codigo.asc'),
+      pdGetAll('est_entradas','data.desc,id.desc'),
+      pdGetAll('est_saidas','data.desc,id.desc')
+    ]);
+    ES.subgrupos = s||[];
+    ES.produtos  = pdNorm(p, ES_NUM_P);
+    ES.entradas  = pdNorm(e, ES_NUM_M);
+    ES.saidas    = pdNorm(sa, ES_NUM_M);
+    ES.ok = true; ES.erro = null;
+    if(!silencioso) notif('🔄 Estoque atualizado');
+  }catch(err){
+    ES.ok = false; ES.erro = err.message;
+    console.error('Estoque:', err.message);
+    if(!silencioso) notif('⚠️ Estoque: '+err.message.slice(0,120), false);
+  }finally{
+    ES.carregando = false; ES.carregou = true;
+    if(!silencioso) barNuvem(false);
+  }
+  esRenderAtual();
+}
+function esRenderAlertas(){
+  let html = '';
+  if(ES.erro){
+    const falta = /42P01|PGRST20|does not exist|schema cache/i.test(ES.erro);
+    html = falta
+      ? '❌ As tabelas do Controle de Estoque ainda não existem no Supabase. Rode o script <code>estoque_supabase.sql</code> no SQL Editor e clique em 🔄.'
+      : '⚠️ Não foi possível carregar o estoque: '+pdEsc(ES.erro.slice(0,200));
+  }
+  document.querySelectorAll('[data-es-alert]').forEach(el=>{ el.innerHTML=html; el.classList.toggle('show', !!html); });
+}
+function esRenderAtual(){
+  esRenderAlertas();
+  const id = pdPaginaAtiva();
+  if(id==='est-produtos') esRenderProdutos();
+  else if(id==='est-subgrupos') esRenderSubgrupos();
+  else if(id==='est-entradas') esRenderMov('entrada');
+  else if(id==='est-saidas') esRenderMov('saida');
+  else if(id==='est-variacao') esRenderVariacao();
+}
+// chamado pelo showPage()
+function esOnShowPage(id){
+  if(!String(id).startsWith('est-')) return;
+  esRenderAtual();
+  esCarregar(true);
+}
+
+// ── saldos ───────────────────────────────────────────────────
+function esSaldos(){
+  const m = {};
+  ES.produtos.forEach(p=>{ m[p.id] = { q:Number(p.estoque_inicial_qtd)||0, v:Number(p.estoque_inicial_valor)||0 }; });
+  const ap = (l,s)=>{ if(l.produto_id==null) return; if(!m[l.produto_id]) m[l.produto_id]={q:0,v:0};
+    m[l.produto_id].q += s*(Number(l.quantidade)||0); m[l.produto_id].v += s*(Number(l.valor_total)||0); };
+  ES.entradas.forEach(l=>ap(l,1)); ES.saidas.forEach(l=>ap(l,-1));
+  return m;
+}
+
+// ── selects ──────────────────────────────────────────────────
+function esFillSub(id, labelTodos, comSem, atualForcado){
+  const el = document.getElementById(id); if(!el) return;
+  const atual = atualForcado!==undefined ? String(atualForcado==null?'':atualForcado) : el.value;
+  el.innerHTML = (labelTodos!=null?'<option value="">'+labelTodos+'</option>':'') +
+    (comSem?'<option value="__sem">— Sem subgrupo —</option>':'') +
+    ES.subgrupos.filter(s=>labelTodos!=null || s.ativo!==false || String(s.id)===atual)
+      .map(s=>'<option value="'+s.id+'">'+pdEsc(s.nome)+(s.ativo===false?' (inativo)':'')+'</option>').join('');
+  if([...el.options].some(o=>o.value===atual)) el.value = atual;
+}
+function esAnos(){
+  const s = new Set(); const a0 = new Date().getFullYear();
+  for(let a=a0-2; a<=a0+1; a++) s.add(a);
+  ES.entradas.concat(ES.saidas).forEach(l=>{ if(l.data) s.add(parseInt(String(l.data).slice(0,4))); });
+  return [...s].sort();
+}
+function esFillAno(id){
+  const el = document.getElementById(id); if(!el) return;
+  const atual = el.dataset.ok ? el.value : String(new Date().getFullYear());
+  el.innerHTML = esAnos().map(a=>'<option value="'+a+'">'+a+'</option>').join('');
+  el.value = atual; el.dataset.ok = '1';
+}
+function esFiltroSub(p, sub){
+  if(!sub) return true;
+  if(sub==='__sem') return !p || !p.subgrupo_id;
+  return !!p && String(p.subgrupo_id)===sub;
+}
+function esKpi(l,v,s,cor){ return '<div class="pd-kpi"><div class="pd-kpi-l">'+l+'</div><div class="pd-kpi-v" style="'+(cor?'color:'+cor:'')+'">'+v+'</div><div class="pd-kpi-s">'+s+'</div></div>'; }
+
+// ═══════════════ CADASTRO DE PRODUTO ═══════════════
+function esRenderProdutos(){
+  const tb = document.getElementById('esp-tbody'); if(!tb) return;
+  esFillSub('esp-sub','Todos os subgrupos',true);
+  const q = esNorm((document.getElementById('esp-busca')?.value||'').trim()), sub = document.getElementById('esp-sub')?.value||'';
+  const saldos = esSaldos();
+  const rows = ES.produtos.filter(p=> esFiltroSub(p,sub) && (!q || String(p.codigo).startsWith(q) || esNorm(p.descricao).includes(q)));
+  const totIni = rows.reduce((a,p)=>a+(Number(p.estoque_inicial_valor)||0),0);
+  const totSaldo = rows.reduce((a,p)=>a+(saldos[p.id]?saldos[p.id].v:0),0);
+  document.getElementById('esp-kpis').innerHTML =
+    esKpi('Produtos', rows.length.toLocaleString('pt-BR'), ES.produtos.length+' cadastrados no total') +
+    esKpi('Com subgrupo', rows.filter(p=>p.subgrupo_id).length.toLocaleString('pt-BR'), ES.subgrupos.length+' subgrupo(s) cadastrado(s)') +
+    esKpi('Estoque inicial', esR(totIni), 'valor do cadastro', 'var(--blue)') +
+    esKpi('Saldo atual', esR(totSaldo), 'inicial + entradas − saídas', 'var(--green)');
+  if(!rows.length){
+    tb.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:36px; color:var(--text2);">'+(ES.carregou?'Nenhum produto encontrado':'Carregando...')+'</td></tr>';
+    document.getElementById('esp-rodape').innerHTML = ''; return;
+  }
+  const vis = rows.slice(0, esProdLimite);
+  tb.innerHTML = vis.map(p=>{
+    const s = saldos[p.id]||{q:0}, sn = esSubNome(p.subgrupo_id);
+    return '<tr>'+
+      '<td class="c"><b style="font-family:JetBrains Mono,monospace;">'+p.codigo+'</b></td>'+
+      '<td style="font-weight:600;">'+pdEsc(p.descricao)+'</td>'+
+      '<td>'+(sn?'<span class="pd-tag nac">'+pdEsc(sn)+'</span>':'<span style="color:var(--text2)">—</span>')+'</td>'+
+      '<td class="num">'+(p.custo!=null?esR(p.custo):'—')+'</td>'+
+      '<td class="num">'+esQ(p.estoque_inicial_qtd)+'</td>'+
+      '<td class="num">'+esR(p.estoque_inicial_valor)+'</td>'+
+      '<td class="num" style="font-weight:700; color:'+(s.q<0?'var(--red)':'var(--text)')+';">'+esQ(s.q)+'</td>'+
+      '<td class="c">'+(p.ativo===false?'<span class="pd-tag inat">INATIVO</span>':'<span class="pd-tag auto">ATIVO</span>')+'</td>'+
+      '<td class="c" style="white-space:nowrap;"><button class="pd-act" onclick="esProdAbrir('+p.id+')" title="Editar">✏️</button> <button class="pd-act del" onclick="esProdExcluir('+p.id+')" title="Excluir">🗑️</button></td>'+
+    '</tr>';
+  }).join('');
+  document.getElementById('esp-rodape').innerHTML = 'Mostrando '+vis.length+' de '+rows.length+' produto(s)' +
+    (rows.length>vis.length ? ' <button class="btn es-mais" onclick="esProdLimite+=300; esRenderProdutos()">Mostrar mais</button>' : '');
+}
+function esProdProxCodigo(){ return ES.produtos.reduce((m,p)=>Math.max(m, Number(p.codigo)||0), 0) + 1; }
+function esProdAbrir(id, retorno){
+  if(!ES.ok){ notif('Estoque indisponível — verifique as tabelas no Supabase', false); return; }
+  const p = id ? esProd(id) : null;
+  esProdEdit = { id:p?p.id:null, valorManual:false, retorno:retorno||null };
+  document.getElementById('esf-titulo').textContent = p ? '✏️ Editar Produto' : '➕ Novo Produto';
+  document.getElementById('esf-codigo').value = p ? p.codigo : esProdProxCodigo();
+  document.getElementById('esf-desc').value = p ? p.descricao : (retorno==='mov' ? (document.getElementById('em-busca').value||'').trim() : '');
+  document.getElementById('esf-custo').value = p && p.custo!=null ? p.custo : '';
+  document.getElementById('esf-qtd').value = p && p.estoque_inicial_qtd ? p.estoque_inicial_qtd : '';
+  document.getElementById('esf-valor').value = p && p.estoque_inicial_valor ? p.estoque_inicial_valor : '';
+  document.getElementById('esf-ativo').checked = p ? p.ativo!==false : true;
+  esFillSub('esf-sub', null, false, p ? p.subgrupo_id : '');
+  document.getElementById('esf-sub').insertAdjacentHTML('afterbegin','<option value="">— Sem subgrupo —</option>');
+  document.getElementById('esf-sub').value = p && p.subgrupo_id ? String(p.subgrupo_id) : '';
+  if(p) esProdEdit.valorManual = Math.abs((Number(p.estoque_inicial_valor)||0) - esR2((Number(p.estoque_inicial_qtd)||0)*(Number(p.custo)||0))) > 0.005;
+  esProdValorInfo();
+  document.getElementById('es-prod-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('esf-desc').focus(), 50);
+}
+function esProdFechar(){ document.getElementById('es-prod-modal').classList.remove('open'); }
+function esProdCalcValor(){
+  if(!esProdEdit.valorManual){
+    const v = esR2(esNumEl('esf-qtd')*esNumEl('esf-custo'));
+    document.getElementById('esf-valor').value = v ? v : '';
+  }
+  esProdValorInfo();
+}
+function esProdOnValor(){
+  const calc = esR2(esNumEl('esf-qtd')*esNumEl('esf-custo'));
+  esProdEdit.valorManual = Math.abs(esNumEl('esf-valor') - calc) > 0.005;
+  esProdValorInfo();
+}
+function esProdValorInfo(){
+  const el = document.getElementById('esf-valor-info'); if(!el) return;
+  const calc = esR2(esNumEl('esf-qtd')*esNumEl('esf-custo'));
+  el.innerHTML = esProdEdit.valorManual
+    ? '<span style="color:var(--orange);">Editado manualmente</span> · calculado: '+esR(calc)+' <button onclick="esProdEdit.valorManual=false; esProdCalcValor()">↺ usar calculado</button>'
+    : 'Calculado: quantidade × custo';
+}
+async function esProdSalvar(){
+  const codigo = parseInt(document.getElementById('esf-codigo').value);
+  const descricao = (document.getElementById('esf-desc').value||'').trim();
+  if(isNaN(codigo)) return notif('Informe o código', false);
+  if(!descricao) return notif('Informe a descrição', false);
+  if(ES.produtos.some(p=>p.codigo==codigo && p.id!=esProdEdit.id)) return notif('Já existe um produto com o código '+codigo, false);
+  const subV = document.getElementById('esf-sub').value;
+  const custoEl = document.getElementById('esf-custo').value;
+  const body = {
+    codigo, descricao,
+    custo: custoEl==='' ? null : esNumEl('esf-custo'),
+    subgrupo_id: subV ? Number(subV) : null,
+    estoque_inicial_qtd: esNumEl('esf-qtd'),
+    estoque_inicial_valor: esNumEl('esf-valor'),
+    ativo: document.getElementById('esf-ativo').checked
+  };
+  barNuvem(true);
+  let novoId = null;
+  try{
+    if(esProdEdit.id){
+      const r = await pdApi('est_produtos?id=eq.'+esProdEdit.id, { method:'PATCH', headers:SUPA_H, body:JSON.stringify(body) });
+      const i = ES.produtos.findIndex(x=>x.id==esProdEdit.id);
+      if(r && r[0] && i>=0) ES.produtos[i] = pdNorm([r[0]], ES_NUM_P)[0];
+      novoId = esProdEdit.id;
+    }else{
+      const r = await pdApi('est_produtos', { method:'POST', headers:SUPA_H, body:JSON.stringify(body) });
+      if(r && r[0]){ ES.produtos.push(pdNorm([r[0]], ES_NUM_P)[0]); novoId = r[0].id; }
+    }
+    ES.produtos.sort((a,b)=>a.codigo-b.codigo);
+    const retorno = esProdEdit.retorno;
+    notif('✅ Produto salvo'); esProdFechar();
+    if(retorno==='mov' && novoId && document.getElementById('es-mov-modal').classList.contains('open')){
+      esMovEdit.custoManual = false; esMovSelProd(novoId); document.getElementById('em-qtd').focus();
+    }
+    esRenderAtual();
+  }catch(e){ notif('❌ Erro ao salvar produto: '+e.message.slice(0,140), false); }
+  finally{ barNuvem(false); }
+}
+async function esProdExcluir(id){
+  const p = esProd(id); if(!p) return;
+  const uso = ES.entradas.filter(l=>l.produto_id==id).length + ES.saidas.filter(l=>l.produto_id==id).length;
+  if(uso){ alert('O produto '+p.codigo+' possui '+uso+' lançamento(s) de entrada/saída e não pode ser excluído.\n\nPara deixá-lo fora dos novos lançamentos, edite e desmarque "Ativo".'); return; }
+  if(!confirm('Excluir o produto '+p.codigo+' — '+p.descricao+'?')) return;
+  barNuvem(true);
+  try{
+    await pdApi('est_produtos?id=eq.'+id, { method:'DELETE', headers:SUPA_H });
+    ES.produtos = ES.produtos.filter(x=>x.id!=id);
+    notif('🗑️ Produto excluído'); esRenderAtual();
+  }catch(e){ notif('❌ Erro ao excluir: '+e.message.slice(0,140), false); }
+  finally{ barNuvem(false); }
+}
+
+// ═══════════════ CADASTRO DE SUBGRUPO ═══════════════
+function esRenderSubgrupos(){
+  const tb = document.getElementById('ess-tbody'); if(!tb) return;
+  const q = esNorm((document.getElementById('ess-busca')?.value||'').trim());
+  const saldos = esSaldos();
+  const rows = ES.subgrupos.filter(s=>!q || esNorm(s.nome).includes(q));
+  if(!rows.length){ tb.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:32px; color:var(--text2);">'+(ES.carregou?'Nenhum subgrupo cadastrado':'Carregando...')+'</td></tr>'; return; }
+  tb.innerHTML = rows.map(s=>{
+    const prods = ES.produtos.filter(p=>p.subgrupo_id==s.id);
+    const val = prods.reduce((a,p)=>a+(saldos[p.id]?saldos[p.id].v:0),0);
+    return '<tr><td style="font-weight:700;">'+pdEsc(s.nome)+'</td>'+
+      '<td class="num">'+prods.length+'</td><td class="num">'+esR(val)+'</td>'+
+      '<td class="c">'+(s.ativo===false?'<span class="pd-tag inat">INATIVO</span>':'<span class="pd-tag auto">ATIVO</span>')+'</td>'+
+      '<td class="c" style="white-space:nowrap;"><button class="pd-act" onclick="esSubAbrir('+s.id+')" title="Editar">✏️</button> <button class="pd-act del" onclick="esSubExcluir('+s.id+')" title="Excluir">🗑️</button></td></tr>';
+  }).join('');
+}
+function esSubAbrir(id, retorno){
+  if(!ES.ok){ notif('Estoque indisponível — verifique as tabelas no Supabase', false); return; }
+  const s = id ? esSub(id) : null;
+  esSubEdit = { id:s?s.id:null, retorno:retorno||null };
+  document.getElementById('ess-titulo').textContent = s ? '✏️ Editar Subgrupo' : '➕ Novo Subgrupo';
+  document.getElementById('ess-nome').value = s ? s.nome : '';
+  document.getElementById('ess-ativo').checked = s ? s.ativo!==false : true;
+  document.getElementById('es-sub-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('ess-nome').focus(), 50);
+}
+function esSubFechar(){ document.getElementById('es-sub-modal').classList.remove('open'); }
+function esSubEditarSel(){ const v=document.getElementById('esf-sub').value; if(!v) return notif('Selecione um subgrupo para editar', false); esSubAbrir(Number(v),'prod'); }
+function esSubExcluirSel(){ const v=document.getElementById('esf-sub').value; if(!v) return notif('Selecione um subgrupo para excluir', false); esSubExcluir(Number(v),'prod'); }
+function esSubAtualizarSelProd(selecionar){
+  if(!document.getElementById('es-prod-modal').classList.contains('open')) return;
+  const sel = document.getElementById('esf-sub');
+  const atual = selecionar!==undefined ? selecionar : sel.value;
+  esFillSub('esf-sub', null, false, atual);
+  sel.insertAdjacentHTML('afterbegin','<option value="">— Sem subgrupo —</option>');
+  sel.value = atual ? String(atual) : '';
+}
+async function esSubSalvar(){
+  const nome = (document.getElementById('ess-nome').value||'').trim().toUpperCase();
+  if(!nome) return notif('Informe o nome do subgrupo', false);
+  if(ES.subgrupos.some(s=>esNorm(s.nome)===esNorm(nome) && s.id!=esSubEdit.id)) return notif('Já existe o subgrupo '+nome, false);
+  const body = { nome, ativo: document.getElementById('ess-ativo').checked };
+  barNuvem(true);
+  try{
+    let id = esSubEdit.id;
+    if(id){
+      const r = await pdApi('est_subgrupos?id=eq.'+id, { method:'PATCH', headers:SUPA_H, body:JSON.stringify(body) });
+      const i = ES.subgrupos.findIndex(x=>x.id==id); if(r && r[0] && i>=0) ES.subgrupos[i] = r[0];
+    }else{
+      const r = await pdApi('est_subgrupos', { method:'POST', headers:SUPA_H, body:JSON.stringify(body) });
+      if(r && r[0]){ ES.subgrupos.push(r[0]); id = r[0].id; }
+    }
+    ES.subgrupos.sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR'));
+    notif('✅ Subgrupo salvo'); esSubFechar();
+    if(esSubEdit.retorno==='prod') esSubAtualizarSelProd(id);
+    esRenderAtual();
+  }catch(e){ notif('❌ Erro ao salvar subgrupo: '+e.message.slice(0,140), false); }
+  finally{ barNuvem(false); }
+}
+async function esSubExcluir(id, retorno){
+  const s = esSub(id); if(!s) return;
+  const n = ES.produtos.filter(p=>p.subgrupo_id==id).length;
+  if(!confirm(n ? 'O subgrupo "'+s.nome+'" está em '+n+' produto(s). Eles ficarão sem subgrupo.\n\nExcluir mesmo assim?' : 'Excluir o subgrupo "'+s.nome+'"?')) return;
+  barNuvem(true);
+  try{
+    await pdApi('est_subgrupos?id=eq.'+id, { method:'DELETE', headers:SUPA_H });
+    ES.subgrupos = ES.subgrupos.filter(x=>x.id!=id);
+    ES.produtos.forEach(p=>{ if(p.subgrupo_id==id) p.subgrupo_id = null; });
+    notif('🗑️ Subgrupo excluído');
+    if(retorno==='prod') esSubAtualizarSelProd('');
+    esRenderAtual();
+  }catch(e){ notif('❌ Erro ao excluir: '+e.message.slice(0,140), false); }
+  finally{ barNuvem(false); }
+}
+
+// ═══════════════ ENTRADAS / SAÍDAS — LISTA ═══════════════
+function esRenderMov(tipo){
+  const cfg = ES_MOV[tipo], pre = cfg.pre;
+  const tb = document.getElementById(pre+'-tbody'); if(!tb) return;
+  if(!document.getElementById(pre+'-mes').dataset.ok) pdFillMes(pre+'-mes','Todos os meses','');
+  esFillAno(pre+'-ano');
+  esFillSub(pre+'-sub','Todos os subgrupos',true);
+  const mes = document.getElementById(pre+'-mes').value, ano = document.getElementById(pre+'-ano').value;
+  const sub = document.getElementById(pre+'-sub').value, q = esNorm((document.getElementById(pre+'-busca').value||'').trim());
+  const rows = cfg.lista().filter(l=>{
+    if(ano && !String(l.data).startsWith(ano)) return false;
+    if(mes && String(l.data).slice(5,7)!==mes) return false;
+    if(sub && !esFiltroSub(esProd(l.produto_id), sub)) return false;
+    if(q && !(String(esMovProdCod(l)).startsWith(q) || esNorm(esMovProdDesc(l)).includes(q) || esNorm(l.nota_fiscal).includes(q) || esNorm(l.obs).includes(q))) return false;
+    return true;
+  }).sort((a,b)=> String(b.data).localeCompare(String(a.data)) || (b.id||0)-(a.id||0));
+  const tot = rows.reduce((t,l)=>{ t.q+=Number(l.quantidade)||0; t.v+=Number(l.valor_total)||0; t.p.add(l.produto_id); if(l.nota_fiscal) t.nf.add(l.nota_fiscal); return t; }, {q:0,v:0,p:new Set(),nf:new Set()});
+  const cor = tipo==='entrada' ? 'var(--green)' : 'var(--red)';
+  document.getElementById(pre+'-kpis').innerHTML =
+    esKpi('Valor total', esR(tot.v), (tipo==='entrada'?'entradas':'saídas')+' no filtro', cor) +
+    esKpi('Quantidade', esQ(tot.q), 'unidades movimentadas') +
+    esKpi('Lançamentos', rows.length, tot.nf.size+' nota(s) fiscal(is)') +
+    esKpi('Produtos', tot.p.size, 'produtos distintos');
+  if(!rows.length){
+    tb.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:36px; color:var(--text2);">'+(ES.carregou?'Nenhum lançamento no filtro':'Carregando...')+'</td></tr>';
+    document.getElementById(pre+'-tfoot').innerHTML = ''; return;
+  }
+  tb.innerHTML = rows.map(l=>{
+    const sn = esMovProdSub(l);
+    return '<tr>'+
+      '<td class="c" style="white-space:nowrap;">'+pdDataBR(l.data)+'</td>'+
+      '<td class="c"><b style="font-family:JetBrains Mono,monospace;">'+esMovProdCod(l)+'</b></td>'+
+      '<td style="font-weight:600;">'+pdEsc(esMovProdDesc(l))+(l.obs?' <span title="'+pdEsc(l.obs)+'" style="cursor:help;">💬</span>':'')+'</td>'+
+      '<td>'+(sn?'<span class="pd-tag nac">'+pdEsc(sn)+'</span>':'<span style="color:var(--text2)">—</span>')+'</td>'+
+      '<td class="num" style="font-weight:700;">'+esQ(l.quantidade)+'</td>'+
+      '<td class="num">'+esR(l.custo_unit)+'</td>'+
+      '<td class="num" style="font-weight:700; color:'+cor+';">'+esR(l.valor_total)+'</td>'+
+      '<td>'+(l.nota_fiscal?pdEsc(l.nota_fiscal):'<span style="color:var(--text2)">—</span>')+'</td>'+
+      '<td class="c" style="white-space:nowrap;"><button class="pd-act" onclick="esMovAbrir(\''+tipo+'\','+l.id+')" title="Editar">✏️</button> <button class="pd-act del" onclick="esMovExcluir(\''+tipo+'\','+l.id+')" title="Excluir">🗑️</button></td>'+
+    '</tr>';
+  }).join('');
+  document.getElementById(pre+'-tfoot').innerHTML = '<tr><td colspan="4">TOTAL ('+rows.length+')</td><td class="num">'+esQ(tot.q)+'</td><td></td><td class="num" style="color:'+cor+';">'+esR(tot.v)+'</td><td colspan="2"></td></tr>';
+}
+async function esMovExcluir(tipo, id){
+  const cfg = ES_MOV[tipo]; const l = cfg.lista().find(x=>x.id==id); if(!l) return;
+  if(!confirm('Excluir a '+cfg.nome.toLowerCase()+' de '+esQ(l.quantidade)+' × '+esMovProdDesc(l)+' ('+pdDataBR(l.data)+')?')) return;
+  barNuvem(true);
+  try{
+    await pdApi(cfg.tabela+'?id=eq.'+id, { method:'DELETE', headers:SUPA_H });
+    cfg.set(cfg.lista().filter(x=>x.id!=id));
+    notif('🗑️ Lançamento excluído'); esRenderAtual();
+  }catch(e){ notif('❌ Erro ao excluir: '+e.message.slice(0,140), false); }
+  finally{ barNuvem(false); }
+}
+
+// ═══════════════ ENTRADAS / SAÍDAS — FORMULÁRIO ═══════════════
+function esMovAbrir(tipo, id){
+  if(!ES.ok){ notif('Estoque indisponível — verifique as tabelas no Supabase', false); return; }
+  const cfg = ES_MOV[tipo]; const l = id ? cfg.lista().find(x=>x.id==id) : null;
+  esMovEdit = { tipo, id:l?l.id:null, produtoId:null, custoManual:false, orig:l?{ produto_id:l.produto_id, quantidade:Number(l.quantidade)||0 }:null };
+  const box = document.getElementById('es-mov-box');
+  box.classList.toggle('entrada', tipo==='entrada'); box.classList.toggle('saida', tipo==='saida');
+  document.getElementById('em-ico').textContent = cfg.ico;
+  document.getElementById('em-titulo').textContent = (l?'✏️ Editar ':'Nova ')+cfg.nome+' de Estoque';
+  document.getElementById('em-sub').textContent = 'Busque o produto pelo código ou pela descrição · valor total calculado automaticamente';
+  document.getElementById('em-nf-lbl').textContent = cfg.nf;
+  document.getElementById('em-btn-novo').style.display = l ? 'none' : '';
+  document.getElementById('em-data').value = l ? String(l.data).slice(0,10) : pdHoje();
+  document.getElementById('em-nf').value = l && l.nota_fiscal ? l.nota_fiscal : '';
+  document.getElementById('em-obs').value = l && l.obs ? l.obs : '';
+  document.getElementById('em-qtd').value = l ? l.quantidade : '';
+  esMovSelProd(l ? l.produto_id : null);
+  if(l){
+    const p = esProd(l.produto_id);
+    if(!p){ document.getElementById('em-codigo').value = l.produto_codigo??''; document.getElementById('em-busca').value = l.produto_desc||''; }
+    document.getElementById('em-custo').value = l.custo_unit;
+    esMovEdit.custoManual = !p || Math.abs((Number(p.custo)||0) - (Number(l.custo_unit)||0)) > 0.00001;
+  }
+  esMovCalc();
+  document.getElementById('es-mov-modal').classList.add('open');
+  setTimeout(()=>document.getElementById(l?'em-qtd':'em-codigo').focus(), 60);
+}
+function esMovFechar(){ esComboFechar(); document.getElementById('es-mov-modal').classList.remove('open'); }
+function esMovSelProd(id){
+  const p = id ? esProd(id) : null;
+  esMovEdit.produtoId = p ? p.id : null;
+  document.getElementById('em-codigo').value = p ? p.codigo : '';
+  document.getElementById('em-busca').value = p ? p.descricao : '';
+  document.getElementById('em-combo').classList.toggle('tem-valor', !!p);
+  if(p && !esMovEdit.custoManual) document.getElementById('em-custo').value = p.custo!=null ? p.custo : '';
+  if(!p && !esMovEdit.custoManual) document.getElementById('em-custo').value = '';
+  esComboFechar();
+  esMovInfo(); esMovCalc();
+}
+function esMovOnCodigo(){
+  const v = (document.getElementById('em-codigo').value||'').trim();
+  const p = v ? ES.produtos.find(x=>String(x.codigo)===v) : null;
+  esMovEdit.produtoId = p ? p.id : null;
+  document.getElementById('em-busca').value = p ? p.descricao : '';
+  document.getElementById('em-combo').classList.toggle('tem-valor', !!p);
+  if(p){ esMovEdit.custoManual = false; document.getElementById('em-custo').value = p.custo!=null ? p.custo : ''; }
+  esMovInfo(v && !p); esMovCalc();
+}
+function esMovBase(){
+  // saldo do produto sem considerar o próprio lançamento (quando editando)
+  const s = esSaldos()[esMovEdit.produtoId] || { q:0, v:0 };
+  let q = s.q;
+  const o = esMovEdit.orig;
+  if(esMovEdit.id && o && o.produto_id==esMovEdit.produtoId) q -= ES_MOV[esMovEdit.tipo].sinal * o.quantidade;
+  return q;
+}
+function esMovInfo(codigoInvalido){
+  const el = document.getElementById('em-info');
+  const p = esProd(esMovEdit.produtoId);
+  if(!p){
+    el.innerHTML = '<div class="es-info-vazio">'+(codigoInvalido ? '⚠️ Código não encontrado — busque pela descrição ou use <b>➕ Incluir produto</b>' : 'Selecione um produto para ver custo cadastrado e saldo em estoque')+'</div>';
+    return;
+  }
+  const sn = esSubNome(p.subgrupo_id);
+  el.innerHTML = '<div class="es-info">'+
+    '<div><div class="l">Subgrupo</div><div class="v" style="font-family:Sora,sans-serif; font-size:13.5px;" title="'+pdEsc(sn)+'">'+(sn?pdEsc(sn):'—')+'</div></div>'+
+    '<div><div class="l">Custo cadastrado</div><div class="v">'+(p.custo!=null?esR(p.custo):'—')+'</div></div>'+
+    '<div><div class="l">Saldo atual</div><div class="v" id="em-saldo-atual">'+esQ(esMovBase())+'</div></div>'+
+    '<div><div class="l">Saldo após</div><div class="v" id="em-saldo-apos">—</div></div>'+
+  '</div>';
+}
+function esMovOnCusto(){ esMovEdit.custoManual = true; esMovCalc(); }
+function esMovResetCusto(){
+  const p = esProd(esMovEdit.produtoId); esMovEdit.custoManual = false;
+  document.getElementById('em-custo').value = p && p.custo!=null ? p.custo : '';
+  esMovCalc();
+}
+function esMovCalc(){
+  const c = esNumEl('em-custo'), q = esNumEl('em-qtd'), tot = esR2(c*q);
+  document.getElementById('em-total').textContent = esR(tot);
+  document.getElementById('em-formula').textContent = esQ(q)+' × '+esR(c);
+  const p = esProd(esMovEdit.produtoId);
+  const info = document.getElementById('em-custo-info');
+  if(!p) info.innerHTML = '';
+  else if(Math.abs((Number(p.custo)||0) - c) > 0.00001) info.innerHTML = '<span class="pd-tag man">EDITADO</span> cadastro: '+esR(p.custo)+' <button onclick="esMovResetCusto()" title="Voltar ao custo do cadastro">↺</button>';
+  else info.innerHTML = '<span class="pd-tag auto">DO CADASTRO</span> pode editar';
+  const warn = document.getElementById('em-warn');
+  if(p){
+    const base = esMovBase(), apos = base + ES_MOV[esMovEdit.tipo].sinal*q;
+    const ap = document.getElementById('em-saldo-apos');
+    if(ap){ ap.textContent = q ? esQ(apos) : '—'; ap.style.color = q && apos<0 ? 'var(--red)' : ''; }
+    if(esMovEdit.tipo==='saida' && q > base + 0.0000001){
+      warn.innerHTML = '⚠️ A quantidade de saída ('+esQ(q)+') é maior que o saldo disponível ('+esQ(base)+'). O estoque ficará negativo em '+esQ(apos)+'.';
+      warn.classList.add('show');
+    } else warn.classList.remove('show');
+  } else warn.classList.remove('show');
+}
+async function esMovSalvar(eNovo){
+  const tipo = esMovEdit.tipo, cfg = ES_MOV[tipo];
+  const data = document.getElementById('em-data').value;
+  const p = esProd(esMovEdit.produtoId);
+  const q = esNumEl('em-qtd'), c = esNumEl('em-custo');
+  if(!data) return notif('Informe a data', false);
+  if(!p) return notif('Selecione o produto', false);
+  if(q<=0) return notif('Informe a quantidade', false);
+  if(tipo==='saida' && q > esMovBase() + 0.0000001 && !confirm('A saída é maior que o saldo disponível ('+esQ(esMovBase())+'). O estoque ficará negativo.\n\nSalvar mesmo assim?')) return;
+  const payload = {
+    data, produto_id:p.id, produto_codigo:p.codigo, produto_desc:p.descricao,
+    quantidade:q, custo_unit:c, valor_total:esR2(c*q),
+    nota_fiscal:(document.getElementById('em-nf').value||'').trim() || null,
+    obs:(document.getElementById('em-obs').value||'').trim() || null
+  };
+  barNuvem(true);
+  try{
+    const lista = cfg.lista().slice();
+    if(esMovEdit.id){
+      const r = await pdApi(cfg.tabela+'?id=eq.'+esMovEdit.id, { method:'PATCH', headers:SUPA_H, body:JSON.stringify(payload) });
+      const i = lista.findIndex(x=>x.id==esMovEdit.id); if(r && r[0] && i>=0) lista[i] = pdNorm([r[0]], ES_NUM_M)[0];
+      notif('✅ '+cfg.nome+' atualizada');
+    }else{
+      const r = await pdApi(cfg.tabela, { method:'POST', headers:SUPA_H, body:JSON.stringify(payload) });
+      if(r && r[0]) lista.unshift(pdNorm([r[0]], ES_NUM_M)[0]);
+      notif('✅ '+cfg.nome+' lançada: '+esQ(q)+' × '+p.codigo+' = '+esR(payload.valor_total));
+    }
+    cfg.set(lista);
+    if(eNovo && !esMovEdit.id){
+      esMovEdit.custoManual = false;
+      document.getElementById('em-qtd').value = ''; document.getElementById('em-obs').value = '';
+      esMovSelProd(null);
+      document.getElementById('em-codigo').focus();   // data e nota fiscal mantidas
+    } else esMovFechar();
+    esRenderAtual();
+  }catch(e){ notif('❌ Erro ao salvar: '+e.message.slice(0,140), false); }
+  finally{ barNuvem(false); }
+}
+
+// ── busca de produto (código ou descrição) ───────────────────
+function esComboAbrir(digitando){
+  const w = document.getElementById('em-combo'), lista = document.getElementById('em-lista'), inp = document.getElementById('em-busca');
+  const v = esNorm(inp.value.trim());
+  const atual = esProd(esMovEdit.produtoId);
+  if(digitando && atual && esNorm(atual.descricao)!==v){ esMovEdit.produtoId = null; document.getElementById('em-codigo').value=''; w.classList.remove('tem-valor'); esMovInfo(); esMovCalc(); }
+  const base = ES.produtos.filter(p=>p.ativo!==false || p.id==esMovEdit.produtoId);
+  const itens = (!v || (!digitando && atual && esNorm(atual.descricao)===v)) ? base
+    : base.filter(p=>String(p.codigo).startsWith(v) || esNorm(p.descricao).includes(v));
+  const saldos = esSaldos();
+  esComboIdx = -1;
+  const mostra = itens.slice(0,80);
+  lista.innerHTML = mostra.length
+    ? mostra.map(p=>'<div class="rel-combo-opt'+(p.id==esMovEdit.produtoId?' sel':'')+'" data-v="'+p.id+'" onmousedown="event.preventDefault(); esMovEdit.custoManual=false; esMovSelProd(Number(this.dataset.v)); document.getElementById(\'em-qtd\').focus();">'+
+        '<span><span class="es-opt-cod">'+p.codigo+'</span> '+pdEsc(p.descricao)+'</span><small>'+(esSubNome(p.subgrupo_id)?pdEsc(esSubNome(p.subgrupo_id))+' · ':'')+'saldo '+esQ(saldos[p.id]?saldos[p.id].q:0)+'</small></div>').join('') +
+      (itens.length>mostra.length?'<div class="rel-combo-vazio">+'+(itens.length-mostra.length)+' produto(s) — continue digitando para filtrar</div>':'')
+    : '<div class="rel-combo-vazio">Nenhum produto encontrado — use <b>➕ Incluir produto</b> para cadastrar</div>';
+  w.classList.add('aberto');
+  const s = lista.querySelector('.rel-combo-opt.sel'); if(s) s.scrollIntoView({block:'nearest'});
+}
+function esComboFechar(){ document.getElementById('em-combo')?.classList.remove('aberto'); }
+function esComboToggle(){
+  const w = document.getElementById('em-combo');
+  if(w.classList.contains('aberto')) esComboFechar();
+  else { esComboAbrir(false); document.getElementById('em-busca').focus(); }
+}
+function esComboTecla(e){
+  const w = document.getElementById('em-combo');
+  const opts = [...document.querySelectorAll('#em-lista .rel-combo-opt')];
+  if(e.key==='ArrowDown' || e.key==='ArrowUp'){
+    e.preventDefault();
+    if(!w.classList.contains('aberto')){ esComboAbrir(false); return; }
+    if(!opts.length) return;
+    esComboIdx = e.key==='ArrowDown' ? Math.min(opts.length-1, esComboIdx+1) : Math.max(0, esComboIdx-1);
+    opts.forEach((o,i)=>o.classList.toggle('ativo', i===esComboIdx));
+    opts[esComboIdx].scrollIntoView({block:'nearest'});
+  }else if(e.key==='Enter'){
+    e.preventDefault();
+    const alvo = esComboIdx>=0 ? opts[esComboIdx] : (opts.length===1 ? opts[0] : null);
+    if(w.classList.contains('aberto') && alvo){ esMovEdit.custoManual=false; esMovSelProd(Number(alvo.dataset.v)); document.getElementById('em-qtd').focus(); }
+    else esComboFechar();
+  }else if(e.key==='Escape'){
+    if(w.classList.contains('aberto')){ e.stopPropagation(); esComboFechar(); }
+  }else if(e.key==='Tab') esComboFechar();
+}
+document.addEventListener('mousedown', e=>{ const w=document.getElementById('em-combo'); if(w && w.classList.contains('aberto') && !w.contains(e.target)){ esComboFechar(); if(!esMovEdit.produtoId) document.getElementById('em-busca').value=''; } });
+
+// ═══════════════ VARIAÇÃO DE ESTOQUE ═══════════════
+function esSetVarModo(m){
+  esVarModo = m;
+  document.querySelectorAll('#ev-modo button').forEach(b=>b.classList.toggle('active', b.dataset.m===m));
+  esRenderVariacao();
+}
+function esRenderVariacao(){
+  const tb = document.getElementById('ev-tbody'); if(!tb) return;
+  esFillAno('ev-ano'); esFillSub('ev-sub','Todos os subgrupos',true);
+  const ano = parseInt(document.getElementById('ev-ano').value), sub = document.getElementById('ev-sub').value;
+  const valor = esVarModo==='valor';
+  const f = v => valor ? esR(v) : esQ(v);
+  const ids = new Set(ES.produtos.filter(p=>esFiltroSub(p,sub)).map(p=>String(p.id)));
+  const entra = l => ids.has(String(l.produto_id)) || (!sub && l.produto_id==null);
+  const pega = l => valor ? (Number(l.valor_total)||0) : (Number(l.quantidade)||0);
+  let ini = ES.produtos.filter(p=>ids.has(String(p.id))).reduce((a,p)=>a+(valor?(Number(p.estoque_inicial_valor)||0):(Number(p.estoque_inicial_qtd)||0)),0);
+  const iniAno = ano+'-01-01';
+  const ent = Array(12).fill(0), sai = Array(12).fill(0);
+  ES.entradas.forEach(l=>{ if(!entra(l)) return; const d=String(l.data); if(d<iniAno) ini+=pega(l); else if(d.startsWith(ano+'-')) ent[parseInt(d.slice(5,7))-1]+=pega(l); });
+  ES.saidas.forEach(l=>{ if(!entra(l)) return; const d=String(l.data); if(d<iniAno) ini-=pega(l); else if(d.startsWith(ano+'-')) sai[parseInt(d.slice(5,7))-1]+=pega(l); });
+  const hoje = new Date(), anoAt = hoje.getFullYear(), mesAt = hoje.getMonth()+1;
+  let ei = ini, linhas = '';
+  const eiAno = ini;
+  PD_MESES.forEach((nome,i)=>{
+    const ef = ei + ent[i] - sai[i], vr = ef - ei, pct = Math.abs(ei)>0.000001 ? vr/Math.abs(ei)*100 : null;
+    const futuro = ano>anoAt || (ano===anoAt && i+1>mesAt);
+    const corV = vr>0.000001 ? 'var(--green)' : (vr<-0.000001 ? 'var(--red)' : 'var(--text2)');
+    linhas += '<tr'+(futuro?' class="es-mut"':'')+'>'+
+      '<td style="font-weight:600;">'+nome+'</td>'+
+      '<td class="num">'+f(ei)+'</td>'+
+      '<td class="num" style="color:'+(futuro?'':'var(--green)')+';">'+(ent[i]?f(ent[i]):'—')+'</td>'+
+      '<td class="num" style="color:'+(futuro?'':'var(--red)')+';">'+(sai[i]?f(sai[i]):'—')+'</td>'+
+      '<td class="num" style="font-weight:700;">'+f(ef)+'</td>'+
+      '<td class="num" style="font-weight:700; color:'+(futuro?'':corV)+';">'+(vr>0.000001?'+':'')+f(vr)+'</td>'+
+      '<td class="num">'+(pct==null?'—':(pct>0?'+':'')+pdN(pct,1)+'%')+'</td></tr>';
+    ei = ef;
+  });
+  const totE = ent.reduce((a,b)=>a+b,0), totS = sai.reduce((a,b)=>a+b,0), efAno = ei, vrAno = efAno - eiAno;
+  const pctAno = Math.abs(eiAno)>0.000001 ? vrAno/Math.abs(eiAno)*100 : null;
+  const corAno = vrAno>0.000001 ? 'var(--green)' : (vrAno<-0.000001 ? 'var(--red)' : '');
+  tb.innerHTML = linhas;
+  document.getElementById('ev-tfoot').innerHTML = '<tr><td>ANO '+ano+'</td><td class="num">'+f(eiAno)+'</td><td class="num">'+f(totE)+'</td><td class="num">'+f(totS)+'</td><td class="num">'+f(efAno)+'</td><td class="num" style="color:'+corAno+';">'+(vrAno>0.000001?'+':'')+f(vrAno)+'</td><td class="num">'+(pctAno==null?'—':(pctAno>0?'+':'')+pdN(pctAno,1)+'%')+'</td></tr>';
+  const subTxt = sub ? (sub==='__sem' ? 'sem subgrupo' : esSubNome(sub)) : 'todos os subgrupos';
+  document.getElementById('ev-kpis').innerHTML =
+    esKpi('Estoque inicial', f(eiAno), '01/01/'+ano+' · '+pdEsc(subTxt), 'var(--blue)') +
+    esKpi('(+) Entradas', f(totE), 'no ano', 'var(--green)') +
+    esKpi('(−) Saídas', f(totS), 'no ano', 'var(--red)') +
+    esKpi('(=) Estoque final', f(efAno), '31/12/'+ano) +
+    esKpi('Variação', (vrAno>0.000001?'+':'')+f(vrAno), pctAno==null?'final − inicial':(pctAno>0?'+':'')+pdN(pctAno,1)+'% sobre o inicial', corAno);
+}
+
+// ── eventos gerais ───────────────────────────────────────────
+document.addEventListener('keydown', e=>{ if(e.key!=='Escape') return;
+  if(document.getElementById('es-sub-modal')?.classList.contains('open')){ esSubFechar(); return; }
+  if(document.getElementById('es-prod-modal')?.classList.contains('open')){ esProdFechar(); return; }
+  if(document.getElementById('es-mov-modal')?.classList.contains('open')) esMovFechar();
+});
+['es-sub-modal','es-prod-modal','es-mov-modal'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('mousedown', e=>{ if(e.target===el){ if(id==='es-mov-modal') esMovFechar(); else el.classList.remove('open'); } });
+});
+esCarregar(true);
+</script>
+
 </body>
 </html>
