@@ -791,6 +791,40 @@
     .es-prod-row, .es-val-row, .es-grid2 { grid-template-columns:1fr; }
     .es-info { grid-template-columns:repeat(2,1fr); }
   }
+
+  /* ═══════════ APROVEITAMENTO DE PRODUÇÃO ═══════════ */
+  #ap-modal { z-index:560; }
+  .ap-ficha { width:100%; max-width:1180px; background:var(--surface); border:1px solid var(--border); border-radius:16px; box-shadow:0 24px 70px rgba(0,0,0,.35); animation:slideUp .22s; }
+  .ap-ficha-h { display:flex; align-items:center; gap:14px; padding:16px 22px; border-bottom:1px solid var(--border); border-radius:16px 16px 0 0; background:linear-gradient(135deg, rgba(30,89,89,.14), rgba(30,89,89,.03)); }
+  .ap-ficha-h .ico { width:46px; height:46px; border-radius:12px; background:#1e5959; color:#fff; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+  .ap-ficha-h h3 { font-size:17px; font-weight:800; letter-spacing:.5px; }
+  .ap-ficha-h p { font-size:12px; color:var(--text2); margin-top:3px; }
+  .ap-ficha-b { padding:18px 22px; }
+  .ap-ficha-f { display:flex; gap:10px; justify-content:flex-end; align-items:center; padding:14px 22px; border-top:1px solid var(--border); background:var(--surface2); border-radius:0 0 16px 16px; flex-wrap:wrap; }
+  .ap-cab { display:grid; grid-template-columns:2fr 1fr 1fr; gap:14px; }
+  .ap-cab2 { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:14px; margin-top:14px; align-items:end; }
+  .ap-mp { display:flex; gap:8px; flex-wrap:wrap; }
+  .ap-mp label { display:inline-flex; align-items:center; gap:7px; padding:9px 14px; border:1.5px solid var(--border); border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; background:var(--surface2); }
+  .ap-mp label.on { border-color:#1e5959; background:rgba(30,89,89,.12); color:var(--text); }
+  .ap-mp input { accent-color:#1e5959; }
+  .ap-coef { border:1.5px solid rgba(30,89,89,.45); border-radius:10px; padding:7px 12px; background:var(--bg); text-align:right; }
+  .ap-coef .l { font-size:10px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; }
+  .ap-coef .v { font-size:22px; font-weight:700; font-family:'JetBrains Mono',monospace; line-height:1.2; }
+  .ap-grade { width:100%; border-collapse:collapse; margin-top:16px; border:1px solid var(--border); }
+  .ap-grade th { background:#1e5959; color:#fbf7ee; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.3px; padding:8px 8px; text-align:center; white-space:pre-line; line-height:1.25; border-right:1px solid rgba(255,255,255,.12); }
+  .ap-grade th:first-child { text-align:left; }
+  .ap-grade td { padding:4px 6px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); font-size:12.5px; }
+  .ap-grade td.d { font-weight:700; white-space:nowrap; padding-left:10px; }
+  .ap-grade td.calc { white-space:nowrap; text-align:right; font-family:'JetBrains Mono',monospace; font-weight:700; background:var(--surface2); padding-right:10px; }
+  .ap-grade td.u { text-align:center; color:var(--text2); }
+  .ap-grade tr:hover td { background:rgba(30,89,89,.05); }
+  .ap-grade tr:hover td.calc { background:rgba(30,89,89,.10); }
+  .ap-grade tfoot td { white-space:nowrap; background:var(--surface2); font-weight:800; font-size:13px; padding:9px 10px; }
+  .ap-in { width:100%; min-width:64px; border:1px solid transparent; background:transparent; color:var(--text); border-radius:6px; padding:6px 8px; font-size:13px; font-family:'JetBrains Mono',monospace; text-align:right; }
+  .ap-in:hover { border-color:var(--border); }
+  .ap-in:focus { outline:none; border-color:#1e5959; background:var(--bg); box-shadow:0 0 0 3px rgba(30,89,89,.12); }
+  .ap-nota { font-size:11px; color:var(--text2); margin-top:8px; }
+  @media (max-width:900px){ .ap-cab, .ap-cab2 { grid-template-columns:1fr 1fr; } .ap-grade-wrap { overflow-x:auto; } }
 </style>
 <script>
 // Aplica o tema salvo (se houver) antes da renderização, evitando "flash".
@@ -954,6 +988,11 @@
     <span class="tab-ico">«</span><span class="tab-txt">Recolher menu</span>
   </button>
   <button class="tab active" data-page="dashboard" onclick="showPage('dashboard')" title="Dashboard"><span class="tab-ico">📊</span><span class="tab-txt">Dashboard</span></button>
+  <div class="tabs-sep" role="separator"></div>
+  <div class="tabs-group-label">Aproveitamento de Produção</div>
+  <button class="tab" data-page="ap-lancamentos" onclick="showPage('ap-lancamentos')" title="Tabela de Produção Final"><span class="tab-ico">🧮</span><span class="tab-txt">Lançar Produção</span></button>
+  <button class="tab" data-page="ap-analise" onclick="showPage('ap-analise')" title="Análise de Aproveitamento"><span class="tab-ico">📈</span><span class="tab-txt">Análise de Aproveitamento</span></button>
+  <div class="tabs-sep" role="separator"></div>
   <button class="tab" data-page="produtores" onclick="showPage('produtores')" title="Todos os Produtores"><span class="tab-ico">👥</span><span class="tab-txt">Todos os Produtores</span></button>
   <button class="tab" data-page="inadimplentes" onclick="showPage('inadimplentes')" title="Inadimplentes"><span class="tab-ico">⚠️</span><span class="tab-txt">Inadimplentes</span></button>
   <button class="tab" data-page="relatorio" onclick="showPage('relatorio')" title="Relatório"><span class="tab-ico">📋</span><span class="tab-txt">Relatório</span></button>
@@ -2172,6 +2211,138 @@
 </div>
 <!-- ═══════════════════ FIM MÓDULO CONTROLE DE ESTOQUE ═══════════════════ -->
 
+<!-- ═══════════════════ APROVEITAMENTO DE PRODUÇÃO ═══════════════════ -->
+
+<!-- LANÇAMENTO DE APROVEITAMENTO -->
+<div class="page" id="page-ap-lancamentos">
+  <div style="max-width:1600px;">
+    <div class="pd-alert" data-ap-alert></div>
+    <div class="pd-head">
+      <div><h2>🧮 Tabela de Produção Final</h2><p>Lançamento das produções por fornecedor · Qtd. vidro 0,300 = Caixas 0,300 × 15 + Vidros 0,300 + Caixas 1,800 × 6 × 15 + Potes 1,800 × 6</p></div>
+      <div class="pd-head-actions">
+        <input class="search-box" id="apl-busca" placeholder="🔍 Nº produção ou fornecedor..." oninput="apRenderLanc()" style="max-width:220px;">
+        <select id="apl-mes" class="search-box" style="max-width:160px;" onchange="apRenderLanc()"></select>
+        <select id="apl-ano" class="search-box" style="max-width:110px;" onchange="apRenderLanc()"></select>
+        <button class="btn" onclick="apCarregar(false)" title="Recarregar">🔄</button>
+        <button class="btn-save green" onclick="apAbrir(null)">➕ Nova Produção</button>
+      </div>
+    </div>
+    <div class="pd-kpis" id="apl-kpis"></div>
+    <div class="table-wrap" style="overflow-x:auto;">
+      <table class="pd-table">
+        <thead><tr>
+          <th class="c">Nº produção</th><th class="c">Data</th><th>Fornecedor</th><th>Matéria-prima</th>
+          <th class="num">Qtd. cabeças</th><th class="num">Qtd. vidro 0,300</th><th class="num">Custo total</th>
+          <th class="num">Coeficiente</th><th class="num">Meta</th><th class="c">Ações</th>
+        </tr></thead>
+        <tbody id="apl-tbody"></tbody>
+        <tfoot id="apl-tfoot"></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ANÁLISE DE APROVEITAMENTO -->
+<div class="page" id="page-ap-analise">
+  <div style="max-width:1600px;">
+    <div class="pd-alert" data-ap-alert></div>
+    <div class="pd-head">
+      <div><h2>📈 Análise de Aproveitamento</h2><p>Coeficiente por produção · Coeficiente = Custo total ÷ Qtd. cabeças</p></div>
+      <div class="pd-head-actions">
+        <select id="apa-mes" class="search-box" style="max-width:160px;" onchange="apRenderAnalise()"></select>
+        <select id="apa-ano" class="search-box" style="max-width:110px;" onchange="apRenderAnalise()"></select>
+        <select id="apa-forn" class="search-box" style="max-width:220px;" onchange="apRenderAnalise()"></select>
+        <select id="apa-mp" class="search-box" style="max-width:160px;" onchange="apRenderAnalise()">
+          <option value="">Todas as matérias-primas</option><option value="PUPUNHA">Pupunha</option><option value="JUÇARA">Juçara</option><option value="REAL">Real</option>
+        </select>
+      </div>
+    </div>
+    <div class="pd-kpis" id="apa-kpis" style="grid-template-columns:repeat(5,1fr);"></div>
+    <div class="table-wrap" style="overflow-x:auto;">
+      <table class="pd-table">
+        <thead><tr>
+          <th class="c">Nº produção</th><th class="c">Data</th><th>Fornecedor</th><th>Matéria-prima</th>
+          <th class="num">Qtd. cabeças</th><th class="num">Qtd. vidro 0,300</th><th class="num">Valor total pago</th>
+          <th class="num">Coeficiente</th><th class="num">Meta</th><th class="num">Coef. ÷ Meta</th>
+        </tr></thead>
+        <tbody id="apa-tbody"></tbody>
+        <tfoot id="apa-tfoot"></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: TABELA DE PRODUÇÃO FINAL -->
+<div id="ap-modal" class="form-modal-overlay">
+  <div class="ap-ficha" role="dialog" aria-modal="true">
+    <div class="ap-ficha-h">
+      <div class="ico">🧮</div>
+      <div style="flex:1; min-width:0;"><h3 id="apf-titulo">TABELA DE PRODUÇÃO FINAL</h3><p>Preencha as caixas e vidros — quantidade, custo total e coeficiente são calculados automaticamente</p></div>
+      <button class="modal-close" onclick="apFechar()" title="Fechar (Esc)">✕</button>
+    </div>
+    <div class="ap-ficha-b">
+      <div class="ap-cab">
+        <div><label class="field-label">Nome do fornecedor <span class="req">*</span></label><select class="form-input" id="apf-forn"></select></div>
+        <div><label class="field-label">Número da produção <span class="req">*</span></label><input class="form-input" id="apf-numero" style="font-family:'JetBrains Mono',monospace; font-weight:700;"></div>
+        <div><label class="field-label">Data da produção <span class="req">*</span></label><input class="form-input" id="apf-data" type="date"></div>
+      </div>
+      <div class="ap-cab2">
+        <div><label class="field-label">Matéria-prima <span class="req">*</span></label>
+          <div class="ap-mp" id="apf-mp">
+            <label><input type="radio" name="apf-mp" value="PUPUNHA" onchange="apMpMarca()"> Pupunha</label>
+            <label><input type="radio" name="apf-mp" value="JUÇARA" onchange="apMpMarca()"> Juçara</label>
+            <label><input type="radio" name="apf-mp" value="REAL" onchange="apMpMarca()"> Real</label>
+          </div></div>
+        <div><label class="field-label">Qtd. cabeça <span class="req">*</span></label><input class="form-input" id="apf-cab" type="number" step="1" min="0" oninput="apCalc()" style="font-family:'JetBrains Mono',monospace; font-weight:700;"></div>
+        <div class="ap-coef"><div class="l">Coeficiente</div><div class="v" id="apf-coef">—</div></div>
+        <div><label class="field-label">Meta</label><input class="form-input" id="apf-meta" type="number" step="any" oninput="apCalc()" style="font-family:'JetBrains Mono',monospace;"></div>
+      </div>
+      <div class="ap-grade-wrap">
+        <table class="ap-grade">
+          <thead><tr>
+            <th style="width:18%;">Descrição do produto</th><th>Caixas
+0,300 kg</th><th>Vidros
+0,300 kg</th><th>Caixas
+1,800 kg</th><th>Potes
+1,800 kg</th><th>Unidade</th><th>Quantidade
+vidro 0,300 kg</th><th>Custo
+unitário</th><th style="width:12%;">Valor
+total</th>
+          </tr></thead>
+          <tbody id="apf-tbody"></tbody>
+          <tfoot><tr><td colspan="6" style="text-align:right;">TOTAL</td><td style="text-align:right; font-family:'JetBrains Mono',monospace;" id="apf-tot-vid">0</td><td style="text-align:right;">CUSTO TOTAL</td><td style="text-align:right; font-family:'JetBrains Mono',monospace; color:#1e5959;" id="apf-tot-custo" class="nw">R$ 0,00</td></tr></tfoot>
+        </table>
+      </div>
+      <div class="ap-nota">Caixas 0,300 kg × 15 vidros · Caixa 1,800 kg = 6 × 15 vidros · Pote 1,800 kg = 6 vidros · Custo unitário sugerido = último valor usado para o produto e matéria-prima</div>
+      <div style="margin-top:14px;"><label class="field-label">Observações</label><input class="form-input" id="apf-obs" placeholder="Opcional"></div>
+    </div>
+    <div class="ap-ficha-f">
+      <button class="btn-cancel" onclick="apFechar()">Cancelar</button>
+      <button class="btn" onclick="apPrintAbrir(null)" title="Imprimir / gerar PDF desta tabela">🖨️ Imprimir / PDF</button>
+      <button class="btn-save green" onclick="apSalvar()">💾 Salvar produção</button>
+    </div>
+  </div>
+</div>
+<!-- MODAL: IMPRIMIR TABELA DE PRODUÇÃO FINAL -->
+<div id="ap-print-modal" class="edit-modal-overlay" style="z-index:620;">
+  <div class="edit-modal" style="max-width:460px;">
+    <div class="edit-modal-header"><div><h3 style="font-size:16px; font-weight:700;">🖨️ Imprimir — Tabela de Produção Final</h3><div style="font-size:12px; color:var(--text2); margin-top:3px;" id="ap-print-info"></div></div><button class="modal-close" onclick="apPrintFechar()">✕</button></div>
+    <div class="edit-modal-body">
+      <div style="display:grid; gap:16px;">
+        <div><label class="field-label">Tamanho do papel</label>
+          <div class="pd-seg" id="ap-print-tam"><button data-v="A4" class="active" onclick="pdPdfSeg('ap-print-tam',this)">A4</button><button data-v="A3" onclick="pdPdfSeg('ap-print-tam',this)">A3</button></div></div>
+        <div><label class="field-label">Orientação</label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <button class="btn-save" style="justify-content:center; padding:14px;" onclick="apPrintGerar('portrait')">📄 Retrato</button>
+            <button class="btn-save green" style="justify-content:center; padding:14px;" onclick="apPrintGerar('landscape')">🗒️ Paisagem</button>
+          </div></div>
+        <div style="font-size:12px; color:var(--text2);">A tabela é ajustada para caber em uma única folha. Na janela de impressão, escolha <b>Salvar como PDF</b> para gerar o arquivo.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ═══════════════════ FIM APROVEITAMENTO DE PRODUÇÃO ═══════════════════ -->
+
 <!-- MODAL PRODUTOR -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
@@ -3009,6 +3180,7 @@ function showPage(id) {
   if (id === 'todos-lancamentos') renderTodosLanc();
   if (typeof pdOnShowPage === 'function') pdOnShowPage(id); // módulo Produção
   if (typeof esOnShowPage === 'function') esOnShowPage(id); // módulo Controle de Estoque
+  if (typeof apOnShowPage === 'function') apOnShowPage(id); // módulo Aproveitamento de Produção
 }
 
 function setFilter(f) {
@@ -5966,6 +6138,363 @@ document.addEventListener('keydown', e=>{ if(e.key!=='Escape') return;
   if(el) el.addEventListener('mousedown', e=>{ if(e.target===el){ if(id==='es-mov-modal') esMovFechar(); else el.classList.remove('open'); } });
 });
 esCarregar(true);
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  APROVEITAMENTO DE PRODUÇÃO — tabela de produção final + análise
+//  Tabela Supabase: apr_producoes (ver aproveitamento_supabase.sql)
+// ═══════════════════════════════════════════════════════════════════
+const AP_PRODUTOS = ['TOLETE','TOLETE ESPECIAL','PICADO','RODELA','BANDA','PICADÃO','PICADO FARELO','APERITIVO','ROLLETE','ESPAGUETE','LAZANHA'];
+const AP_META_PADRAO = 4;
+const AP = { lista:[], ok:false, erro:null, carregando:false, carregou:false };
+let apEdit = { id:null };
+
+function apNum(v){ const n = parseFloat(String(v==null?'':v).replace(',','.')); return isNaN(n)?0:n; }
+// Qtd. vidro 0,300 = caixas 0,300 × 15 + vidros 0,300 + caixas 1,800 × 6 × 15 + potes 1,800 × 6
+function apQtdVidro(it){ return apNum(it.caixas_300)*15 + apNum(it.vidros_300) + (apNum(it.caixas_1800)*6*15 + apNum(it.potes_1800)*6); }
+function apCoefTxt(v){ return v==null ? '—' : pdN(v,4); }
+function apNorm(r){
+  ['qtd_cabecas','meta','total_vidros','custo_total','coeficiente'].forEach(c=>{ if(r[c]!=null) r[c]=Number(r[c]); });
+  if(!Array.isArray(r.itens)) r.itens = [];
+  return r;
+}
+
+async function apCarregar(silencioso){
+  if(AP.carregando) return;
+  AP.carregando = true;
+  if(!silencioso) barNuvem(true);
+  try{
+    AP.lista = (await pdGetAll('apr_producoes','data.desc,id.desc')).map(apNorm);
+    AP.ok = true; AP.erro = null;
+    if(!silencioso) notif('🔄 Aproveitamento atualizado');
+  }catch(e){
+    AP.ok = false; AP.erro = e.message;
+    console.error('Aproveitamento:', e.message);
+    if(!silencioso) notif('⚠️ Aproveitamento: '+e.message.slice(0,120), false);
+  }finally{
+    AP.carregando = false; AP.carregou = true;
+    if(!silencioso) barNuvem(false);
+  }
+  apRenderAtual();
+}
+function apRenderAlertas(){
+  let html = '';
+  if(AP.erro){
+    const falta = /42P01|PGRST20|does not exist|schema cache/i.test(AP.erro);
+    html = falta ? '❌ A tabela do Aproveitamento de Produção ainda não existe no Supabase. Rode o script <code>aproveitamento_supabase.sql</code> no SQL Editor e clique em 🔄.'
+                 : '⚠️ Não foi possível carregar o aproveitamento: '+pdEsc(AP.erro.slice(0,200));
+  }
+  document.querySelectorAll('[data-ap-alert]').forEach(el=>{ el.innerHTML=html; el.classList.toggle('show', !!html); });
+}
+function apRenderAtual(){
+  apRenderAlertas();
+  const id = pdPaginaAtiva();
+  if(id==='ap-lancamentos') apRenderLanc();
+  else if(id==='ap-analise') apRenderAnalise();
+}
+function apOnShowPage(id){
+  if(!String(id).startsWith('ap-')) return;
+  apRenderAtual();
+  apCarregar(true);
+}
+function apFillAno(id){
+  const el = document.getElementById(id); if(!el) return;
+  const atual = el.dataset.ok ? el.value : String(new Date().getFullYear());
+  const s = new Set(); const a0 = new Date().getFullYear();
+  for(let a=a0-2; a<=a0+1; a++) s.add(a);
+  AP.lista.forEach(p=>{ if(p.data) s.add(parseInt(String(p.data).slice(0,4))); });
+  el.innerHTML = '<option value="">Todos os anos</option>' + [...s].sort().map(a=>'<option value="'+a+'">'+a+'</option>').join('');
+  el.value = atual; el.dataset.ok = '1';
+}
+function apFiltrar(pre, extra){
+  if(!document.getElementById(pre+'-mes').dataset.ok) pdFillMes(pre+'-mes','Todos os meses','');
+  apFillAno(pre+'-ano');
+  const mes = document.getElementById(pre+'-mes').value, ano = document.getElementById(pre+'-ano').value;
+  return AP.lista.filter(p=>{
+    if(ano && !String(p.data).startsWith(ano)) return false;
+    if(mes && String(p.data).slice(5,7)!==mes) return false;
+    return extra ? extra(p) : true;
+  }).sort((a,b)=> String(b.data).localeCompare(String(a.data)) || String(b.numero).localeCompare(String(a.numero),'pt-BR',{numeric:true}));
+}
+function apTotais(rows){
+  return rows.reduce((t,p)=>{ t.cab+=p.qtd_cabecas||0; t.vid+=p.total_vidros||0; t.custo+=p.custo_total||0; t.forn.add(p.fornecedor); return t; }, {cab:0,vid:0,custo:0,forn:new Set()});
+}
+
+// ═══════════════ LISTA DE PRODUÇÕES ═══════════════
+function apRenderLanc(){
+  const tb = document.getElementById('apl-tbody'); if(!tb) return;
+  const q = esNorm((document.getElementById('apl-busca').value||'').trim());
+  const rows = apFiltrar('apl', p=> !q || esNorm(p.numero).includes(q) || esNorm(p.fornecedor).includes(q));
+  const t = apTotais(rows), coefG = t.cab>0 ? t.custo/t.cab : null;
+  document.getElementById('apl-kpis').innerHTML =
+    esKpi('Produções', rows.length, t.forn.size+' fornecedor(es)') +
+    esKpi('Qtd. cabeças', pdN(t.cab,0), 'total no filtro') +
+    esKpi('Custo total', esR(t.custo), 'soma das produções', '#1e5959') +
+    esKpi('Coeficiente geral', apCoefTxt(coefG), 'custo total ÷ cabeças');
+  if(!rows.length){
+    tb.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:36px; color:var(--text2);">'+(AP.carregou?'Nenhuma produção no período':'Carregando...')+'</td></tr>';
+    document.getElementById('apl-tfoot').innerHTML = ''; return;
+  }
+  tb.innerHTML = rows.map(p=>'<tr>'+
+    '<td class="c"><b style="font-family:JetBrains Mono,monospace;">'+pdEsc(p.numero)+'</b></td>'+
+    '<td class="c">'+pdDataBR(p.data)+'</td>'+
+    '<td style="font-weight:600;">'+pdEsc(p.fornecedor)+(p.obs?' <span title="'+pdEsc(p.obs)+'" style="cursor:help;">💬</span>':'')+'</td>'+
+    '<td>'+pdEsc(p.materia_prima||'')+'</td>'+
+    '<td class="num">'+pdN(p.qtd_cabecas,0)+'</td>'+
+    '<td class="num">'+pdN(p.total_vidros,0)+'</td>'+
+    '<td class="num" style="font-weight:700;">'+esR(p.custo_total)+'</td>'+
+    '<td class="num" style="font-weight:700; color:#1e5959;">'+apCoefTxt(p.coeficiente)+'</td>'+
+    '<td class="num">'+(p.meta!=null?pdN(p.meta,4):'—')+'</td>'+
+    '<td class="c" style="white-space:nowrap;"><button class="pd-act" onclick="apPrintAbrir('+p.id+')" title="Imprimir / gerar PDF">🖨️</button> <button class="pd-act" onclick="apAbrir('+p.id+')" title="Editar">✏️</button> <button class="pd-act del" onclick="apExcluir('+p.id+')" title="Excluir">🗑️</button></td>'+
+  '</tr>').join('');
+  document.getElementById('apl-tfoot').innerHTML = '<tr><td colspan="4">TOTAL ('+rows.length+')</td><td class="num">'+pdN(t.cab,0)+'</td><td class="num">'+pdN(t.vid,0)+'</td><td class="num">'+esR(t.custo)+'</td><td class="num">'+apCoefTxt(coefG)+'</td><td colspan="2"></td></tr>';
+}
+
+// ═══════════════ ANÁLISE ═══════════════
+function apRenderAnalise(){
+  const tb = document.getElementById('apa-tbody'); if(!tb) return;
+  const selF = document.getElementById('apa-forn'), atualF = selF.value;
+  const nomes = [...new Set(AP.lista.map(p=>p.fornecedor).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  selF.innerHTML = '<option value="">Todos os fornecedores</option>' + nomes.map(n=>'<option value="'+pdEsc(n)+'">'+pdEsc(n)+'</option>').join('');
+  if(nomes.includes(atualF)) selF.value = atualF;
+  const forn = selF.value, mp = document.getElementById('apa-mp').value;
+  const rows = apFiltrar('apa', p=> (!forn || p.fornecedor===forn) && (!mp || p.materia_prima===mp));
+  const t = apTotais(rows), coefG = t.cab>0 ? t.custo/t.cab : null;
+  const coefs = rows.map(p=>p.coeficiente).filter(v=>v!=null);
+  const melhor = coefs.length ? Math.max(...coefs) : null, pior = coefs.length ? Math.min(...coefs) : null;
+  document.getElementById('apa-kpis').innerHTML =
+    esKpi('Produções', rows.length, t.forn.size+' fornecedor(es)') +
+    esKpi('Nº total de cabeças', pdN(t.cab,0), pdN(t.vid,0)+' vidros 0,300') +
+    esKpi('Valor total pago', esR(t.custo), 'soma do custo total', '#1e5959') +
+    esKpi('Coeficiente geral', apCoefTxt(coefG), 'valor total ÷ cabeças', '#1e5959') +
+    esKpi('Maior / menor coef.', coefs.length ? pdN(melhor,2)+' / '+pdN(pior,2) : '—', 'entre as produções');
+  if(!rows.length){
+    tb.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:36px; color:var(--text2);">'+(AP.carregou?'Nenhuma produção no filtro':'Carregando...')+'</td></tr>';
+    document.getElementById('apa-tfoot').innerHTML = ''; return;
+  }
+  tb.innerHTML = rows.map(p=>{
+    const r = p.meta && p.coeficiente!=null ? p.coeficiente/p.meta*100 : null;
+    return '<tr style="cursor:pointer;" onclick="apAbrir('+p.id+')" title="Clique para abrir a produção">'+
+      '<td class="c"><b style="font-family:JetBrains Mono,monospace;">'+pdEsc(p.numero)+'</b></td>'+
+      '<td class="c">'+pdDataBR(p.data)+'</td>'+
+      '<td style="font-weight:600;">'+pdEsc(p.fornecedor)+'</td>'+
+      '<td>'+pdEsc(p.materia_prima||'')+'</td>'+
+      '<td class="num">'+pdN(p.qtd_cabecas,0)+'</td>'+
+      '<td class="num">'+pdN(p.total_vidros,0)+'</td>'+
+      '<td class="num" style="font-weight:700;">'+esR(p.custo_total)+'</td>'+
+      '<td class="num" style="font-weight:800; color:#1e5959;">'+apCoefTxt(p.coeficiente)+'</td>'+
+      '<td class="num">'+(p.meta!=null?pdN(p.meta,4):'—')+'</td>'+
+      '<td class="num">'+(r==null?'—':pdN(r,1)+'%')+'</td></tr>';
+  }).join('');
+  document.getElementById('apa-tfoot').innerHTML = '<tr><td colspan="4">TOTAL ('+rows.length+' produç'+(rows.length>1?'ões':'ão')+')</td><td class="num">'+pdN(t.cab,0)+'</td><td class="num">'+pdN(t.vid,0)+'</td><td class="num">'+esR(t.custo)+'</td><td class="num">'+apCoefTxt(coefG)+'</td><td colspan="2"></td></tr>';
+}
+
+// ═══════════════ FICHA (lançamento) ═══════════════
+function apUltimoCusto(desc, mp){
+  const l = AP.lista.slice().sort((a,b)=>String(b.data).localeCompare(String(a.data)));
+  for(const p of l){ if(mp && p.materia_prima!==mp) continue; const it = p.itens.find(i=>i.descricao===desc && apNum(i.custo_unit)>0); if(it) return it.custo_unit; }
+  for(const p of l){ const it = p.itens.find(i=>i.descricao===desc && apNum(i.custo_unit)>0); if(it) return it.custo_unit; }
+  return '';
+}
+function apProxNumero(){
+  const n = AP.lista.map(p=>parseInt(String(p.numero).replace(/\D/g,''))).filter(v=>!isNaN(v));
+  return n.length ? String(Math.max(...n)+1) : '';
+}
+function apFillForn(atual){
+  const sel = document.getElementById('apf-forn');
+  const nomes = fornecedores.filter(f=>f.status==='ativo' || f.nome===atual).map(f=>f.nome);
+  if(atual && !nomes.includes(atual)) nomes.push(atual);
+  nomes.sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  sel.innerHTML = '<option value="">— Selecione o fornecedor —</option>' + nomes.map(n=>'<option value="'+pdEsc(n)+'">'+pdEsc(n)+'</option>').join('');
+  sel.value = atual || '';
+}
+function apMpMarca(){
+  document.querySelectorAll('#apf-mp label').forEach(l=>l.classList.toggle('on', l.querySelector('input').checked));
+  if(!apEdit.id){ // sugere custos da matéria-prima escolhida nas linhas sem custo digitado
+    const mp = apMpSel();
+    document.querySelectorAll('#apf-tbody tr').forEach(tr=>{ const c = tr.querySelector('[data-k="custo_unit"]'); if(c && c.dataset.auto==='1'){ c.value = apUltimoCusto(tr.dataset.desc, mp); } });
+    apCalc();
+  }
+}
+function apMpSel(){ const r = document.querySelector('input[name="apf-mp"]:checked'); return r ? r.value : ''; }
+function apAbrir(id){
+  if(!AP.ok){ notif('Aproveitamento indisponível — verifique a tabela no Supabase', false); return; }
+  const p = id ? AP.lista.find(x=>x.id==id) : null;
+  apEdit = { id:p?p.id:null };
+  document.getElementById('apf-titulo').textContent = p ? 'TABELA DE PRODUÇÃO FINAL — Nº '+p.numero : 'TABELA DE PRODUÇÃO FINAL';
+  apFillForn(p ? p.fornecedor : '');
+  document.getElementById('apf-numero').value = p ? p.numero : apProxNumero();
+  document.getElementById('apf-data').value = p ? String(p.data).slice(0,10) : pdHoje();
+  document.querySelectorAll('input[name="apf-mp"]').forEach(r=>{ r.checked = p ? r.value===p.materia_prima : false; });
+  document.querySelectorAll('#apf-mp label').forEach(l=>l.classList.toggle('on', l.querySelector('input').checked));
+  document.getElementById('apf-cab').value = p ? (p.qtd_cabecas||'') : '';
+  document.getElementById('apf-meta').value = p ? (p.meta??'') : AP_META_PADRAO;
+  document.getElementById('apf-obs').value = p && p.obs ? p.obs : '';
+  const descs = AP_PRODUTOS.slice();
+  if(p) p.itens.forEach(i=>{ if(!descs.includes(i.descricao)) descs.push(i.descricao); });
+  const inp = (k,v,auto)=>'<td><input class="ap-in" type="number" step="any" min="0" data-k="'+k+'" value="'+(v==null||v===0||v===''?'':v)+'"'+(auto?' data-auto="1"':'')+' oninput="'+(k==='custo_unit'?'this.dataset.auto=0;':'')+'apCalc()"></td>';
+  document.getElementById('apf-tbody').innerHTML = descs.map(d=>{
+    const it = p ? (p.itens.find(i=>i.descricao===d)||{}) : {};
+    const custo = p ? it.custo_unit : apUltimoCusto(d, '');
+    return '<tr data-desc="'+pdEsc(d)+'"><td class="d">'+pdEsc(d)+'</td>'+
+      inp('caixas_300',it.caixas_300)+inp('vidros_300',it.vidros_300)+inp('caixas_1800',it.caixas_1800)+inp('potes_1800',it.potes_1800)+
+      '<td class="u">un</td><td class="calc" data-o="qtd">0</td>'+inp('custo_unit',custo,!p)+'<td class="calc" data-o="valor">—</td></tr>';
+  }).join('');
+  apCalc();
+  document.getElementById('ap-modal').classList.add('open');
+  setTimeout(()=>document.getElementById(p?'apf-cab':'apf-forn').focus(), 60);
+}
+function apFechar(){ document.getElementById('ap-modal').classList.remove('open'); }
+function apLinhas(){
+  return [...document.querySelectorAll('#apf-tbody tr')].map(tr=>{
+    const g = k => apNum(tr.querySelector('[data-k="'+k+'"]').value);
+    const it = { descricao:tr.dataset.desc, caixas_300:g('caixas_300'), vidros_300:g('vidros_300'), caixas_1800:g('caixas_1800'), potes_1800:g('potes_1800'), custo_unit:g('custo_unit') };
+    it.qtd_vidro = apQtdVidro(it);
+    it.valor_total = esR2(it.qtd_vidro * it.custo_unit);
+    return { tr, it };
+  });
+}
+function apCalc(){
+  let vid = 0, custo = 0;
+  apLinhas().forEach(({tr,it})=>{
+    tr.querySelector('[data-o="qtd"]').textContent = it.qtd_vidro ? pdN(it.qtd_vidro,0) : '—';
+    tr.querySelector('[data-o="valor"]').textContent = it.valor_total ? esR(it.valor_total) : '—';
+    vid += it.qtd_vidro; custo += it.valor_total;
+  });
+  const cab = apNum(document.getElementById('apf-cab').value);
+  document.getElementById('apf-tot-vid').textContent = pdN(vid,0);
+  document.getElementById('apf-tot-custo').textContent = esR(custo);
+  document.getElementById('apf-coef').textContent = cab>0 ? pdN(custo/cab,4) : '—';
+}
+async function apSalvar(){
+  const fornecedor = document.getElementById('apf-forn').value;
+  const numero = (document.getElementById('apf-numero').value||'').trim();
+  const data = document.getElementById('apf-data').value;
+  const mp = apMpSel(), cab = apNum(document.getElementById('apf-cab').value);
+  if(!fornecedor) return notif('Selecione o fornecedor', false);
+  if(!numero) return notif('Informe o número da produção', false);
+  if(!data) return notif('Informe a data da produção', false);
+  if(!mp) return notif('Selecione a matéria-prima', false);
+  if(cab<=0) return notif('Informe a quantidade de cabeças', false);
+  if(AP.lista.some(p=>String(p.numero)===numero && p.id!=apEdit.id) && !confirm('Já existe uma produção com o número '+numero+'. Salvar mesmo assim?')) return;
+  const itens = apLinhas().map(x=>x.it).filter(i=>i.caixas_300||i.vidros_300||i.caixas_1800||i.potes_1800);
+  if(!itens.length) return notif('Preencha ao menos um produto', false);
+  const total_vidros = itens.reduce((a,i)=>a+i.qtd_vidro,0);
+  const custo_total = esR2(itens.reduce((a,i)=>a+i.valor_total,0));
+  const metaV = document.getElementById('apf-meta').value;
+  const body = { numero, data, fornecedor, materia_prima:mp, qtd_cabecas:cab, meta: metaV===''?null:apNum(metaV),
+    total_vidros, custo_total, coeficiente: Math.round(custo_total/cab*1e6)/1e6, itens,
+    obs:(document.getElementById('apf-obs').value||'').trim() || null };
+  barNuvem(true);
+  try{
+    if(apEdit.id){
+      const r = await pdApi('apr_producoes?id=eq.'+apEdit.id, { method:'PATCH', headers:SUPA_H, body:JSON.stringify(body) });
+      const i = AP.lista.findIndex(x=>x.id==apEdit.id); if(r && r[0] && i>=0) AP.lista[i] = apNorm(r[0]);
+    }else{
+      const r = await pdApi('apr_producoes', { method:'POST', headers:SUPA_H, body:JSON.stringify(body) });
+      if(r && r[0]) AP.lista.unshift(apNorm(r[0]));
+    }
+    notif('✅ Produção '+numero+' salva · coeficiente '+pdN(body.coeficiente,4));
+    apFechar(); apRenderAtual();
+  }catch(e){ notif('❌ Erro ao salvar: '+e.message.slice(0,140), false); }
+  finally{ barNuvem(false); }
+}
+async function apExcluir(id){
+  const p = AP.lista.find(x=>x.id==id); if(!p) return;
+  if(!confirm('Excluir a produção nº '+p.numero+' de '+p.fornecedor+' ('+pdDataBR(p.data)+')?')) return;
+  barNuvem(true);
+  try{
+    await pdApi('apr_producoes?id=eq.'+id, { method:'DELETE', headers:SUPA_H });
+    AP.lista = AP.lista.filter(x=>x.id!=id);
+    notif('🗑️ Produção excluída'); apRenderAtual();
+  }catch(e){ notif('❌ Erro ao excluir: '+e.message.slice(0,140), false); }
+  finally{ barNuvem(false); }
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && document.getElementById('ap-modal')?.classList.contains('open')) apFechar(); });
+document.getElementById('ap-modal')?.addEventListener('mousedown', e=>{ if(e.target.id==='ap-modal') apFechar(); });
+// ═══════════════ IMPRESSÃO / PDF DA TABELA DE PRODUÇÃO FINAL ═══════════════
+let apPrintAlvo = null;   // produção a imprimir (objeto)
+function apPrintAbrir(id){
+  let p;
+  if(id==null){ // imprime o que está na ficha aberta (mesmo antes de salvar)
+    const itensForm = apLinhas().map(x=>x.it);
+    const cab = apNum(document.getElementById('apf-cab').value);
+    const custo = esR2(itensForm.reduce((a,i)=>a+i.valor_total,0));
+    const metaV = document.getElementById('apf-meta').value;
+    p = { numero:(document.getElementById('apf-numero').value||'').trim(), data:document.getElementById('apf-data').value,
+      fornecedor:document.getElementById('apf-forn').value, materia_prima:apMpSel(), qtd_cabecas:cab,
+      meta: metaV===''?null:apNum(metaV), total_vidros:itensForm.reduce((a,i)=>a+i.qtd_vidro,0), custo_total:custo,
+      coeficiente: cab>0 ? custo/cab : null, itens:itensForm, obs:(document.getElementById('apf-obs').value||'').trim() };
+  } else p = AP.lista.find(x=>x.id==id);
+  if(!p) return;
+  apPrintAlvo = p;
+  document.getElementById('ap-print-info').textContent = 'Produção nº '+(p.numero||'—')+' · '+(p.fornecedor||'sem fornecedor')+' · '+(p.data?pdDataBR(p.data):'');
+  document.getElementById('ap-print-modal').classList.add('open');
+}
+function apPrintFechar(){ document.getElementById('ap-print-modal').classList.remove('open'); }
+function apPrintGerar(ori){
+  const p = apPrintAlvo; if(!p) return;
+  const tam = document.querySelector('#ap-print-tam button.active')?.dataset.v || 'A4';
+  const dim = tam==='A3' ? [297,420] : [210,297];
+  const W = ori==='landscape' ? dim[1] : dim[0], H = ori==='landscape' ? dim[0] : dim[1], M = 10;
+  const descs = AP_PRODUTOS.slice(); (p.itens||[]).forEach(i=>{ if(!descs.includes(i.descricao)) descs.push(i.descricao); });
+  const n = v => v ? pdN(v,0) : '';
+  const linhas = descs.map(d=>{
+    const it = (p.itens||[]).find(i=>i.descricao===d) || {};
+    const q = apQtdVidro(it), cu = apNum(it.custo_unit), vt = esR2(q*cu);
+    return '<tr><td class="d">'+pdEsc(d)+'</td><td class="n">'+n(it.caixas_300)+'</td><td class="n">'+n(it.vidros_300)+'</td><td class="n">'+n(it.caixas_1800)+'</td><td class="n">'+n(it.potes_1800)+'</td>'+
+      '<td class="c">un</td><td class="n b">'+(q?pdN(q,0):'')+'</td><td class="n">'+(cu&&q?pdN(cu,2):'')+'</td><td class="n b">'+(vt?esR(vt):'')+'</td></tr>';
+  }).join('');
+  const mp = v => (p.materia_prima===v?'☒':'☐')+' '+v;
+  const logo = document.querySelector('.header .logo img')?.src || '';
+  const emitido = new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Produção Final nº '+pdEsc(p.numero)+' — '+pdEsc(p.fornecedor)+'</title><style>'+
+    '@page{size:'+tam+' '+ori+';margin:'+M+'mm}*{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+    'body{font-family:Arial,Helvetica,sans-serif;color:#1f2328;background:#fff;font-size:12px}'+
+    '.bar{padding:12px;display:flex;gap:10px;background:#f6f8fa;border-bottom:1px solid #d0d7de}.bar button{padding:8px 16px;border-radius:7px;border:1px solid #d0d7de;background:#fff;font-weight:700;cursor:pointer}.bar .p{background:#1e5959;color:#fff;border-color:#1e5959}'+
+    '@media print{.bar{display:none}}'+
+    '.pg{width:'+(W-2*M)+'mm;margin:0 auto}'+
+    '.hd{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;border:1px solid #c9d8d5;border-top:5px solid #1e5959;border-radius:8px;padding:8px 14px;background:#fbf7ee;margin-bottom:10px}'+
+    '.hd img{height:54px;width:auto;display:block}.hd .emp{font-size:9px;color:#5a5a4e;letter-spacing:2px;text-transform:uppercase;font-weight:700}.hd h1{font-size:19px;color:#1e5959;margin-top:2px}'+
+    '.hd .r{text-align:right;font-size:9.5px;color:#59636e;border-left:1px solid #e2d9c4;padding-left:12px;line-height:1.5}.hd .r b{color:#1f2328;font-size:11px}'+
+    '.cab{display:grid;grid-template-columns:2.2fr 1fr 1fr;border:1px solid #c9d8d5;border-radius:8px;overflow:hidden;margin-bottom:10px}'+
+    '.cab>div{padding:7px 12px;border-right:1px solid #c9d8d5;border-bottom:1px solid #c9d8d5}.cab .l{font-size:9px;font-weight:700;color:#1e5959;text-transform:uppercase;letter-spacing:.5px}.cab .v{font-size:13.5px;font-weight:700;margin-top:2px}'+
+    '.cab .mp{grid-column:1/2;font-size:13px;font-weight:700}.cab .k{background:#e3eeec}.cab .k .v{font-size:17px;color:#1e5959;font-family:Consolas,monospace}'+
+    'table{width:100%;border-collapse:collapse;border:1px solid #c9d8d5}th{background:#1e5959;color:#fbf7ee;font-size:10px;text-transform:uppercase;padding:6px;text-align:center;border-right:1px solid rgba(255,255,255,.15);line-height:1.25}th:first-child{text-align:left}'+
+    'td{padding:5px 8px;border-bottom:1px solid #e2e8e6;border-right:1px solid #e2e8e6;font-size:11.5px;height:24px}td.d{font-weight:700}td.n{text-align:right;font-family:Consolas,monospace}td.c{text-align:center;color:#59636e}td.b{font-weight:700;background:#f4f8f7}'+
+    'tfoot td{background:#1e5959;color:#fbf7ee;font-weight:800;font-size:12px}'+
+    '.nota{font-size:9.5px;color:#59636e;margin-top:6px}.obs{margin-top:8px;border:1px solid #c9d8d5;border-radius:8px;padding:7px 12px;font-size:11px;min-height:34px}.obs .l{font-size:9px;font-weight:700;color:#1e5959;text-transform:uppercase}'+
+    '.ass{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:26px}.ass div{border-top:1px solid #59636e;padding-top:4px;text-align:center;font-size:10px;color:#59636e}'+
+    '</style></head><body>'+
+    '<div class="bar"><button class="p" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button><button onclick="window.close()">✕ Fechar</button><span style="align-self:center;font-size:12px;color:#59636e;">'+tam+' · '+(ori==='landscape'?'Paisagem':'Retrato')+' · página única</span></div>'+
+    '<div class="pg" id="pg">'+
+      '<div class="hd">'+(logo?'<img src="'+logo+'" alt="Bom do Sul">':'')+'<div><div class="emp">Bom do Sul · Aproveitamento de Produção</div><h1>TABELA DE PRODUÇÃO FINAL</h1></div>'+
+        '<div class="r">Emitido em<br><b>'+emitido+'</b></div></div>'+
+      '<div class="cab">'+
+        '<div><div class="l">Nome do fornecedor</div><div class="v">'+pdEsc(p.fornecedor||'')+'</div></div>'+
+        '<div><div class="l">Número da produção</div><div class="v">'+pdEsc(p.numero||'')+'</div></div>'+
+        '<div><div class="l">Data da produção</div><div class="v">'+(p.data?pdDataBR(p.data):'')+'</div></div>'+
+        '<div><div class="l">Matéria-prima</div><div class="v">'+mp('PUPUNHA')+' &nbsp; '+mp('JUÇARA')+' &nbsp; '+mp('REAL')+'</div></div>'+
+        '<div><div class="l">Qtd. cabeça</div><div class="v">'+pdN(p.qtd_cabecas,0)+'</div></div>'+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;padding:0;"><div class="k" style="padding:7px 12px;border-right:1px solid #c9d8d5;"><div class="l">Coeficiente</div><div class="v">'+(p.coeficiente!=null?pdN(p.coeficiente,4):'—')+'</div></div><div style="padding:7px 12px;"><div class="l">Meta</div><div class="v">'+(p.meta!=null?pdN(p.meta,4):'—')+'</div></div></div>'+
+      '</div>'+
+      '<table><thead><tr><th style="width:19%">Descrição do produto</th><th>Caixas<br>0,300 kg</th><th>Vidros<br>0,300 kg</th><th>Caixas<br>1,800 kg</th><th>Potes<br>1,800 kg</th><th>Unidade</th><th>Quantidade<br>vidro 0,300 kg</th><th>Custo<br>unitário</th><th>Valor<br>total</th></tr></thead>'+
+      '<tbody>'+linhas+'</tbody><tfoot><tr><td colspan="6" style="text-align:right;">TOTAL</td><td style="text-align:right;font-family:Consolas,monospace;">'+pdN(p.total_vidros,0)+'</td><td style="text-align:right;">CUSTO TOTAL</td><td style="text-align:right;font-family:Consolas,monospace;">'+esR(p.custo_total)+'</td></tr></tfoot></table>'+
+      '<div class="nota">Caixas 0,300 kg × 15 vidros · Caixa 1,800 kg = 6 × 15 vidros · Pote 1,800 kg = 6 vidros · Coeficiente = Custo total ÷ Qtd. cabeça</div>'+
+      '<div class="obs"><div class="l">Observações</div>'+pdEsc(p.obs||'')+'</div>'+
+      '<div class="ass"><div>Responsável pela produção</div><div>Fornecedor</div></div>'+
+    '</div>'+
+    '<script>function ajustar(){var pg=document.getElementById("pg");pg.style.zoom=1;var px=96/25.4,aH=('+(H-2*M)+'-2)*px,h=pg.scrollHeight;if(h>aH)pg.style.zoom=aH/h;}'+
+    'window.addEventListener("load",ajustar);window.addEventListener("beforeprint",ajustar);window.addEventListener("load",function(){setTimeout(function(){window.print();},350);});<\/script></body></html>';
+  const win = window.open('', '_blank');
+  if(!win) return notif('Permita pop-ups para gerar o PDF', false);
+  win.document.write(html); win.document.close();
+  apPrintFechar();
+}
+document.getElementById('ap-print-modal')?.addEventListener('mousedown', e=>{ if(e.target.id==='ap-print-modal') apPrintFechar(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && document.getElementById('ap-print-modal')?.classList.contains('open')) apPrintFechar(); });
+apCarregar(true);
 </script>
 
 </body>
