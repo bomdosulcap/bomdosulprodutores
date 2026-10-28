@@ -824,6 +824,8 @@
   .ap-in:hover { border-color:var(--border); }
   .ap-in:focus { outline:none; border-color:#1e5959; background:var(--bg); box-shadow:0 0 0 3px rgba(30,89,89,.12); }
   .ap-nota { font-size:11px; color:var(--text2); margin-top:8px; }
+  .ap-fat { display:flex; flex-wrap:wrap; align-items:center; gap:4px; line-height:2; }
+  .ap-fat .ap-fat-in { width:58px !important; display:inline-block; padding:3px 6px; text-align:center; font-weight:700; }
   @media (max-width:900px){ .ap-cab, .ap-cab2 { grid-template-columns:1fr 1fr; } .ap-grade-wrap { overflow-x:auto; } }
 </style>
 <script>
@@ -1860,7 +1862,7 @@
     <div class="pd-drill-h">
       <div class="pd-drill-ico">🧾</div>
       <div style="flex:1; min-width:0;"><h3 id="pdr-titulo">Lançamentos</h3><p id="pdr-sub"></p></div>
-      <button class="modal-close" onclick="pdDrillFechar()" title="Fechar (Esc)">✕</button>
+      <button class="modal-close" onclick="pdDrillFechar()" title="Fechar">✕</button>
     </div>
     <div class="pd-drill-kpis" id="pdr-kpis"></div>
     <div class="pd-drill-tools">
@@ -2127,7 +2129,7 @@
     <div class="es-mov-h">
       <div class="es-mov-ico" id="em-ico">📥</div>
       <div style="flex:1; min-width:0;"><h3 id="em-titulo">Nova Entrada de Estoque</h3><p id="em-sub">Busque o produto pelo código ou pela descrição</p></div>
-      <button class="modal-close" onclick="esMovFechar()" title="Fechar (Esc)">✕</button>
+      <button class="modal-close" onclick="esMovFechar()" title="Fechar">✕</button>
     </div>
     <div class="es-mov-b">
       <div class="es-sec">📋 Dados do lançamento</div>
@@ -2218,7 +2220,7 @@
   <div style="max-width:1600px;">
     <div class="pd-alert" data-ap-alert></div>
     <div class="pd-head">
-      <div><h2>🧮 Tabela de Produção Final</h2><p>Lançamento das produções por fornecedor · Qtd. vidro 0,300 = Caixas 0,300 × 15 + Vidros 0,300 + Caixas 1,800 × 6 × 15 + Potes 1,800 × 6</p></div>
+      <div><h2>🧮 Tabela de Produção Final</h2><p>Lançamento das produções por fornecedor · Qtd. vidro 0,300 = Caixas 0,300 × 15 + Vidros 0,300 + Caixas 1,800 × 6 × 6 + Potes 1,800 × 6 (fatores editáveis na ficha)</p></div>
       <div class="pd-head-actions">
         <input class="search-box" id="apl-busca" placeholder="🔍 Nº produção ou fornecedor..." oninput="apRenderLanc()" style="max-width:220px;">
         <select id="apl-mes" class="search-box" style="max-width:160px;" onchange="apRenderLanc()"></select>
@@ -2278,7 +2280,7 @@
     <div class="ap-ficha-h">
       <div class="ico">🧮</div>
       <div style="flex:1; min-width:0;"><h3 id="apf-titulo">TABELA DE PRODUÇÃO FINAL</h3><p>Preencha as caixas e vidros — quantidade, custo total e coeficiente são calculados automaticamente</p></div>
-      <button class="modal-close" onclick="apFechar()" title="Fechar (Esc)">✕</button>
+      <button class="modal-close" onclick="apFechar()" title="Fechar">✕</button>
     </div>
     <div class="ap-ficha-b">
       <div class="ap-cab">
@@ -2313,7 +2315,7 @@ total</th>
           <tfoot><tr><td colspan="6" style="text-align:right;">TOTAL</td><td style="text-align:right; font-family:'JetBrains Mono',monospace;" id="apf-tot-vid">0</td><td style="text-align:right;">CUSTO TOTAL</td><td style="text-align:right; font-family:'JetBrains Mono',monospace; color:#1e5959;" id="apf-tot-custo" class="nw">R$ 0,00</td></tr></tfoot>
         </table>
       </div>
-      <div class="ap-nota">Caixas 0,300 kg × 15 vidros · Caixa 1,800 kg = 6 × 15 vidros · Pote 1,800 kg = 6 vidros · Custo unitário sugerido = último valor usado para o produto e matéria-prima</div>
+      <div class="ap-nota ap-fat">⚙️ <b>Cálculo:</b> Caixa 0,300 kg = <input class="ap-in ap-fat-in" id="apf-f300" type="number" step="any" min="0" oninput="apCalc()" title="Vidros por caixa 0,300 kg"> vidros · Caixa 1,800 kg = <input class="ap-in ap-fat-in" id="apf-f1800a" type="number" step="any" min="0" oninput="apCalc()" title="1º fator da caixa 1,800 kg"> × <input class="ap-in ap-fat-in" id="apf-f1800b" type="number" step="any" min="0" oninput="apCalc()" title="2º fator da caixa 1,800 kg"> vidros <span id="apf-f1800t" style="font-weight:700;"></span> · Pote 1,800 kg = 6 vidros · Custo unitário sugerido = último valor usado para o produto e matéria-prima</div>
       <div style="margin-top:14px;"><label class="field-label">Observações</label><input class="form-input" id="apf-obs" placeholder="Opcional"></div>
     </div>
     <div class="ap-ficha-f">
@@ -3663,9 +3665,7 @@ function closeModal() {
   document.getElementById('modal').classList.remove('open');
 }
 
-document.getElementById('modal').addEventListener('click', e => {
-  if (e.target === document.getElementById('modal')) closeModal();
-});
+// telas só fecham pelo X
 
 // EXPORT
 function exportarRelatorio() {
@@ -4284,9 +4284,6 @@ atualizarSelectResumoProdutor();
   const ldEl=document.getElementById('lanc-data');if(ldEl)ldEl.value=new Date().toISOString().split('T')[0];
   restaurarFiltrosUsuario();
   aplicarPadraoRelatorio(); // relatório: mês/ano atual + primeiro produtor
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){fecharEditLanc();fecharEditForn();}});
-  document.getElementById('edit-lanc-modal')?.addEventListener('click',e=>{if(e.target===document.getElementById('edit-lanc-modal'))fecharEditLanc();});
-  document.getElementById('edit-forn-modal')?.addEventListener('click',e=>{if(e.target===document.getElementById('edit-forn-modal'))fecharEditForn();});
   atualizarSelectFornecedores();
   renderDashboard();
   renderProdutores();
@@ -5497,14 +5494,7 @@ function pdGerarPdf(){
 }
 
 // ── eventos gerais ───────────────────────────────────────────
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'){
-  if(document.getElementById('pd-cad-modal')?.classList.contains('open')){ pdFecharCad(); return; }
-  if(document.getElementById('pd-lanc-modal')?.classList.contains('open')){ pdFecharLanc(); return; }
-  pdFecharLanc(); pdFecharCad(); pdFecharFeriado(); pdFecharPdf(); pdDrillFechar(); } });
-['pd-cad-modal','pd-fer-modal','pd-pdf-modal','pd-drill-modal'].forEach(id=>{
-  const el = document.getElementById(id);
-  if(el) el.addEventListener('mousedown', e=>{ if(e.target===el) el.classList.remove('open'); });
-});
+// telas só fecham pelo X (sem Esc / clique fora)
 // re-desenha os gráficos ao trocar tema claro/escuro
 new MutationObserver(()=>{ if(pdPaginaAtiva()==='prod-dashboard') pdRenderDashboard(); else if(pdPaginaAtiva()==='prod-meta') pdRenderMeta(); })
   .observe(document.documentElement, { attributes:true, attributeFilter:['class'] });
@@ -6128,15 +6118,7 @@ function esRenderVariacao(){
 }
 
 // ── eventos gerais ───────────────────────────────────────────
-document.addEventListener('keydown', e=>{ if(e.key!=='Escape') return;
-  if(document.getElementById('es-sub-modal')?.classList.contains('open')){ esSubFechar(); return; }
-  if(document.getElementById('es-prod-modal')?.classList.contains('open')){ esProdFechar(); return; }
-  if(document.getElementById('es-mov-modal')?.classList.contains('open')) esMovFechar();
-});
-['es-sub-modal','es-prod-modal','es-mov-modal'].forEach(id=>{
-  const el = document.getElementById(id);
-  if(el) el.addEventListener('mousedown', e=>{ if(e.target===el){ if(id==='es-mov-modal') esMovFechar(); else el.classList.remove('open'); } });
-});
+// telas só fecham pelo X (sem Esc / clique fora)
 esCarregar(true);
 </script>
 
@@ -6151,8 +6133,16 @@ const AP = { lista:[], ok:false, erro:null, carregando:false, carregou:false };
 let apEdit = { id:null };
 
 function apNum(v){ const n = parseFloat(String(v==null?'':v).replace(',','.')); return isNaN(n)?0:n; }
-// Qtd. vidro 0,300 = caixas 0,300 × 15 + vidros 0,300 + caixas 1,800 × 6 × 15 + potes 1,800 × 6
-function apQtdVidro(it){ return apNum(it.caixas_300)*15 + apNum(it.vidros_300) + (apNum(it.caixas_1800)*6*15 + apNum(it.potes_1800)*6); }
+// Qtd. vidro 0,300 = caixas 0,300 × F300 + vidros 0,300 + caixas 1,800 × A × B + potes 1,800 × 6
+// Fatores editáveis na ficha; ficam gravados em cada item (it.fat) para manter o histórico.
+const AP_FAT_PADRAO = { c300:15, c1800a:6, c1800b:6 };
+const AP_FAT_LEGADO = { c300:15, c1800a:6, c1800b:15 }; // produções salvas antes dos fatores editáveis
+function apFatDe(it){ const f = it && it.fat; return f ? { c300:apNum(f.c300), c1800a:apNum(f.c1800a), c1800b:apNum(f.c1800b) } : AP_FAT_LEGADO; }
+function apFatProd(p){ const it = (p && p.itens||[]).find(i=>i.fat); return it ? apFatDe(it) : AP_FAT_LEGADO; }
+function apFatUltimo(){ for(const p of AP.lista){ const it=(p.itens||[]).find(i=>i.fat); if(it) return apFatDe(it); } return AP_FAT_PADRAO; }
+function apFatForm(){ const g=id=>apNum(document.getElementById(id).value); return { c300:g('apf-f300'), c1800a:g('apf-f1800a'), c1800b:g('apf-f1800b') }; }
+function apFatTxt(f){ return 'Caixas 0,300 kg × '+pdN(f.c300,0)+' vidros · Caixa 1,800 kg = '+pdN(f.c1800a,0)+' × '+pdN(f.c1800b,0)+' vidros · Pote 1,800 kg = 6 vidros'; }
+function apQtdVidro(it){ const f = apFatDe(it); return apNum(it.caixas_300)*f.c300 + apNum(it.vidros_300) + (apNum(it.caixas_1800)*f.c1800a*f.c1800b + apNum(it.potes_1800)*6); }
 function apCoefTxt(v){ return v==null ? '—' : pdN(v,4); }
 function apNorm(r){
   ['qtd_cabecas','meta','total_vidros','custo_total','coeficiente'].forEach(c=>{ if(r[c]!=null) r[c]=Number(r[c]); });
@@ -6341,15 +6331,20 @@ function apAbrir(id){
       inp('caixas_300',it.caixas_300)+inp('vidros_300',it.vidros_300)+inp('caixas_1800',it.caixas_1800)+inp('potes_1800',it.potes_1800)+
       '<td class="u">un</td><td class="calc" data-o="qtd">0</td>'+inp('custo_unit',custo,!p)+'<td class="calc" data-o="valor">—</td></tr>';
   }).join('');
+  const fat = p ? apFatProd(p) : apFatUltimo();
+  document.getElementById('apf-f300').value = fat.c300;
+  document.getElementById('apf-f1800a').value = fat.c1800a;
+  document.getElementById('apf-f1800b').value = fat.c1800b;
   apCalc();
   document.getElementById('ap-modal').classList.add('open');
   setTimeout(()=>document.getElementById(p?'apf-cab':'apf-forn').focus(), 60);
 }
 function apFechar(){ document.getElementById('ap-modal').classList.remove('open'); }
 function apLinhas(){
+  const fat = apFatForm();
   return [...document.querySelectorAll('#apf-tbody tr')].map(tr=>{
     const g = k => apNum(tr.querySelector('[data-k="'+k+'"]').value);
-    const it = { descricao:tr.dataset.desc, caixas_300:g('caixas_300'), vidros_300:g('vidros_300'), caixas_1800:g('caixas_1800'), potes_1800:g('potes_1800'), custo_unit:g('custo_unit') };
+    const it = { descricao:tr.dataset.desc, caixas_300:g('caixas_300'), vidros_300:g('vidros_300'), caixas_1800:g('caixas_1800'), potes_1800:g('potes_1800'), custo_unit:g('custo_unit'), fat:fat };
     it.qtd_vidro = apQtdVidro(it);
     it.valor_total = esR2(it.qtd_vidro * it.custo_unit);
     return { tr, it };
@@ -6363,6 +6358,7 @@ function apCalc(){
     vid += it.qtd_vidro; custo += it.valor_total;
   });
   const cab = apNum(document.getElementById('apf-cab').value);
+  const f = apFatForm(); document.getElementById('apf-f1800t').textContent = '(= '+pdN(f.c1800a*f.c1800b,0)+')';
   document.getElementById('apf-tot-vid').textContent = pdN(vid,0);
   document.getElementById('apf-tot-custo').textContent = esR(custo);
   document.getElementById('apf-coef').textContent = cab>0 ? pdN(custo/cab,4) : '—';
@@ -6377,6 +6373,7 @@ async function apSalvar(){
   if(!data) return notif('Informe a data da produção', false);
   if(!mp) return notif('Selecione a matéria-prima', false);
   if(cab<=0) return notif('Informe a quantidade de cabeças', false);
+  { const f = apFatForm(); if(!(f.c300>0 && f.c1800a>0 && f.c1800b>0)) return notif('Informe os fatores do cálculo das caixas (0,300 e 1,800 kg)', false); }
   if(AP.lista.some(p=>String(p.numero)===numero && p.id!=apEdit.id) && !confirm('Já existe uma produção com o número '+numero+'. Salvar mesmo assim?')) return;
   const itens = apLinhas().map(x=>x.it).filter(i=>i.caixas_300||i.vidros_300||i.caixas_1800||i.potes_1800);
   if(!itens.length) return notif('Preencha ao menos um produto', false);
@@ -6411,8 +6408,6 @@ async function apExcluir(id){
   }catch(e){ notif('❌ Erro ao excluir: '+e.message.slice(0,140), false); }
   finally{ barNuvem(false); }
 }
-document.addEventListener('keydown', e=>{ if(e.key==='Escape' && document.getElementById('ap-modal')?.classList.contains('open')) apFechar(); });
-document.getElementById('ap-modal')?.addEventListener('mousedown', e=>{ if(e.target.id==='ap-modal') apFechar(); });
 // ═══════════════ IMPRESSÃO / PDF DA TABELA DE PRODUÇÃO FINAL ═══════════════
 let apPrintAlvo = null;   // produção a imprimir (objeto)
 function apPrintAbrir(id){
@@ -6481,7 +6476,7 @@ function apPrintGerar(ori){
       '</div>'+
       '<table><thead><tr><th style="width:19%">Descrição do produto</th><th>Caixas<br>0,300 kg</th><th>Vidros<br>0,300 kg</th><th>Caixas<br>1,800 kg</th><th>Potes<br>1,800 kg</th><th>Unidade</th><th>Quantidade<br>vidro 0,300 kg</th><th>Custo<br>unitário</th><th>Valor<br>total</th></tr></thead>'+
       '<tbody>'+linhas+'</tbody><tfoot><tr><td colspan="6" style="text-align:right;">TOTAL</td><td style="text-align:right;font-family:Consolas,monospace;">'+pdN(p.total_vidros,0)+'</td><td style="text-align:right;">CUSTO TOTAL</td><td style="text-align:right;font-family:Consolas,monospace;">'+esR(p.custo_total)+'</td></tr></tfoot></table>'+
-      '<div class="nota">Caixas 0,300 kg × 15 vidros · Caixa 1,800 kg = 6 × 15 vidros · Pote 1,800 kg = 6 vidros · Coeficiente = Custo total ÷ Qtd. cabeça</div>'+
+      '<div class="nota">'+apFatTxt(apFatProd(p))+' · Coeficiente = Custo total ÷ Qtd. cabeça</div>'+
       '<div class="obs"><div class="l">Observações</div>'+pdEsc(p.obs||'')+'</div>'+
       '<div class="ass"><div>Responsável pela produção</div><div>Fornecedor</div></div>'+
     '</div>'+
@@ -6492,8 +6487,6 @@ function apPrintGerar(ori){
   win.document.write(html); win.document.close();
   apPrintFechar();
 }
-document.getElementById('ap-print-modal')?.addEventListener('mousedown', e=>{ if(e.target.id==='ap-print-modal') apPrintFechar(); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape' && document.getElementById('ap-print-modal')?.classList.contains('open')) apPrintFechar(); });
 apCarregar(true);
 </script>
 
