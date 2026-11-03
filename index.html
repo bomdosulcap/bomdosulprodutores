@@ -796,7 +796,9 @@
   #ap-modal { z-index:560; }
   .ap-ficha { width:100%; max-width:1180px; background:var(--surface); border:1px solid var(--border); border-radius:16px; box-shadow:0 24px 70px rgba(0,0,0,.35); animation:slideUp .22s; }
   .ap-ficha-h { display:flex; align-items:center; gap:14px; padding:16px 22px; border-bottom:1px solid var(--border); border-radius:16px 16px 0 0; background:linear-gradient(135deg, rgba(30,89,89,.14), rgba(30,89,89,.03)); }
-  .ap-ficha-h .ico { width:46px; height:46px; border-radius:12px; background:#1e5959; color:#fff; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+  .ap-ficha-h .ico { width:auto; height:52px; min-width:46px; background:transparent; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .ap-ficha-h .ico img { height:52px; width:auto; display:block; filter:drop-shadow(0 1px 2px rgba(0,0,0,.18)); }
+  .ap-in.moeda { min-width:104px; }
   .ap-ficha-h h3 { font-size:17px; font-weight:800; letter-spacing:.5px; }
   .ap-ficha-h p { font-size:12px; color:var(--text2); margin-top:3px; }
   .ap-ficha-b { padding:18px 22px; }
@@ -2278,7 +2280,7 @@
 <div id="ap-modal" class="form-modal-overlay">
   <div class="ap-ficha" role="dialog" aria-modal="true">
     <div class="ap-ficha-h">
-      <div class="ico">🧮</div>
+      <div class="ico"><img id="apf-logo" alt="Bom do Sul"></div>
       <div style="flex:1; min-width:0;"><h3 id="apf-titulo">TABELA DE PRODUÇÃO FINAL</h3><p>Preencha as caixas e vidros — quantidade, custo total e coeficiente são calculados automaticamente</p></div>
       <button class="modal-close" onclick="apFechar()" title="Fechar">✕</button>
     </div>
@@ -6127,7 +6129,7 @@ esCarregar(true);
 //  APROVEITAMENTO DE PRODUÇÃO — tabela de produção final + análise
 //  Tabela Supabase: apr_producoes (ver aproveitamento_supabase.sql)
 // ═══════════════════════════════════════════════════════════════════
-const AP_PRODUTOS = ['TOLETE','TOLETE ESPECIAL','PICADO','RODELA','BANDA','PICADÃO','PICADO FARELO','APERITIVO','ROLLETE','ESPAGUETE','LAZANHA'];
+const AP_PRODUTOS = ['TOLETE','TOLETE ESPECIAL','PICADO','RODELA','BANDA','PICADÃO','PICADO FARELO','APERITIVO','ROLLETE','ESPAGUETE','LASANHA','CORAÇÃO'];
 const AP_META_PADRAO = 4;
 const AP = { lista:[], ok:false, erro:null, carregando:false, carregou:false };
 let apEdit = { id:null };
@@ -6147,6 +6149,7 @@ function apCoefTxt(v){ return v==null ? '—' : pdN(v,4); }
 function apNorm(r){
   ['qtd_cabecas','meta','total_vidros','custo_total','coeficiente'].forEach(c=>{ if(r[c]!=null) r[c]=Number(r[c]); });
   if(!Array.isArray(r.itens)) r.itens = [];
+  r.itens.forEach(i=>{ if(i && i.descricao==='LAZANHA') i.descricao='LASANHA'; });
   return r;
 }
 
@@ -6301,14 +6304,14 @@ function apFillForn(atual){
 }
 function apMpMarca(){
   document.querySelectorAll('#apf-mp label').forEach(l=>l.classList.toggle('on', l.querySelector('input').checked));
-  if(!apEdit.id){ // sugere custos da matéria-prima escolhida nas linhas sem custo digitado
-    const mp = apMpSel();
-    document.querySelectorAll('#apf-tbody tr').forEach(tr=>{ const c = tr.querySelector('[data-k="custo_unit"]'); if(c && c.dataset.auto==='1'){ c.value = apUltimoCusto(tr.dataset.desc, mp); } });
-    apCalc();
-  }
 }
+// custo unitário em formato contábil R$ 0,00 (digitação da direita para a esquerda)
+function apMoedaFmt(v){ v=Number(v)||0; return 'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function apMoedaParse(t){ const d=String(t==null?'':t).replace(/\D/g,''); return d ? parseInt(d,10)/100 : 0; }
+function apMoedaInput(el){ const d=el.value.replace(/\D/g,''); el.value = d ? apMoedaFmt(parseInt(d,10)/100) : ''; apCalc(); }
 function apMpSel(){ const r = document.querySelector('input[name="apf-mp"]:checked'); return r ? r.value : ''; }
 function apAbrir(id){
+  { const lg=document.getElementById('apf-logo'), src=document.querySelector('.header .logo img')?.src; if(lg && src && !lg.src) lg.src=src; }
   if(!AP.ok){ notif('Aproveitamento indisponível — verifique a tabela no Supabase', false); return; }
   const p = id ? AP.lista.find(x=>x.id==id) : null;
   apEdit = { id:p?p.id:null };
@@ -6323,13 +6326,15 @@ function apAbrir(id){
   document.getElementById('apf-obs').value = p && p.obs ? p.obs : '';
   const descs = AP_PRODUTOS.slice();
   if(p) p.itens.forEach(i=>{ if(!descs.includes(i.descricao)) descs.push(i.descricao); });
-  const inp = (k,v,auto)=>'<td><input class="ap-in" type="number" step="any" min="0" data-k="'+k+'" value="'+(v==null||v===0||v===''?'':v)+'"'+(auto?' data-auto="1"':'')+' oninput="'+(k==='custo_unit'?'this.dataset.auto=0;':'')+'apCalc()"></td>';
+  const inp = (k,v)=> k==='custo_unit'
+    ? '<td><input class="ap-in moeda" type="text" inputmode="numeric" placeholder="R$ 0,00" data-k="custo_unit" value="'+(v==null||v===0||v===''?'':apMoedaFmt(v))+'" oninput="apMoedaInput(this)"></td>'
+    : '<td><input class="ap-in" type="number" step="any" min="0" data-k="'+k+'" value="'+(v==null||v===0||v===''?'':v)+'" oninput="apCalc()"></td>';
   document.getElementById('apf-tbody').innerHTML = descs.map(d=>{
     const it = p ? (p.itens.find(i=>i.descricao===d)||{}) : {};
-    const custo = p ? it.custo_unit : apUltimoCusto(d, '');
+    const custo = p ? it.custo_unit : '';   // novo lançamento: custo sempre em branco
     return '<tr data-desc="'+pdEsc(d)+'"><td class="d">'+pdEsc(d)+'</td>'+
       inp('caixas_300',it.caixas_300)+inp('vidros_300',it.vidros_300)+inp('caixas_1800',it.caixas_1800)+inp('potes_1800',it.potes_1800)+
-      '<td class="u">un</td><td class="calc" data-o="qtd">0</td>'+inp('custo_unit',custo,!p)+'<td class="calc" data-o="valor">—</td></tr>';
+      '<td class="u">un</td><td class="calc" data-o="qtd">0</td>'+inp('custo_unit',custo)+'<td class="calc" data-o="valor">—</td></tr>';
   }).join('');
   const fat = p ? apFatProd(p) : apFatUltimo();
   document.getElementById('apf-f300').value = fat.c300;
@@ -6343,7 +6348,7 @@ function apFechar(){ document.getElementById('ap-modal').classList.remove('open'
 function apLinhas(){
   const fat = apFatForm();
   return [...document.querySelectorAll('#apf-tbody tr')].map(tr=>{
-    const g = k => apNum(tr.querySelector('[data-k="'+k+'"]').value);
+    const g = k => { const v = tr.querySelector('[data-k="'+k+'"]').value; return k==='custo_unit' ? apMoedaParse(v) : apNum(v); };
     const it = { descricao:tr.dataset.desc, caixas_300:g('caixas_300'), vidros_300:g('vidros_300'), caixas_1800:g('caixas_1800'), potes_1800:g('potes_1800'), custo_unit:g('custo_unit'), fat:fat };
     it.qtd_vidro = apQtdVidro(it);
     it.valor_total = esR2(it.qtd_vidro * it.custo_unit);
@@ -6439,7 +6444,7 @@ function apPrintGerar(ori){
     const it = (p.itens||[]).find(i=>i.descricao===d) || {};
     const q = apQtdVidro(it), cu = apNum(it.custo_unit), vt = esR2(q*cu);
     return '<tr><td class="d">'+pdEsc(d)+'</td><td class="n">'+n(it.caixas_300)+'</td><td class="n">'+n(it.vidros_300)+'</td><td class="n">'+n(it.caixas_1800)+'</td><td class="n">'+n(it.potes_1800)+'</td>'+
-      '<td class="c">un</td><td class="n b">'+(q?pdN(q,0):'')+'</td><td class="n">'+(cu&&q?pdN(cu,2):'')+'</td><td class="n b">'+(vt?esR(vt):'')+'</td></tr>';
+      '<td class="c">un</td><td class="n b">'+(q?pdN(q,0):'')+'</td><td class="n">'+(cu&&q?esR(cu):'')+'</td><td class="n b">'+(vt?esR(vt):'')+'</td></tr>';
   }).join('');
   const mp = v => (p.materia_prima===v?'☒':'☐')+' '+v;
   const logo = document.querySelector('.header .logo img')?.src || '';
