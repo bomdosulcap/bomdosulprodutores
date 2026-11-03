@@ -799,6 +799,20 @@
   .ap-ficha-h .ico { width:auto; height:52px; min-width:46px; background:transparent; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .ap-ficha-h .ico img { height:52px; width:auto; display:block; filter:drop-shadow(0 1px 2px rgba(0,0,0,.18)); }
   .ap-in.moeda { min-width:104px; }
+  .ap-cu { display:flex; align-items:center; gap:4px; }
+  .ap-in.moeda.auto { color:#1e5959; font-weight:700; background:rgba(30,89,89,.07); }
+  .ap-in.moeda.man { border-color:var(--orange); color:var(--orange); font-weight:700; }
+  .ap-cu-rs { border:none; background:none; cursor:pointer; color:var(--orange); font-size:13px; padding:0 2px; }
+  .apr-wrap { display:grid; grid-template-columns:300px 1fr; gap:14px; align-items:start; }
+  .apr-forns { display:flex; flex-direction:column; gap:4px; max-height:640px; overflow-y:auto; margin-top:10px; }
+  .apr-forn { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:9px 12px; border:1px solid var(--border); border-radius:8px; cursor:pointer; font-size:13px; background:var(--bg); }
+  .apr-forn:hover { border-color:#1e5959; }
+  .apr-forn.on { background:rgba(30,89,89,.12); border-color:#1e5959; font-weight:700; }
+  .apr-forn small { font-size:11px; color:var(--text2); white-space:nowrap; }
+  .apr-forn .sem { color:var(--orange); }
+  .apr-grade tr.mud td { background:rgba(154,103,0,.07); }
+  .apr-grade .ap-in.moeda { border-color:var(--border); background:var(--bg); max-width:180px; margin-left:auto; display:block; }
+  @media (max-width:900px){ .apr-wrap { grid-template-columns:1fr; } }
   .ap-ficha-h h3 { font-size:17px; font-weight:800; letter-spacing:.5px; }
   .ap-ficha-h p { font-size:12px; color:var(--text2); margin-top:3px; }
   .ap-ficha-b { padding:18px 22px; }
@@ -996,6 +1010,7 @@
   <div class="tabs-group-label">Aproveitamento de Produção</div>
   <button class="tab" data-page="ap-lancamentos" onclick="showPage('ap-lancamentos')" title="Tabela de Produção Final"><span class="tab-ico">🧮</span><span class="tab-txt">Lançar Produção</span></button>
   <button class="tab" data-page="ap-analise" onclick="showPage('ap-analise')" title="Análise de Aproveitamento"><span class="tab-ico">📈</span><span class="tab-txt">Análise de Aproveitamento</span></button>
+  <button class="tab" data-page="ap-precos" onclick="showPage('ap-precos')" title="Tabela de Preços — fornecedor × produto"><span class="tab-ico">💲</span><span class="tab-txt">Tabela de Preços</span></button>
   <div class="tabs-sep" role="separator"></div>
   <button class="tab" data-page="produtores" onclick="showPage('produtores')" title="Todos os Produtores"><span class="tab-ico">👥</span><span class="tab-txt">Todos os Produtores</span></button>
   <button class="tab" data-page="inadimplentes" onclick="showPage('inadimplentes')" title="Inadimplentes"><span class="tab-ico">⚠️</span><span class="tab-txt">Inadimplentes</span></button>
@@ -2276,6 +2291,46 @@
   </div>
 </div>
 
+<!-- TABELA DE PREÇOS (fornecedor × produto × custo unitário) -->
+<div class="page" id="page-ap-precos">
+  <div style="max-width:1300px;">
+    <div class="pd-alert" data-ap-alert></div>
+    <div class="pd-alert" id="apr-alert"></div>
+    <div class="pd-head">
+      <div><h2>💲 Tabela de Preços</h2><p>Custo unitário por fornecedor × produto · usado automaticamente na Tabela de Produção Final (pode ser alterado manualmente na ficha)</p></div>
+      <div class="pd-head-actions">
+        <button class="btn" onclick="apCarregar(false)" title="Recarregar">🔄</button>
+      </div>
+    </div>
+    <div class="pd-kpis" id="apr-kpis"></div>
+    <div class="apr-wrap">
+      <div class="pd-card">
+        <div class="pd-card-t">Fornecedores</div>
+        <input class="search-box" id="apr-busca" placeholder="🔍 Buscar fornecedor..." oninput="aprRenderLista()" style="width:100%; margin-top:10px;">
+        <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text2); margin-top:8px; cursor:pointer;"><input type="checkbox" id="apr-so-sem" onchange="aprRenderLista()"> Só fornecedores sem preço</label>
+        <div class="apr-forns" id="apr-forns"></div>
+      </div>
+      <div class="pd-card">
+        <div class="pd-card-h">
+          <div><div class="pd-card-t" id="apr-tit">Selecione um fornecedor</div><div class="pd-card-st" id="apr-st">Escolha um fornecedor na lista para cadastrar os preços</div></div>
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;" id="apr-acoes">
+            <select class="pd-sel" id="apr-copiar" onchange="aprCopiar(this.value)" title="Preenche a grade com os preços de outro fornecedor (depois é só salvar)"></select>
+          </div>
+        </div>
+        <div class="table-wrap"><table class="pd-table apr-grade">
+          <thead><tr><th>Descrição do produto</th><th class="num" style="width:210px;">Custo unitário</th><th class="c" style="width:150px;">Atualizado em</th><th class="c" style="width:70px;"></th></tr></thead>
+          <tbody id="apr-tbody"></tbody>
+        </table></div>
+        <div class="form-actions">
+          <span id="apr-mud" style="font-size:12px; color:var(--orange); margin-right:auto; align-self:center;"></span>
+          <button class="btn-cancel" onclick="aprRenderGrade()">↺ Desfazer alterações</button>
+          <button class="btn-save green" onclick="aprSalvar()">💾 Salvar preços</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: TABELA DE PRODUÇÃO FINAL -->
 <div id="ap-modal" class="form-modal-overlay">
   <div class="ap-ficha" role="dialog" aria-modal="true">
@@ -2286,7 +2341,7 @@
     </div>
     <div class="ap-ficha-b">
       <div class="ap-cab">
-        <div><label class="field-label">Nome do fornecedor <span class="req">*</span></label><select class="form-input" id="apf-forn"></select></div>
+        <div><label class="field-label">Nome do fornecedor <span class="req">*</span></label><select class="form-input" id="apf-forn" onchange="apCalc()"></select></div>
         <div><label class="field-label">Número da produção <span class="req">*</span></label><input class="form-input" id="apf-numero" style="font-family:'JetBrains Mono',monospace; font-weight:700;"></div>
         <div><label class="field-label">Data da produção <span class="req">*</span></label><input class="form-input" id="apf-data" type="date"></div>
       </div>
@@ -2317,7 +2372,7 @@ total</th>
           <tfoot><tr><td colspan="6" style="text-align:right;">TOTAL</td><td style="text-align:right; font-family:'JetBrains Mono',monospace;" id="apf-tot-vid">0</td><td style="text-align:right;">CUSTO TOTAL</td><td style="text-align:right; font-family:'JetBrains Mono',monospace; color:#1e5959;" id="apf-tot-custo" class="nw">R$ 0,00</td></tr></tfoot>
         </table>
       </div>
-      <div class="ap-nota ap-fat">⚙️ <b>Cálculo:</b> Caixa 0,300 kg = <input class="ap-in ap-fat-in" id="apf-f300" type="number" step="any" min="0" oninput="apCalc()" title="Vidros por caixa 0,300 kg"> vidros · Caixa 1,800 kg = <input class="ap-in ap-fat-in" id="apf-f1800a" type="number" step="any" min="0" oninput="apCalc()" title="1º fator da caixa 1,800 kg"> × <input class="ap-in ap-fat-in" id="apf-f1800b" type="number" step="any" min="0" oninput="apCalc()" title="2º fator da caixa 1,800 kg"> vidros <span id="apf-f1800t" style="font-weight:700;"></span> · Pote 1,800 kg = 6 vidros · Custo unitário sugerido = último valor usado para o produto e matéria-prima</div>
+      <div class="ap-nota ap-fat">⚙️ <b>Cálculo:</b> Caixa 0,300 kg = <input class="ap-in ap-fat-in" id="apf-f300" type="number" step="any" min="0" oninput="apCalc()" title="Vidros por caixa 0,300 kg"> vidros · Caixa 1,800 kg = <input class="ap-in ap-fat-in" id="apf-f1800a" type="number" step="any" min="0" oninput="apCalc()" title="1º fator da caixa 1,800 kg"> × <input class="ap-in ap-fat-in" id="apf-f1800b" type="number" step="any" min="0" oninput="apCalc()" title="2º fator da caixa 1,800 kg"> vidros <span id="apf-f1800t" style="font-weight:700;"></span> · Pote 1,800 kg = 6 vidros · Custo unitário automático = Tabela de Preços (fornecedor × produto) ao preencher o fornecedor e a quantidade · se alterar à mão, ↺ volta ao automático</div>
       <div style="margin-top:14px;"><label class="field-label">Observações</label><input class="form-input" id="apf-obs" placeholder="Opcional"></div>
     </div>
     <div class="ap-ficha-f">
@@ -6131,7 +6186,8 @@ esCarregar(true);
 // ═══════════════════════════════════════════════════════════════════
 const AP_PRODUTOS = ['TOLETE','TOLETE ESPECIAL','PICADO','RODELA','BANDA','PICADÃO','PICADO FARELO','APERITIVO','ROLLETE','ESPAGUETE','LASANHA','CORAÇÃO'];
 const AP_META_PADRAO = 4;
-const AP = { lista:[], ok:false, erro:null, carregando:false, carregou:false };
+const AP = { lista:[], precos:[], precosOk:false, precosErro:null, ok:false, erro:null, carregando:false, carregou:false };
+let aprForn = '';
 let apEdit = { id:null };
 
 function apNum(v){ const n = parseFloat(String(v==null?'':v).replace(',','.')); return isNaN(n)?0:n; }
@@ -6158,7 +6214,13 @@ async function apCarregar(silencioso){
   AP.carregando = true;
   if(!silencioso) barNuvem(true);
   try{
-    AP.lista = (await pdGetAll('apr_producoes','data.desc,id.desc')).map(apNorm);
+    const [lst, prc] = await Promise.all([
+      pdGetAll('apr_producoes','data.desc,id.desc'),
+      pdGetAll('apr_precos','fornecedor.asc,produto.asc').then(r=>({ok:true,r}), e=>({ok:false,e}))
+    ]);
+    AP.lista = lst.map(apNorm);
+    if(prc.ok){ AP.precos = (prc.r||[]).map(x=>{ x.custo_unit=Number(x.custo_unit)||0; return x; }); AP.precosOk = true; AP.precosErro = null; }
+    else { AP.precosOk = false; AP.precosErro = prc.e.message; console.error('Preços:', prc.e.message); }
     AP.ok = true; AP.erro = null;
     if(!silencioso) notif('🔄 Aproveitamento atualizado');
   }catch(e){
@@ -6185,6 +6247,7 @@ function apRenderAtual(){
   const id = pdPaginaAtiva();
   if(id==='ap-lancamentos') apRenderLanc();
   else if(id==='ap-analise') apRenderAnalise();
+  else if(id==='ap-precos') aprRender();
 }
 function apOnShowPage(id){
   if(!String(id).startsWith('ap-')) return;
@@ -6308,7 +6371,39 @@ function apMpMarca(){
 // custo unitário em formato contábil R$ 0,00 (digitação da direita para a esquerda)
 function apMoedaFmt(v){ v=Number(v)||0; return 'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function apMoedaParse(t){ const d=String(t==null?'':t).replace(/\D/g,''); return d ? parseInt(d,10)/100 : 0; }
-function apMoedaInput(el){ const d=el.value.replace(/\D/g,''); el.value = d ? apMoedaFmt(parseInt(d,10)/100) : ''; apCalc(); }
+function apMoedaInput(el){
+  const d=el.value.replace(/\D/g,''); el.value = d ? apMoedaFmt(parseInt(d,10)/100) : '';
+  if(el.closest('#apf-tbody')) el.dataset.man = d ? '1' : '0';   // digitou → manual; apagou → volta ao automático
+  if(el.closest('#apr-tbody')) aprMarcaMud(); else apCalc();
+}
+// preço cadastrado para fornecedor × produto (null se não houver)
+function apPreco(forn, prod){
+  if(!forn || !prod) return null;
+  const f = esNorm(forn), p = esNorm(prod);
+  const r = AP.precos.find(x=>esNorm(x.fornecedor)===f && esNorm(x.produto)===p);
+  return r ? r.custo_unit : null;
+}
+function apCuReset(btn){ const inp = btn.closest('td').querySelector('[data-k="custo_unit"]'); inp.dataset.man='0'; apCalc(); }
+// aplica os preços automáticos na ficha (linhas com quantidade e sem valor manual)
+function apAplicarPrecos(){
+  const forn = document.getElementById('apf-forn')?.value || '';
+  const fat = apFatForm();
+  document.querySelectorAll('#apf-tbody tr').forEach(tr=>{
+    const inp = tr.querySelector('[data-k="custo_unit"]'); if(!inp) return;
+    const g = k => apNum(tr.querySelector('[data-k="'+k+'"]').value);
+    const qtd = apQtdVidro({ caixas_300:g('caixas_300'), vidros_300:g('vidros_300'), caixas_1800:g('caixas_1800'), potes_1800:g('potes_1800'), fat });
+    const preco = apPreco(forn, tr.dataset.desc);
+    const man = inp.dataset.man==='1';
+    if(!man) inp.value = (qtd>0 && preco!=null) ? apMoedaFmt(preco) : '';
+    const valor = apMoedaParse(inp.value);
+    const auto = !man && !!inp.value;
+    const difere = man && preco!=null && Math.abs(valor-preco)>0.004;
+    inp.classList.toggle('auto', auto);
+    inp.classList.toggle('man', difere);
+    inp.title = auto ? 'Preço automático da Tabela de Preços' : (preco!=null ? 'Tabela de Preços: '+apMoedaFmt(preco)+(difere?' · valor alterado manualmente':'') : (forn?'Sem preço cadastrado para este fornecedor e produto':'Selecione o fornecedor para trazer o preço automático'));
+    const rs = tr.querySelector('.ap-cu-rs'); if(rs) rs.style.visibility = (man && preco!=null && qtd>0 && difere) ? 'visible' : 'hidden';
+  });
+}
 function apMpSel(){ const r = document.querySelector('input[name="apf-mp"]:checked'); return r ? r.value : ''; }
 function apAbrir(id){
   { const lg=document.getElementById('apf-logo'), src=document.querySelector('.header .logo img')?.src; if(lg && src && !lg.src) lg.src=src; }
@@ -6327,7 +6422,7 @@ function apAbrir(id){
   const descs = AP_PRODUTOS.slice();
   if(p) p.itens.forEach(i=>{ if(!descs.includes(i.descricao)) descs.push(i.descricao); });
   const inp = (k,v)=> k==='custo_unit'
-    ? '<td><input class="ap-in moeda" type="text" inputmode="numeric" placeholder="R$ 0,00" data-k="custo_unit" value="'+(v==null||v===0||v===''?'':apMoedaFmt(v))+'" oninput="apMoedaInput(this)"></td>'
+    ? '<td><div class="ap-cu"><input class="ap-in moeda" type="text" inputmode="numeric" placeholder="R$ 0,00" data-k="custo_unit" data-man="'+(v==null||v===0||v===''?'0':'1')+'" value="'+(v==null||v===0||v===''?'':apMoedaFmt(v))+'" oninput="apMoedaInput(this)"><button type="button" class="ap-cu-rs" style="visibility:hidden" title="Voltar ao preço da Tabela de Preços" onclick="apCuReset(this)">↺</button></div></td>'
     : '<td><input class="ap-in" type="number" step="any" min="0" data-k="'+k+'" value="'+(v==null||v===0||v===''?'':v)+'" oninput="apCalc()"></td>';
   document.getElementById('apf-tbody').innerHTML = descs.map(d=>{
     const it = p ? (p.itens.find(i=>i.descricao===d)||{}) : {};
@@ -6356,6 +6451,7 @@ function apLinhas(){
   });
 }
 function apCalc(){
+  apAplicarPrecos();
   let vid = 0, custo = 0;
   apLinhas().forEach(({tr,it})=>{
     tr.querySelector('[data-o="qtd"]').textContent = it.qtd_vidro ? pdN(it.qtd_vidro,0) : '—';
@@ -6491,6 +6587,114 @@ function apPrintGerar(ori){
   if(!win) return notif('Permita pop-ups para gerar o PDF', false);
   win.document.write(html); win.document.close();
   apPrintFechar();
+}
+// ═══════════════ TABELA DE PREÇOS ═══════════════
+function aprFornecedores(){
+  const nomes = new Set(fornecedores.filter(f=>f.status==='ativo').map(f=>f.nome));
+  AP.precos.forEach(x=>nomes.add(x.fornecedor));
+  return [...nomes].filter(Boolean).sort((a,b)=>a.localeCompare(b,'pt-BR'));
+}
+function aprPrecosDe(forn){ const f = esNorm(forn); return AP.precos.filter(x=>esNorm(x.fornecedor)===f); }
+function aprRender(){
+  const al = document.getElementById('apr-alert');
+  let html = '';
+  if(AP.precosErro){
+    html = /42P01|PGRST20|does not exist|schema cache/i.test(AP.precosErro)
+      ? '❌ A tabela de preços ainda não existe no Supabase. Rode o script <code>precos_supabase.sql</code> no SQL Editor e clique em 🔄.'
+      : '⚠️ Não foi possível carregar os preços: '+pdEsc(AP.precosErro.slice(0,200));
+  }
+  if(al){ al.innerHTML = html; al.classList.toggle('show', !!html); }
+  const forns = aprFornecedores();
+  const comPreco = new Set(AP.precos.map(x=>esNorm(x.fornecedor)));
+  const nPrecos = AP.precos.length;
+  document.getElementById('apr-kpis').innerHTML =
+    esKpi('Preços cadastrados', nPrecos, 'fornecedor × produto', '#1e5959') +
+    esKpi('Fornecedores com preço', forns.filter(f=>comPreco.has(esNorm(f))).length, 'de '+forns.length+' fornecedor(es)') +
+    esKpi('Sem preço', forns.filter(f=>!comPreco.has(esNorm(f))).length, 'fornecedores sem tabela', 'var(--orange)') +
+    esKpi('Produtos', AP_PRODUTOS.length, 'na Tabela de Produção Final');
+  aprRenderLista(); aprRenderGrade();
+}
+function aprRenderLista(){
+  const el = document.getElementById('apr-forns'); if(!el) return;
+  const q = esNorm((document.getElementById('apr-busca').value||'').trim()), soSem = document.getElementById('apr-so-sem').checked;
+  const lista = aprFornecedores().filter(f=>(!q || esNorm(f).includes(q)) && (!soSem || !aprPrecosDe(f).length));
+  el.innerHTML = lista.length ? lista.map(f=>{ const n = aprPrecosDe(f).length;
+    return '<div class="apr-forn'+(f===aprForn?' on':'')+'" data-f="'+pdEsc(f)+'" onclick="aprSelForn(this.dataset.f)"><span>'+pdEsc(f)+'</span><small class="'+(n?'':'sem')+'">'+(n?n+' preço'+(n>1?'s':''):'sem preço')+'</small></div>'; }).join('')
+    : '<div style="font-size:12px; color:var(--text2); padding:10px;">'+(AP.carregou?'Nenhum fornecedor encontrado':'Carregando...')+'</div>';
+}
+function aprSelForn(f){
+  if(f!==aprForn && aprMudancas() && !confirm('Há preços alterados e não salvos para '+aprForn+'. Descartar?')) return;
+  aprForn = f; aprRenderLista(); aprRenderGrade();
+}
+function aprRenderGrade(){
+  const tb = document.getElementById('apr-tbody'); if(!tb) return;
+  const cp = document.getElementById('apr-copiar');
+  if(!aprForn){
+    document.getElementById('apr-tit').textContent = 'Selecione um fornecedor';
+    document.getElementById('apr-st').textContent = 'Escolha um fornecedor na lista para cadastrar os preços';
+    tb.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:36px; color:var(--text2);">← Selecione um fornecedor</td></tr>';
+    cp.style.display = 'none'; document.getElementById('apr-mud').textContent = ''; return;
+  }
+  const precos = aprPrecosDe(aprForn);
+  const prods = AP_PRODUTOS.slice(); precos.forEach(x=>{ if(!prods.includes(x.produto)) prods.push(x.produto); });
+  document.getElementById('apr-tit').textContent = aprForn;
+  document.getElementById('apr-st').textContent = precos.length+' de '+prods.length+' produto(s) com preço · deixe em branco para não ter preço automático';
+  const outros = [...new Set(AP.precos.map(x=>x.fornecedor))].filter(f=>esNorm(f)!==esNorm(aprForn)).sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  cp.style.display = outros.length ? '' : 'none';
+  cp.innerHTML = '<option value="">📋 Copiar preços de...</option>'+outros.map(f=>'<option value="'+pdEsc(f)+'">'+pdEsc(f)+'</option>').join('');
+  tb.innerHTML = prods.map(prod=>{
+    const r = precos.find(x=>x.produto===prod);
+    const v = r ? apMoedaFmt(r.custo_unit) : '';
+    const dt = r && (r.updated_at||r.criado_em) ? new Date(r.updated_at||r.criado_em).toLocaleDateString('pt-BR') : '—';
+    return '<tr data-prod="'+pdEsc(prod)+'" data-orig="'+(r?r.custo_unit:'')+'"><td class="d" style="font-weight:700;">'+pdEsc(prod)+'</td>'+
+      '<td class="num"><input class="ap-in moeda" type="text" inputmode="numeric" placeholder="R$ 0,00" value="'+v+'" oninput="apMoedaInput(this)"></td>'+
+      '<td class="c" style="color:var(--text2); font-size:12px;">'+dt+'</td>'+
+      '<td class="c">'+(r?'<button class="pd-act del" title="Remover preço" onclick="this.closest(\'tr\').querySelector(\'input\').value=\'\'; aprMarcaMud()">🗑️</button>':'')+'</td></tr>';
+  }).join('');
+  aprMarcaMud();
+}
+function aprMudancas(){
+  let n = 0;
+  document.querySelectorAll('#apr-tbody tr[data-prod]').forEach(tr=>{
+    const v = apMoedaParse(tr.querySelector('input').value), o = tr.dataset.orig==='' ? 0 : Number(tr.dataset.orig);
+    const mud = Math.abs(v-o)>0.004; tr.classList.toggle('mud', mud); if(mud) n++;
+  });
+  return n;
+}
+function aprMarcaMud(){ const n = aprMudancas(); const el = document.getElementById('apr-mud'); if(el) el.textContent = n ? '● '+n+' alteração(ões) não salva(s)' : ''; }
+function aprCopiar(origem){
+  if(!origem) return;
+  const src = aprPrecosDe(origem);
+  document.querySelectorAll('#apr-tbody tr[data-prod]').forEach(tr=>{ const r = src.find(x=>x.produto===tr.dataset.prod); if(r) tr.querySelector('input').value = apMoedaFmt(r.custo_unit); });
+  document.getElementById('apr-copiar').value = '';
+  aprMarcaMud(); notif('📋 Preços de '+origem+' copiados — confira e clique em Salvar');
+}
+async function aprSalvar(){
+  if(!aprForn) return notif('Selecione um fornecedor', false);
+  if(!AP.precosOk) return notif('Tabela de preços indisponível — rode o precos_supabase.sql no Supabase', false);
+  const precos = aprPrecosDe(aprForn), ups = [], dels = [];
+  document.querySelectorAll('#apr-tbody tr[data-prod]').forEach(tr=>{
+    const prod = tr.dataset.prod, v = apMoedaParse(tr.querySelector('input').value), r = precos.find(x=>x.produto===prod);
+    if(v>0 && (!r || Math.abs(r.custo_unit-v)>0.004)) ups.push({ fornecedor:aprForn, produto:prod, custo_unit:v, updated_at:new Date().toISOString() });
+    else if(!(v>0) && r) dels.push(r.id);
+  });
+  if(!ups.length && !dels.length) return notif('Nenhuma alteração para salvar');
+  barNuvem(true);
+  try{
+    if(ups.length){
+      const r = await pdApi('apr_precos?on_conflict=fornecedor,produto', { method:'POST',
+        headers:Object.assign({}, SUPA_H, { 'Prefer':'resolution=merge-duplicates,return=representation' }), body:JSON.stringify(ups) });
+      (r||[]).forEach(n=>{ n.custo_unit = Number(n.custo_unit)||0; const i = AP.precos.findIndex(x=>x.id==n.id || (x.fornecedor===n.fornecedor && x.produto===n.produto)); if(i>=0) AP.precos[i]=n; else AP.precos.push(n); });
+    }
+    if(dels.length){
+      await pdApi('apr_precos?id=in.('+dels.join(',')+')', { method:'DELETE', headers:SUPA_H });
+      AP.precos = AP.precos.filter(x=>!dels.includes(x.id));
+    }
+    notif('✅ Preços de '+aprForn+' salvos ('+ups.length+' atualizado(s), '+dels.length+' removido(s))');
+    aprRender();
+    if(document.getElementById('ap-modal').classList.contains('open')) apCalc();
+  }catch(e){ notif('❌ Erro ao salvar preços: '+e.message.slice(0,140), false); }
+  finally{ barNuvem(false); }
 }
 apCarregar(true);
 </script>
