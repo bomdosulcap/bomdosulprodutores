@@ -813,43 +813,6 @@
   .apr-grade tr.mud td { background:rgba(154,103,0,.07); }
   .apr-grade .ap-in.moeda { border-color:var(--border); background:var(--bg); max-width:180px; margin-left:auto; display:block; }
   @media (max-width:900px){ .apr-wrap { grid-template-columns:1fr; } }
-  /* ═══════════ BACKUP ═══════════ */
-  .bkp-sec { border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:14px; background:var(--bg); }
-  .bkp-t { font-size:13px; font-weight:700; margin-bottom:10px; }
-  .bkp-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-  .bkp-pasta { flex:1; min-width:200px; padding:9px 12px; border:1.5px dashed var(--border); border-radius:8px; font-size:13px; color:var(--text2); }
-  .bkp-pasta.on { border-style:solid; border-color:#1e5959; color:var(--text); font-weight:700; background:rgba(30,89,89,.06); }
-  .bkp-nota { font-size:11.5px; color:var(--text2); margin-top:8px; line-height:1.5; }
-  .bkp-nota code { font-family:'JetBrains Mono',monospace; font-size:11px; background:var(--surface2); padding:1px 5px; border-radius:4px; }
-  .bkp-chk { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; cursor:pointer; margin-bottom:12px; }
-  .bkp-chk input { accent-color:#1e5959; width:16px; height:16px; }
-  .bkp-grid { display:grid; grid-template-columns:1fr auto; gap:12px 16px; }
-  .bkp-grid > div:first-child { grid-column:1/-1; }
-  .bkp-dias { display:flex; gap:6px; flex-wrap:wrap; }
-  .bkp-dias label { display:inline-flex; align-items:center; justify-content:center; min-width:46px; padding:7px 8px; border:1.5px solid var(--border); border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; background:var(--surface2); user-select:none; }
-  .bkp-dias label.on { border-color:#1e5959; background:rgba(30,89,89,.12); color:var(--text); }
-  .bkp-dias input { display:none; }
-  .bkp-status { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
-  .bkp-status div { border:1px solid var(--border); border-radius:8px; padding:8px 12px; background:var(--surface); }
-  .bkp-status span { display:block; font-size:10.5px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.4px; }
-  .bkp-status b { font-size:13px; }
-  .bkp-aviso { display:none; position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:700; max-width:720px; width:calc(100% - 32px);
-    background:var(--surface); border:1.5px solid #1e5959; border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,.25); padding:12px 14px; gap:10px; align-items:center; flex-wrap:wrap; font-size:13px; }
-  .bkp-aviso.show { display:flex; }
-  .bkp-aviso > span { flex:1; min-width:220px; }
-  .apd-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
-  @media (max-width:1100px){ .apd-grid2 { grid-template-columns:1fr; } }
-  .apd-pill { background:rgba(30,89,89,.10); border-color:rgba(30,89,89,.35); color:#1e5959; }
-  .theme-dark .apd-pill { color:#7fc4c4; }
-  .apd-mx th, .apd-mx td { white-space:nowrap; }
-  .apd-mx td.num { font-family:'JetBrains Mono',monospace; font-size:12px; }
-  .apd-mx td.f { font-weight:600; cursor:pointer; }
-  .apd-mx td.f:hover { color:#1e5959; text-decoration:underline; }
-  .apd-mx tr.on td { box-shadow:inset 0 0 0 9999px rgba(30,89,89,.06); }
-  .apr-mpbar { display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:12px 14px; margin-bottom:12px; border:1px dashed rgba(30,89,89,.45); border-radius:10px; background:rgba(30,89,89,.04); }
-  .apr-mpbar .field-label { margin:0; }
-  .apr-mp label small { font-size:10.5px; font-weight:600; color:var(--text2); margin-left:2px; }
-  .apr-mp label small.sem { color:var(--orange); }
   .ap-ficha-h h3 { font-size:17px; font-weight:800; letter-spacing:.5px; }
   .ap-ficha-h p { font-size:12px; color:var(--text2); margin-top:3px; }
   .ap-ficha-b { padding:18px 22px; }
@@ -1029,7 +992,7 @@
     <button class="btn" id="btn-tema" onclick="toggleTema()" title="Alternar tema claro/escuro">🌙 Escuro</button>
     <button class="btn" onclick="window.print()">🖨️ Imprimir</button>
     <button class="btn primary" onclick="exportarRelatorio()">📊 Exportar CSV</button>
-    <button class="btn" id="btn-backup" onclick="bkpAbrir()" title="Backup completo · pasta e agendamento">💾 Backup</button>
+    <button class="btn" id="btn-backup" onclick="fazerBackup()" title="Baixar backup completo (JSON) de fornecedores e lançamentos">💾 Backup</button>
     <button class="btn" id="btn-limpar" style="display:none;" onclick="limparLancamentos()" title="Excluir TODOS os lançamentos, mantendo o cadastro dos produtores">🧹 Limpar Lançamentos</button>
     <button class="btn" id="btn-restaurar" style="display:none;" onclick="document.getElementById('restore-file').click()" title="Restaurar o sistema a partir de um arquivo de backup (.json)">♻️ Restaurar</button>
     <input type="file" id="restore-file" accept="application/json,.json" style="display:none" onchange="restaurarBackupArquivo(event)">
@@ -1045,7 +1008,6 @@
   <button class="tab active" data-page="dashboard" onclick="showPage('dashboard')" title="Dashboard"><span class="tab-ico">📊</span><span class="tab-txt">Dashboard</span></button>
   <div class="tabs-sep" role="separator"></div>
   <div class="tabs-group-label">Aproveitamento de Produção</div>
-  <button class="tab" data-page="ap-dashboard" onclick="showPage('ap-dashboard')" title="Dashboard de Aproveitamento — coeficiente e custo pago"><span class="tab-ico">📊</span><span class="tab-txt">Dashboard Aproveitamento</span></button>
   <button class="tab" data-page="ap-lancamentos" onclick="showPage('ap-lancamentos')" title="Tabela de Produção Final"><span class="tab-ico">🧮</span><span class="tab-txt">Lançar Produção</span></button>
   <button class="tab" data-page="ap-analise" onclick="showPage('ap-analise')" title="Análise de Aproveitamento"><span class="tab-ico">📈</span><span class="tab-txt">Análise de Aproveitamento</span></button>
   <button class="tab" data-page="ap-precos" onclick="showPage('ap-precos')" title="Tabela de Preços — fornecedor × produto"><span class="tab-ico">💲</span><span class="tab-txt">Tabela de Preços</span></button>
@@ -2270,58 +2232,6 @@
 
 <!-- ═══════════════════ APROVEITAMENTO DE PRODUÇÃO ═══════════════════ -->
 
-<!-- DASHBOARD DE APROVEITAMENTO -->
-<div class="page" id="page-ap-dashboard">
-  <div style="max-width:1600px;">
-    <div class="pd-alert" data-ap-alert></div>
-    <div class="pd-head">
-      <div><h2>📊 Dashboard de Aproveitamento</h2><p>Coeficiente e custo total pago de janeiro a dezembro · Coeficiente = Custo total ÷ Qtd. cabeças (média ponderada pelas cabeças)</p></div>
-      <div class="pd-head-actions">
-        <select id="apd-ano" class="search-box" style="max-width:110px;" onchange="apRenderDash()"></select>
-        <select id="apd-forn" class="search-box" style="max-width:220px;" onchange="apRenderDash()"></select>
-        <select id="apd-mp" class="search-box" style="max-width:170px;" onchange="apRenderDash()">
-          <option value="">Todas as matérias-primas</option><option value="PUPUNHA">Pupunha</option><option value="JUÇARA">Juçara</option><option value="REAL">Real</option>
-        </select>
-        <button class="btn" onclick="apCarregar(false)" title="Recarregar">🔄 Atualizar</button>
-      </div>
-    </div>
-    <div class="pd-kpis" id="apd-kpis" style="grid-template-columns:repeat(5,1fr);"></div>
-
-    <div class="apd-grid2">
-      <div class="pd-card">
-        <div class="pd-card-h"><div><div class="pd-card-t">Coeficiente médio — Jan a Dez</div><div class="pd-card-st" id="apd-coef-st"></div></div><span class="pd-total-pill apd-pill" id="apd-coef-pill"></span></div>
-        <div class="pd-canvas"><canvas id="apd-coef"></canvas></div>
-      </div>
-      <div class="pd-card">
-        <div class="pd-card-h"><div><div class="pd-card-t">Custo total pago — Jan a Dez</div><div class="pd-card-st" id="apd-custo-st"></div></div><span class="pd-total-pill apd-pill" id="apd-custo-pill"></span></div>
-        <div class="pd-canvas"><canvas id="apd-custo"></canvas></div>
-      </div>
-    </div>
-
-    <div class="apd-grid2">
-      <div class="pd-card">
-        <div class="pd-card-h"><div><div class="pd-card-t">Coeficiente médio por produtor</div><div class="pd-card-st" id="apd-forn-st">Ano inteiro · clique numa barra para filtrar o produtor</div></div>
-          <div class="pd-seg" id="apd-forn-seg"><button data-m="coef" class="active" onclick="apdSetFornModo('coef')">Coeficiente</button><button data-m="custo" onclick="apdSetFornModo('custo')">Custo pago</button></div></div>
-        <div class="pd-canvas" id="apd-forn-wrap"><canvas id="apd-fornchart"></canvas></div>
-      </div>
-      <div class="pd-card">
-        <div class="pd-card-h"><div><div class="pd-card-t">Coeficiente por produto</div><div class="pd-card-st" id="apd-prod-st"></div></div></div>
-        <div class="pd-canvas" id="apd-prod-wrap"><canvas id="apd-prod"></canvas></div>
-      </div>
-    </div>
-
-    <div class="pd-card" style="margin-top:14px;">
-      <div class="pd-card-h">
-        <div><div class="pd-card-t" id="apd-tab-t">Produtor × mês</div><div class="pd-card-st" id="apd-tab-st"></div></div>
-        <div class="pd-seg" id="apd-tab-seg"><button data-m="coef" class="active" onclick="apdSetTabModo('coef')">Coeficiente</button><button data-m="custo" onclick="apdSetTabModo('custo')">Custo pago</button><button data-m="cab" onclick="apdSetTabModo('cab')">Cabeças</button></div>
-      </div>
-      <div class="table-wrap" style="overflow-x:auto;"><table class="pd-table apd-mx">
-        <thead id="apd-tab-thead"></thead><tbody id="apd-tab-tbody"></tbody><tfoot id="apd-tab-tfoot"></tfoot>
-      </table></div>
-    </div>
-  </div>
-</div>
-
 <!-- LANÇAMENTO DE APROVEITAMENTO -->
 <div class="page" id="page-ap-lancamentos">
   <div style="max-width:1600px;">
@@ -2387,7 +2297,7 @@
     <div class="pd-alert" data-ap-alert></div>
     <div class="pd-alert" id="apr-alert"></div>
     <div class="pd-head">
-      <div><h2>💲 Tabela de Preços</h2><p>Custo unitário por fornecedor × matéria-prima × produto · usado automaticamente na Tabela de Produção Final conforme a matéria-prima marcada (pode ser alterado manualmente na ficha)</p></div>
+      <div><h2>💲 Tabela de Preços</h2><p>Custo unitário por fornecedor × produto · usado automaticamente na Tabela de Produção Final (pode ser alterado manualmente na ficha)</p></div>
       <div class="pd-head-actions">
         <button class="btn" onclick="apCarregar(false)" title="Recarregar">🔄</button>
       </div>
@@ -2406,15 +2316,6 @@
           <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;" id="apr-acoes">
             <select class="pd-sel" id="apr-copiar" onchange="aprCopiar(this.value)" title="Preenche a grade com os preços de outro fornecedor (depois é só salvar)"></select>
           </div>
-        </div>
-        <div class="apr-mpbar" id="apr-mpbar" style="display:none;">
-          <label class="field-label">1º · Tipo de matéria-prima <span class="req">*</span></label>
-          <div class="ap-mp apr-mp" id="apr-mp">
-            <label data-mp="PUPUNHA"><input type="radio" name="apr-mp" value="PUPUNHA" onchange="aprSelMp(this.value)"> Pupunha <small></small></label>
-            <label data-mp="JUÇARA"><input type="radio" name="apr-mp" value="JUÇARA" onchange="aprSelMp(this.value)"> Juçara <small></small></label>
-            <label data-mp="REAL"><input type="radio" name="apr-mp" value="REAL" onchange="aprSelMp(this.value)"> Real <small></small></label>
-          </div>
-          <span style="font-size:12px; color:var(--text2);">2º · informe os preços de cada produto abaixo</span>
         </div>
         <div class="table-wrap"><table class="pd-table apr-grade">
           <thead><tr><th>Descrição do produto</th><th class="num" style="width:210px;">Custo unitário</th><th class="c" style="width:150px;">Atualizado em</th><th class="c" style="width:70px;"></th></tr></thead>
@@ -2471,7 +2372,7 @@ total</th>
           <tfoot><tr><td colspan="6" style="text-align:right;">TOTAL</td><td style="text-align:right; font-family:'JetBrains Mono',monospace;" id="apf-tot-vid">0</td><td style="text-align:right;">CUSTO TOTAL</td><td style="text-align:right; font-family:'JetBrains Mono',monospace; color:#1e5959;" id="apf-tot-custo" class="nw">R$ 0,00</td></tr></tfoot>
         </table>
       </div>
-      <div class="ap-nota ap-fat">⚙️ <b>Cálculo:</b> Caixa 0,300 kg = <input class="ap-in ap-fat-in" id="apf-f300" type="number" step="any" min="0" oninput="apCalc()" title="Vidros por caixa 0,300 kg"> vidros · Caixa 1,800 kg = <input class="ap-in ap-fat-in" id="apf-f1800a" type="number" step="any" min="0" oninput="apCalc()" title="1º fator da caixa 1,800 kg"> × <input class="ap-in ap-fat-in" id="apf-f1800b" type="number" step="any" min="0" oninput="apCalc()" title="2º fator da caixa 1,800 kg"> vidros <span id="apf-f1800t" style="font-weight:700;"></span> · Pote 1,800 kg = 6 vidros · Custo unitário automático = Tabela de Preços (fornecedor × matéria-prima × produto) ao preencher o fornecedor, a matéria-prima e a quantidade · se alterar à mão, ↺ volta ao automático</div>
+      <div class="ap-nota ap-fat">⚙️ <b>Cálculo:</b> Caixa 0,300 kg = <input class="ap-in ap-fat-in" id="apf-f300" type="number" step="any" min="0" oninput="apCalc()" title="Vidros por caixa 0,300 kg"> vidros · Caixa 1,800 kg = <input class="ap-in ap-fat-in" id="apf-f1800a" type="number" step="any" min="0" oninput="apCalc()" title="1º fator da caixa 1,800 kg"> × <input class="ap-in ap-fat-in" id="apf-f1800b" type="number" step="any" min="0" oninput="apCalc()" title="2º fator da caixa 1,800 kg"> vidros <span id="apf-f1800t" style="font-weight:700;"></span> · Pote 1,800 kg = 6 vidros · Custo unitário automático = Tabela de Preços (fornecedor × produto) ao preencher o fornecedor e a quantidade · se alterar à mão, ↺ volta ao automático</div>
       <div style="margin-top:14px;"><label class="field-label">Observações</label><input class="form-input" id="apf-obs" placeholder="Opcional"></div>
     </div>
     <div class="ap-ficha-f">
@@ -6285,11 +6186,8 @@ esCarregar(true);
 // ═══════════════════════════════════════════════════════════════════
 const AP_PRODUTOS = ['TOLETE','TOLETE ESPECIAL','PICADO','RODELA','BANDA','PICADÃO','PICADO FARELO','APERITIVO','ROLLETE','ESPAGUETE','LASANHA','CORAÇÃO'];
 const AP_META_PADRAO = 4;
-const AP_MPS = ['PUPUNHA','JUÇARA','REAL'];
-const AP_MP_NOME = { PUPUNHA:'Pupunha', 'JUÇARA':'Juçara', REAL:'Real' };
 const AP = { lista:[], precos:[], precosOk:false, precosErro:null, ok:false, erro:null, carregando:false, carregou:false };
 let aprForn = '';
-let aprMp = '';          // matéria-prima selecionada na Tabela de Preços
 let apEdit = { id:null };
 
 function apNum(v){ const n = parseFloat(String(v==null?'':v).replace(',','.')); return isNaN(n)?0:n; }
@@ -6321,12 +6219,7 @@ async function apCarregar(silencioso){
       pdGetAll('apr_precos','fornecedor.asc,produto.asc').then(r=>({ok:true,r}), e=>({ok:false,e}))
     ]);
     AP.lista = lst.map(apNorm);
-    if(prc.ok){
-      const rr = prc.r||[];
-      AP.precosSemMp = rr.length>0 && !('materia_prima' in rr[0]);   // coluna ainda não criada no Supabase
-      AP.precos = rr.map(x=>{ x.custo_unit=Number(x.custo_unit)||0; x.materia_prima = x.materia_prima||null; return x; });
-      AP.precosOk = true; AP.precosErro = null;
-    }
+    if(prc.ok){ AP.precos = (prc.r||[]).map(x=>{ x.custo_unit=Number(x.custo_unit)||0; return x; }); AP.precosOk = true; AP.precosErro = null; }
     else { AP.precosOk = false; AP.precosErro = prc.e.message; console.error('Preços:', prc.e.message); }
     AP.ok = true; AP.erro = null;
     if(!silencioso) notif('🔄 Aproveitamento atualizado');
@@ -6352,8 +6245,7 @@ function apRenderAlertas(){
 function apRenderAtual(){
   apRenderAlertas();
   const id = pdPaginaAtiva();
-  if(id==='ap-dashboard') apRenderDash();
-  else if(id==='ap-lancamentos') apRenderLanc();
+  if(id==='ap-lancamentos') apRenderLanc();
   else if(id==='ap-analise') apRenderAnalise();
   else if(id==='ap-precos') aprRender();
 }
@@ -6475,7 +6367,6 @@ function apFillForn(atual){
 }
 function apMpMarca(){
   document.querySelectorAll('#apf-mp label').forEach(l=>l.classList.toggle('on', l.querySelector('input').checked));
-  apCalc();   // a matéria-prima muda o preço automático
 }
 // custo unitário em formato contábil R$ 0,00 (digitação da direita para a esquerda)
 function apMoedaFmt(v){ v=Number(v)||0; return 'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
@@ -6485,26 +6376,23 @@ function apMoedaInput(el){
   if(el.closest('#apf-tbody')) el.dataset.man = d ? '1' : '0';   // digitou → manual; apagou → volta ao automático
   if(el.closest('#apr-tbody')) aprMarcaMud(); else apCalc();
 }
-// preço cadastrado para fornecedor × matéria-prima × produto (null se não houver)
-// preços antigos sem matéria-prima valem para qualquer matéria-prima (fallback)
-function apPreco(forn, mp, prod){
-  if(!forn || !prod || !mp) return null;
+// preço cadastrado para fornecedor × produto (null se não houver)
+function apPreco(forn, prod){
+  if(!forn || !prod) return null;
   const f = esNorm(forn), p = esNorm(prod);
-  const doForn = AP.precos.filter(x=>esNorm(x.fornecedor)===f && esNorm(x.produto)===p);
-  const r = doForn.find(x=>x.materia_prima===mp) || doForn.find(x=>!x.materia_prima);
+  const r = AP.precos.find(x=>esNorm(x.fornecedor)===f && esNorm(x.produto)===p);
   return r ? r.custo_unit : null;
 }
 function apCuReset(btn){ const inp = btn.closest('td').querySelector('[data-k="custo_unit"]'); inp.dataset.man='0'; apCalc(); }
 // aplica os preços automáticos na ficha (linhas com quantidade e sem valor manual)
 function apAplicarPrecos(){
   const forn = document.getElementById('apf-forn')?.value || '';
-  const mpSel = apMpSel();
   const fat = apFatForm();
   document.querySelectorAll('#apf-tbody tr').forEach(tr=>{
     const inp = tr.querySelector('[data-k="custo_unit"]'); if(!inp) return;
     const g = k => apNum(tr.querySelector('[data-k="'+k+'"]').value);
     const qtd = apQtdVidro({ caixas_300:g('caixas_300'), vidros_300:g('vidros_300'), caixas_1800:g('caixas_1800'), potes_1800:g('potes_1800'), fat });
-    const preco = apPreco(forn, mpSel, tr.dataset.desc);
+    const preco = apPreco(forn, tr.dataset.desc);
     const man = inp.dataset.man==='1';
     if(!man) inp.value = (qtd>0 && preco!=null) ? apMoedaFmt(preco) : '';
     const valor = apMoedaParse(inp.value);
@@ -6512,7 +6400,7 @@ function apAplicarPrecos(){
     const difere = man && preco!=null && Math.abs(valor-preco)>0.004;
     inp.classList.toggle('auto', auto);
     inp.classList.toggle('man', difere);
-    inp.title = auto ? 'Preço automático da Tabela de Preços' : (preco!=null ? 'Tabela de Preços: '+apMoedaFmt(preco)+(difere?' · valor alterado manualmente':'') : (!forn ? 'Selecione o fornecedor para trazer o preço automático' : !mpSel ? 'Selecione a matéria-prima para trazer o preço automático' : 'Sem preço cadastrado para este fornecedor, matéria-prima e produto'));
+    inp.title = auto ? 'Preço automático da Tabela de Preços' : (preco!=null ? 'Tabela de Preços: '+apMoedaFmt(preco)+(difere?' · valor alterado manualmente':'') : (forn?'Sem preço cadastrado para este fornecedor e produto':'Selecione o fornecedor para trazer o preço automático'));
     const rs = tr.querySelector('.ap-cu-rs'); if(rs) rs.style.visibility = (man && preco!=null && qtd>0 && difere) ? 'visible' : 'hidden';
   });
 }
@@ -6700,15 +6588,13 @@ function apPrintGerar(ori){
   win.document.write(html); win.document.close();
   apPrintFechar();
 }
-// ═══════════════ TABELA DE PREÇOS (fornecedor × matéria-prima × produto) ═══════════════
+// ═══════════════ TABELA DE PREÇOS ═══════════════
 function aprFornecedores(){
   const nomes = new Set(fornecedores.filter(f=>f.status==='ativo').map(f=>f.nome));
   AP.precos.forEach(x=>nomes.add(x.fornecedor));
   return [...nomes].filter(Boolean).sort((a,b)=>a.localeCompare(b,'pt-BR'));
 }
-// mp vazio = todos os preços do fornecedor
-function aprPrecosDe(forn, mp){ const f = esNorm(forn); return AP.precos.filter(x=>esNorm(x.fornecedor)===f && (!mp || x.materia_prima===mp)); }
-function aprMsgColuna(){ return '❌ A coluna <b>materia_prima</b> ainda não existe na tabela de preços. Rode o script <code>precos_materia_prima.sql</code> no SQL Editor do Supabase e clique em 🔄.'; }
+function aprPrecosDe(forn){ const f = esNorm(forn); return AP.precos.filter(x=>esNorm(x.fornecedor)===f); }
 function aprRender(){
   const al = document.getElementById('apr-alert');
   let html = '';
@@ -6716,75 +6602,46 @@ function aprRender(){
     html = /42P01|PGRST20|does not exist|schema cache/i.test(AP.precosErro)
       ? '❌ A tabela de preços ainda não existe no Supabase. Rode o script <code>precos_supabase.sql</code> no SQL Editor e clique em 🔄.'
       : '⚠️ Não foi possível carregar os preços: '+pdEsc(AP.precosErro.slice(0,200));
-  } else if(AP.precosSemMp) html = aprMsgColuna();
+  }
   if(al){ al.innerHTML = html; al.classList.toggle('show', !!html); }
   const forns = aprFornecedores();
   const comPreco = new Set(AP.precos.map(x=>esNorm(x.fornecedor)));
   const nPrecos = AP.precos.length;
   document.getElementById('apr-kpis').innerHTML =
-    esKpi('Preços cadastrados', nPrecos, 'fornecedor × matéria-prima × produto', '#1e5959') +
+    esKpi('Preços cadastrados', nPrecos, 'fornecedor × produto', '#1e5959') +
     esKpi('Fornecedores com preço', forns.filter(f=>comPreco.has(esNorm(f))).length, 'de '+forns.length+' fornecedor(es)') +
     esKpi('Sem preço', forns.filter(f=>!comPreco.has(esNorm(f))).length, 'fornecedores sem tabela', 'var(--orange)') +
-    esKpi('Produtos', AP_PRODUTOS.length, 'por matéria-prima ('+AP_MPS.length+' tipos)');
+    esKpi('Produtos', AP_PRODUTOS.length, 'na Tabela de Produção Final');
   aprRenderLista(); aprRenderGrade();
 }
 function aprRenderLista(){
   const el = document.getElementById('apr-forns'); if(!el) return;
   const q = esNorm((document.getElementById('apr-busca').value||'').trim()), soSem = document.getElementById('apr-so-sem').checked;
   const lista = aprFornecedores().filter(f=>(!q || esNorm(f).includes(q)) && (!soSem || !aprPrecosDe(f).length));
-  el.innerHTML = lista.length ? lista.map(f=>{
-    const pr = aprPrecosDe(f), n = pr.length;
-    const mps = AP_MPS.filter(m=>pr.some(x=>x.materia_prima===m)).map(m=>AP_MP_NOME[m]).join(', ');
-    return '<div class="apr-forn'+(f===aprForn?' on':'')+'" data-f="'+pdEsc(f)+'" onclick="aprSelForn(this.dataset.f)" title="'+(mps?'Com preço: '+pdEsc(mps):'Sem preço cadastrado')+'"><span>'+pdEsc(f)+'</span><small class="'+(n?'':'sem')+'">'+(n?n+' preço'+(n>1?'s':''):'sem preço')+'</small></div>'; }).join('')
+  el.innerHTML = lista.length ? lista.map(f=>{ const n = aprPrecosDe(f).length;
+    return '<div class="apr-forn'+(f===aprForn?' on':'')+'" data-f="'+pdEsc(f)+'" onclick="aprSelForn(this.dataset.f)"><span>'+pdEsc(f)+'</span><small class="'+(n?'':'sem')+'">'+(n?n+' preço'+(n>1?'s':''):'sem preço')+'</small></div>'; }).join('')
     : '<div style="font-size:12px; color:var(--text2); padding:10px;">'+(AP.carregou?'Nenhum fornecedor encontrado':'Carregando...')+'</div>';
 }
 function aprSelForn(f){
-  if(f!==aprForn && aprMudancas() && !confirm('Há preços alterados e não salvos para '+aprForn+' ('+AP_MP_NOME[aprMp]+'). Descartar?')) return;
+  if(f!==aprForn && aprMudancas() && !confirm('Há preços alterados e não salvos para '+aprForn+'. Descartar?')) return;
   aprForn = f; aprRenderLista(); aprRenderGrade();
-}
-function aprSelMp(mp){
-  if(mp!==aprMp && aprMudancas() && !confirm('Há preços alterados e não salvos para '+AP_MP_NOME[aprMp]+'. Descartar?')){
-    document.querySelectorAll('input[name="apr-mp"]').forEach(r=>{ r.checked = r.value===aprMp; }); return;
-  }
-  aprMp = mp; aprRenderGrade();
-}
-function aprMarcaMpBar(){
-  const bar = document.getElementById('apr-mpbar'); if(!bar) return;
-  bar.style.display = aprForn ? '' : 'none';
-  if(!aprForn) return;
-  bar.querySelectorAll('label[data-mp]').forEach(l=>{
-    const m = l.dataset.mp, n = aprPrecosDe(aprForn, m).length;
-    l.querySelector('input').checked = m===aprMp;
-    l.classList.toggle('on', m===aprMp);
-    const sm = l.querySelector('small'); sm.textContent = n ? '('+n+')' : '(sem preço)'; sm.className = n ? '' : 'sem';
-  });
 }
 function aprRenderGrade(){
   const tb = document.getElementById('apr-tbody'); if(!tb) return;
   const cp = document.getElementById('apr-copiar');
-  aprMarcaMpBar();
   if(!aprForn){
     document.getElementById('apr-tit').textContent = 'Selecione um fornecedor';
     document.getElementById('apr-st').textContent = 'Escolha um fornecedor na lista para cadastrar os preços';
     tb.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:36px; color:var(--text2);">← Selecione um fornecedor</td></tr>';
     cp.style.display = 'none'; document.getElementById('apr-mud').textContent = ''; return;
   }
-  document.getElementById('apr-tit').textContent = aprForn + (aprMp ? ' · '+AP_MP_NOME[aprMp] : '');
-  if(!aprMp){
-    document.getElementById('apr-st').textContent = 'Selecione o tipo de matéria-prima para cadastrar os preços';
-    tb.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:36px; color:var(--text2);">↑ Primeiro selecione o tipo de matéria-prima (Pupunha, Juçara ou Real)</td></tr>';
-    cp.style.display = 'none'; document.getElementById('apr-mud').textContent = ''; return;
-  }
-  const precos = aprPrecosDe(aprForn, aprMp);
+  const precos = aprPrecosDe(aprForn);
   const prods = AP_PRODUTOS.slice(); precos.forEach(x=>{ if(!prods.includes(x.produto)) prods.push(x.produto); });
-  document.getElementById('apr-st').textContent = precos.length+' de '+prods.length+' produto(s) com preço para '+AP_MP_NOME[aprMp]+' · deixe em branco para não ter preço automático';
-  // copiar: outra matéria-prima do mesmo fornecedor ou outro fornecedor (mesma matéria-prima)
-  const outrasMp = AP_MPS.filter(m=>m!==aprMp && aprPrecosDe(aprForn, m).length);
-  const outrosF = [...new Set(AP.precos.filter(x=>x.materia_prima===aprMp).map(x=>x.fornecedor))].filter(f=>esNorm(f)!==esNorm(aprForn)).sort((a,b)=>a.localeCompare(b,'pt-BR'));
-  cp.style.display = (outrasMp.length || outrosF.length) ? '' : 'none';
-  cp.innerHTML = '<option value="">📋 Copiar preços de...</option>'+
-    (outrasMp.length ? '<optgroup label="Outra matéria-prima deste fornecedor">'+outrasMp.map(m=>'<option value="mp:'+m+'">'+AP_MP_NOME[m]+'</option>').join('')+'</optgroup>' : '')+
-    (outrosF.length ? '<optgroup label="Outro fornecedor ('+AP_MP_NOME[aprMp]+')">'+outrosF.map(f=>'<option value="f:'+pdEsc(f)+'">'+pdEsc(f)+'</option>').join('')+'</optgroup>' : '');
+  document.getElementById('apr-tit').textContent = aprForn;
+  document.getElementById('apr-st').textContent = precos.length+' de '+prods.length+' produto(s) com preço · deixe em branco para não ter preço automático';
+  const outros = [...new Set(AP.precos.map(x=>x.fornecedor))].filter(f=>esNorm(f)!==esNorm(aprForn)).sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  cp.style.display = outros.length ? '' : 'none';
+  cp.innerHTML = '<option value="">📋 Copiar preços de...</option>'+outros.map(f=>'<option value="'+pdEsc(f)+'">'+pdEsc(f)+'</option>').join('');
   tb.innerHTML = prods.map(prod=>{
     const r = precos.find(x=>x.produto===prod);
     const v = r ? apMoedaFmt(r.custo_unit) : '';
@@ -6807,438 +6664,39 @@ function aprMudancas(){
 function aprMarcaMud(){ const n = aprMudancas(); const el = document.getElementById('apr-mud'); if(el) el.textContent = n ? '● '+n+' alteração(ões) não salva(s)' : ''; }
 function aprCopiar(origem){
   if(!origem) return;
-  let src, nome;
-  if(origem.startsWith('mp:')){ const m = origem.slice(3); src = aprPrecosDe(aprForn, m); nome = AP_MP_NOME[m]+' de '+aprForn; }
-  else { const f = origem.slice(2); src = aprPrecosDe(f, aprMp); nome = f+' ('+AP_MP_NOME[aprMp]+')'; }
+  const src = aprPrecosDe(origem);
   document.querySelectorAll('#apr-tbody tr[data-prod]').forEach(tr=>{ const r = src.find(x=>x.produto===tr.dataset.prod); if(r) tr.querySelector('input').value = apMoedaFmt(r.custo_unit); });
   document.getElementById('apr-copiar').value = '';
-  aprMarcaMud(); notif('📋 Preços de '+nome+' copiados — confira e clique em Salvar');
+  aprMarcaMud(); notif('📋 Preços de '+origem+' copiados — confira e clique em Salvar');
 }
 async function aprSalvar(){
   if(!aprForn) return notif('Selecione um fornecedor', false);
-  if(!aprMp) return notif('Selecione o tipo de matéria-prima', false);
   if(!AP.precosOk) return notif('Tabela de preços indisponível — rode o precos_supabase.sql no Supabase', false);
-  const precos = aprPrecosDe(aprForn, aprMp), ups = [], dels = [];
+  const precos = aprPrecosDe(aprForn), ups = [], dels = [];
   document.querySelectorAll('#apr-tbody tr[data-prod]').forEach(tr=>{
     const prod = tr.dataset.prod, v = apMoedaParse(tr.querySelector('input').value), r = precos.find(x=>x.produto===prod);
-    if(v>0 && (!r || Math.abs(r.custo_unit-v)>0.004)) ups.push({ fornecedor:aprForn, materia_prima:aprMp, produto:prod, custo_unit:v, updated_at:new Date().toISOString() });
+    if(v>0 && (!r || Math.abs(r.custo_unit-v)>0.004)) ups.push({ fornecedor:aprForn, produto:prod, custo_unit:v, updated_at:new Date().toISOString() });
     else if(!(v>0) && r) dels.push(r.id);
   });
   if(!ups.length && !dels.length) return notif('Nenhuma alteração para salvar');
   barNuvem(true);
   try{
     if(ups.length){
-      const r = await pdApi('apr_precos?on_conflict=fornecedor,materia_prima,produto', { method:'POST',
+      const r = await pdApi('apr_precos?on_conflict=fornecedor,produto', { method:'POST',
         headers:Object.assign({}, SUPA_H, { 'Prefer':'resolution=merge-duplicates,return=representation' }), body:JSON.stringify(ups) });
-      (r||[]).forEach(n=>{ n.custo_unit = Number(n.custo_unit)||0; const i = AP.precos.findIndex(x=>x.id==n.id || (x.fornecedor===n.fornecedor && x.materia_prima===n.materia_prima && x.produto===n.produto)); if(i>=0) AP.precos[i]=n; else AP.precos.push(n); });
+      (r||[]).forEach(n=>{ n.custo_unit = Number(n.custo_unit)||0; const i = AP.precos.findIndex(x=>x.id==n.id || (x.fornecedor===n.fornecedor && x.produto===n.produto)); if(i>=0) AP.precos[i]=n; else AP.precos.push(n); });
     }
     if(dels.length){
       await pdApi('apr_precos?id=in.('+dels.join(',')+')', { method:'DELETE', headers:SUPA_H });
       AP.precos = AP.precos.filter(x=>!dels.includes(x.id));
     }
-    notif('✅ Preços de '+aprForn+' · '+AP_MP_NOME[aprMp]+' salvos ('+ups.length+' atualizado(s), '+dels.length+' removido(s))');
+    notif('✅ Preços de '+aprForn+' salvos ('+ups.length+' atualizado(s), '+dels.length+' removido(s))');
     aprRender();
     if(document.getElementById('ap-modal').classList.contains('open')) apCalc();
-  }catch(e){
-    if(/materia_prima|42P10|no unique or exclusion constraint/i.test(e.message)){
-      const al = document.getElementById('apr-alert'); if(al){ al.innerHTML = aprMsgColuna(); al.classList.add('show'); }
-      notif('❌ Rode o script precos_materia_prima.sql no Supabase antes de salvar', false);
-    } else notif('❌ Erro ao salvar preços: '+e.message.slice(0,140), false);
-  }
+  }catch(e){ notif('❌ Erro ao salvar preços: '+e.message.slice(0,140), false); }
   finally{ barNuvem(false); }
 }
-
-// ═══════════════ DASHBOARD DE APROVEITAMENTO ═══════════════
-let apdFornModo = 'coef', apdTabModo = 'coef';
-const APD_COR = '#1e5959', APD_COR_DK = '#5fb3b3';
-function apdCor(){ return pdDark() ? APD_COR_DK : APD_COR; }
-function apdRgba(a){ return pdDark() ? 'rgba(95,179,179,'+a+')' : 'rgba(30,89,89,'+a+')'; }
-function apdSetFornModo(m){ apdFornModo = m; document.querySelectorAll('#apd-forn-seg button').forEach(b=>b.classList.toggle('active', b.dataset.m===m)); apRenderDash(); }
-function apdSetTabModo(m){ apdTabModo = m; document.querySelectorAll('#apd-tab-seg button').forEach(b=>b.classList.toggle('active', b.dataset.m===m)); apRenderDash(); }
-function apdFiltrarForn(f){ const s = document.getElementById('apd-forn'); s.value = (s.value===f ? '' : f); apRenderDash(); }
-// soma custo e cabeças por mês (0..11)
-function apdMeses(rows){
-  const m = Array.from({length:12}, ()=>({ custo:0, cab:0, n:0, meta:0, nMeta:0 }));
-  rows.forEach(p=>{ const i = parseInt(String(p.data).slice(5,7))-1; if(i<0||i>11) return;
-    m[i].custo += p.custo_total||0; m[i].cab += p.qtd_cabecas||0; m[i].n++;
-    if(p.meta!=null){ m[i].meta += p.meta; m[i].nMeta++; } });
-  return m;
-}
-function apdValorItem(it){ const v = apNum(it.valor_total); return v || esR2(apQtdVidro(it)*apNum(it.custo_unit)); }
-function apRenderDash(){
-  if(!document.getElementById('apd-kpis')) return;
-  apFillAno('apd-ano');
-  const selA = document.getElementById('apd-ano');
-  if(!selA.value){ selA.value = String(new Date().getFullYear()); }
-  const ano = selA.value, mp = document.getElementById('apd-mp').value;
-  const doAno = AP.lista.filter(p=>String(p.data).startsWith(ano) && (!mp || p.materia_prima===mp));
-  // produtores
-  const selF = document.getElementById('apd-forn'), atualF = selF.value;
-  const nomes = [...new Set(AP.lista.map(p=>p.fornecedor).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
-  selF.innerHTML = '<option value="">Todos os produtores</option>' + nomes.map(n=>'<option value="'+pdEsc(n)+'">'+pdEsc(n)+'</option>').join('');
-  selF.value = nomes.includes(atualF) ? atualF : '';
-  const forn = selF.value;
-  const rows = doAno.filter(p=>!forn || p.fornecedor===forn);
-  const quem = forn ? forn : 'Todos os produtores';
-  const sub = quem+' · '+ano+(mp?' · '+AP_MP_NOME[mp]:'');
-
-  // KPIs
-  const t = apTotais(rows), coefG = t.cab>0 ? t.custo/t.cab : null;
-  const metas = rows.map(p=>p.meta).filter(v=>v!=null), metaMed = metas.length ? metas.reduce((a,b)=>a+b,0)/metas.length : null;
-  document.getElementById('apd-kpis').innerHTML =
-    esKpi('Coeficiente médio', apCoefTxt(coefG), 'custo total ÷ cabeças · '+ano, '#1e5959') +
-    esKpi('Custo total pago', esR(t.custo), rows.length+' produç'+(rows.length===1?'ão':'ões'), '#1e5959') +
-    esKpi('Nº de cabeças', pdN(t.cab,0), pdN(t.vid,0)+' vidros 0,300') +
-    esKpi('Produtores', t.forn.size, forn ? 'filtrado' : 'com produção no ano') +
-    esKpi('Meta média', metaMed==null?'—':pdN(metaMed,4), metaMed&&coefG!=null ? 'coef. = '+pdN(coefG/metaMed*100,1)+'% da meta' : 'informada nas produções');
-
-  if(!pdChartBase()) return;
-  const meses = apdMeses(rows);
-  const lbl = PD_MESES.map(m=>m.slice(0,3));
-  const coefM = meses.map(m=>m.cab>0 ? m.custo/m.cab : null);
-  const metaM = meses.map(m=>m.nMeta ? m.meta/m.nMeta : null);
-  const grid = { color: pdVar('--border') }, semGrid = { display:false };
-  const tt = pdTooltip();
-
-  // 1) Coeficiente médio Jan–Dez
-  document.getElementById('apd-coef-st').textContent = sub;
-  document.getElementById('apd-coef-pill').textContent = 'Ano: '+apCoefTxt(coefG);
-  if(!rows.length) pdChartVazio('apd-coef', AP.carregou ? 'Nenhuma produção em '+ano : 'Carregando...');
-  else {
-    const ds = [{ label:'Coeficiente médio', data:coefM, borderColor:apdCor(), backgroundColor:apdRgba(.12), fill:true, borderWidth:2, tension:0, spanGaps:true,
-      pointRadius:4, pointHoverRadius:6, pointBackgroundColor:apdCor(), pointBorderColor:pdVar('--surface'), pointBorderWidth:2 }];
-    if(metaM.some(v=>v!=null)) ds.push({ label:'Meta (média)', data:metaM, borderColor:pdVar('--text2'), borderDash:[5,4], borderWidth:1.5, pointRadius:0, fill:false, spanGaps:true });
-    pdChart('apd-coef', { type:'line', data:{ labels:lbl, datasets:ds },
-      options:{ responsive:true, maintainAspectRatio:false, interaction:{ mode:'index', intersect:false },
-        plugins:{ legend:{ display:ds.length>1, position:'bottom', labels:{ usePointStyle:true, boxWidth:8 } },
-          tooltip:Object.assign({}, tt, { callbacks:{ title:it=>PD_MESES[it[0].dataIndex]+' / '+ano,
-            label:c=> c.raw==null ? null : c.dataset.label+': '+pdN(c.raw,4),
-            afterBody:it=>{ const m = meses[it[0].dataIndex]; return m.n ? [esR(m.custo)+' ÷ '+pdN(m.cab,0)+' cabeças', m.n+' produç'+(m.n===1?'ão':'ões')] : ['Sem produção']; } } }) },
-        scales:{ x:{ grid:semGrid }, y:{ grid, beginAtZero:false, ticks:{ callback:v=>pdN(v,2) }, title:{ display:true, text:'R$ por cabeça' } } } } });
-  }
-
-  // 2) Custo total pago Jan–Dez
-  document.getElementById('apd-custo-st').textContent = sub;
-  document.getElementById('apd-custo-pill').textContent = 'Ano: '+esR(t.custo);
-  if(!rows.length) pdChartVazio('apd-custo', AP.carregou ? 'Nenhuma produção em '+ano : 'Carregando...');
-  else pdChart('apd-custo', { type:'bar', data:{ labels:lbl, datasets:[{ label:'Custo total pago', data:meses.map(m=>esR2(m.custo)), backgroundColor:apdCor(), borderRadius:4, maxBarThickness:38 }] },
-      options:{ responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ display:false }, tooltip:Object.assign({}, tt, { callbacks:{ title:it=>PD_MESES[it[0].dataIndex]+' / '+ano, label:c=>'Custo pago: '+esR(c.raw),
-          afterLabel:c=>{ const m = meses[c.dataIndex]; return m.n ? pdN(m.cab,0)+' cabeças · '+m.n+' produç'+(m.n===1?'ão':'ões') : ''; } } }) },
-        scales:{ x:{ grid:semGrid }, y:{ grid, beginAtZero:true, ticks:{ callback:v=>'R$ '+pdN(v,0) } } } } });
-
-  // 3) Por produtor (ano inteiro, todos os produtores)
-  const porF = {};
-  doAno.forEach(p=>{ const f = p.fornecedor||'—'; (porF[f] = porF[f] || { custo:0, cab:0, n:0 }); porF[f].custo += p.custo_total||0; porF[f].cab += p.qtd_cabecas||0; porF[f].n++; });
-  let fl = Object.entries(porF).map(([f,v])=>({ f, custo:v.custo, cab:v.cab, n:v.n, coef: v.cab>0 ? v.custo/v.cab : 0 }));
-  const kF = apdFornModo==='coef' ? 'coef' : 'custo';
-  fl.sort((a,b)=>b[kF]-a[kF]);
-  document.getElementById('apd-forn-st').textContent = ano+(mp?' · '+AP_MP_NOME[mp]:'')+' · '+fl.length+' produtor(es) · clique numa barra para filtrar';
-  const wrapF = document.getElementById('apd-forn-wrap'); wrapF.style.height = Math.max(300, fl.length*26+40)+'px';
-  if(!fl.length) pdChartVazio('apd-fornchart', AP.carregou ? 'Nenhuma produção em '+ano : 'Carregando...');
-  else pdChart('apd-fornchart', { type:'bar', data:{ labels:fl.map(x=>x.f), datasets:[{ label: kF==='coef'?'Coeficiente médio':'Custo total pago',
-      data:fl.map(x=>kF==='coef' ? Math.round(x.coef*1e4)/1e4 : esR2(x.custo)),
-      backgroundColor:fl.map(x=>!forn || x.f===forn ? apdCor() : apdRgba(.28)), borderRadius:4, maxBarThickness:20 }] },
-    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
-      onClick:(e,els)=>{ if(els.length) apdFiltrarForn(fl[els[0].index].f); },
-      onHover:(e,els)=>{ e.native.target.style.cursor = els.length ? 'pointer' : 'default'; },
-      plugins:{ legend:{ display:false }, tooltip:Object.assign({}, tt, { callbacks:{
-        label:c=>{ const x = fl[c.dataIndex]; return ['Coeficiente: '+apCoefTxt(x.cab>0?x.coef:null), 'Custo pago: '+esR(x.custo), pdN(x.cab,0)+' cabeças · '+x.n+' produç'+(x.n===1?'ão':'ões')]; } } }) },
-      scales:{ x:{ grid, beginAtZero:true, ticks:{ callback:v=> kF==='coef' ? pdN(v,2) : 'R$ '+pdN(v,0) } }, y:{ grid:semGrid, ticks:{ autoSkip:false } } } } });
-
-  // 4) Coeficiente por produto = valor pago no produto ÷ cabeças (a soma dos produtos = coeficiente geral)
-  const porP = {};
-  rows.forEach(p=>(p.itens||[]).forEach(it=>{ const v = apdValorItem(it); if(!v) return; porP[it.descricao] = (porP[it.descricao]||0) + v; }));
-  const pl = Object.entries(porP).map(([d,v])=>({ d, v, coef: t.cab>0 ? v/t.cab : 0 })).sort((a,b)=>b.v-a.v);
-  const totP = pl.reduce((a,x)=>a+x.v,0);
-  document.getElementById('apd-prod-st').textContent = sub+' · valor pago no produto ÷ cabeças (soma = coeficiente geral)';
-  document.getElementById('apd-prod-wrap').style.height = Math.max(300, pl.length*28+40)+'px';
-  if(!pl.length) pdChartVazio('apd-prod', AP.carregou ? 'Nenhuma produção em '+ano : 'Carregando...');
-  else pdChart('apd-prod', { type:'bar', data:{ labels:pl.map(x=>x.d), datasets:[{ label:'Coeficiente do produto', data:pl.map(x=>Math.round(x.coef*1e4)/1e4), backgroundColor:apdCor(), borderRadius:4, maxBarThickness:20 }] },
-    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ display:false }, tooltip:Object.assign({}, tt, { callbacks:{
-        label:c=>{ const x = pl[c.dataIndex]; return ['Coeficiente: '+pdN(x.coef,4), 'Custo pago: '+esR(x.v)+' ('+pdN(totP?x.v/totP*100:0,1)+'%)']; } } }) },
-      scales:{ x:{ grid, beginAtZero:true, ticks:{ callback:v=>pdN(v,2) } }, y:{ grid:semGrid, ticks:{ autoSkip:false } } } } });
-
-  // 5) Tabela produtor × mês
-  const modo = apdTabModo;
-  const tit = { coef:'Coeficiente médio', custo:'Custo total pago', cab:'Nº de cabeças' }[modo];
-  document.getElementById('apd-tab-t').textContent = tit+' por produtor — Jan a Dez';
-  document.getElementById('apd-tab-st').textContent = ano+(mp?' · '+AP_MP_NOME[mp]:'')+' · clique no produtor para filtrar os gráficos';
-  document.getElementById('apd-tab-thead').innerHTML = '<tr><th>Produtor</th>'+lbl.map(m=>'<th class="num">'+m+'</th>').join('')+'<th class="num">Ano</th></tr>';
-  const fmtV = (custo,cab)=> modo==='coef' ? (cab>0 ? pdN(custo/cab,4) : '') : modo==='custo' ? (custo ? esR(custo) : '') : (cab ? pdN(cab,0) : '');
-  const valNum = (custo,cab)=> modo==='coef' ? (cab>0 ? custo/cab : null) : modo==='custo' ? custo : cab;
-  const fNomes = Object.keys(porF).sort((a,b)=>a.localeCompare(b,'pt-BR'));
-  const matriz = fNomes.map(f=>({ f, m: apdMeses(doAno.filter(p=>(p.fornecedor||'—')===f)) }));
-  const todosV = []; matriz.forEach(r=>r.m.forEach(x=>{ if(x.n){ const v = valNum(x.custo,x.cab); if(v!=null) todosV.push(v); } }));
-  const vMin = todosV.length ? Math.min(...todosV) : 0, vMax = todosV.length ? Math.max(...todosV) : 0;
-  const shade = v=>{ if(v==null || vMax===vMin) return ''; const a = .05 + .30*(v-vMin)/(vMax-vMin); return 'background:'+apdRgba(a.toFixed(3))+';'; };
-  const tb = document.getElementById('apd-tab-tbody');
-  if(!matriz.length){
-    tb.innerHTML = '<tr><td colspan="14" style="text-align:center; padding:30px; color:var(--text2);">'+(AP.carregou?'Nenhuma produção em '+ano:'Carregando...')+'</td></tr>';
-    document.getElementById('apd-tab-tfoot').innerHTML = '';
-  } else {
-    tb.innerHTML = matriz.map(r=>{
-      const tc = r.m.reduce((a,x)=>a+x.custo,0), tcab = r.m.reduce((a,x)=>a+x.cab,0);
-      return '<tr class="'+(r.f===forn?'on':'')+'"><td class="f" data-f="'+pdEsc(r.f)+'" onclick="apdFiltrarForn(this.dataset.f)">'+pdEsc(r.f)+'</td>'+
-        r.m.map(x=>'<td class="num" style="'+(x.n?shade(valNum(x.custo,x.cab)):'')+'">'+(x.n?fmtV(x.custo,x.cab):'<span style="color:var(--text2)">·</span>')+'</td>').join('')+
-        '<td class="num" style="font-weight:700;">'+fmtV(tc,tcab)+'</td></tr>';
-    }).join('');
-    const mt = apdMeses(doAno), tc = mt.reduce((a,x)=>a+x.custo,0), tcab = mt.reduce((a,x)=>a+x.cab,0);
-    document.getElementById('apd-tab-tfoot').innerHTML = '<tr><td>'+(modo==='coef'?'MÉDIA GERAL':'TOTAL')+'</td>'+mt.map(x=>'<td class="num">'+fmtV(x.custo,x.cab)+'</td>').join('')+'<td class="num">'+fmtV(tc,tcab)+'</td></tr>';
-  }
-}
-// re-desenha os gráficos ao trocar tema claro/escuro
-new MutationObserver(()=>{ if(pdPaginaAtiva()==='ap-dashboard') apRenderDash(); })
-  .observe(document.documentElement, { attributes:true, attributeFilter:['class'] });
 apCarregar(true);
-</script>
-
-<!-- MODAL: BACKUP (manual + pasta + agendamento) -->
-<div id="bkp-modal" class="edit-modal-overlay" style="z-index:640;">
-  <div class="edit-modal" style="max-width:600px;">
-    <div class="edit-modal-header"><div><h3 style="font-size:16px; font-weight:700;">💾 Backup</h3><div style="font-size:12px; color:var(--text2); margin-top:3px;">Cópia completa de todos os módulos (produtores, lançamentos, produção, estoque, aproveitamento e preços)</div></div><button class="modal-close" onclick="bkpFechar()">✕</button></div>
-    <div class="edit-modal-body">
-      <div class="bkp-sec">
-        <div class="bkp-t">📁 Pasta de destino</div>
-        <div class="bkp-row">
-          <div class="bkp-pasta" id="bkp-pasta">Nenhuma pasta escolhida</div>
-          <button class="btn" onclick="bkpEscolherPasta()">📁 Escolher pasta</button>
-          <button class="btn" id="bkp-btn-limpar-pasta" onclick="bkpLimparPasta()" title="Esquecer a pasta escolhida" style="display:none;">✕</button>
-        </div>
-        <div class="bkp-nota" id="bkp-pasta-nota"></div>
-      </div>
-      <div class="bkp-sec">
-        <div class="bkp-t">⏰ Backup programado</div>
-        <label class="bkp-chk"><input type="checkbox" id="bkp-ativo" onchange="bkpSalvarCfg()"> Fazer backup automático</label>
-        <div class="bkp-grid">
-          <div><label class="field-label">Dias da semana</label>
-            <div class="bkp-dias" id="bkp-dias"></div></div>
-          <div><label class="field-label">Horário</label><input type="time" class="form-input" id="bkp-hora" value="18:00" onchange="bkpSalvarCfg()" style="max-width:130px;"></div>
-          <div><label class="field-label">Manter na pasta</label>
-            <select class="form-input" id="bkp-manter" onchange="bkpSalvarCfg()" style="max-width:190px;">
-              <option value="0">Todos os backups</option><option value="7">Últimos 7</option><option value="15">Últimos 15</option><option value="30">Últimos 30</option><option value="60">Últimos 60</option><option value="90">Últimos 90</option>
-            </select></div>
-        </div>
-        <div class="bkp-status" id="bkp-status"></div>
-        <div class="bkp-nota">O agendamento roda neste computador enquanto o sistema estiver aberto no navegador. Se o sistema estiver fechado no horário, o backup é feito assim que ele for aberto de novo.</div>
-      </div>
-    </div>
-    <div class="ap-ficha-f" style="border-radius:0 0 16px 16px;">
-      <button class="btn" onclick="bkpExecutar('download')" title="Baixa o arquivo na pasta Downloads">⬇️ Baixar agora</button>
-      <button class="btn-save green" onclick="bkpExecutar('manual')">💾 Fazer backup agora na pasta</button>
-    </div>
-  </div>
-</div>
-<!-- aviso: pasta precisa de autorização -->
-<div id="bkp-aviso" class="bkp-aviso"><span id="bkp-aviso-txt"></span><button class="btn-save green" onclick="bkpAutorizarESalvar()">✅ Autorizar e salvar</button><button class="btn" onclick="bkpAvisoFechar()">Agora não</button></div>
-
-<script>
-// ═══════════════════════════════════════════════════════════════════
-//  BACKUP — completo, em pasta escolhida e com agendamento
-//  Pasta: File System Access API (Chrome/Edge); a pasta fica guardada no
-//  IndexedDB deste navegador. Agenda: localStorage deste computador.
-// ═══════════════════════════════════════════════════════════════════
-const BKP_TABELAS = ['fornecedores','lancamentos','prod_materias','prod_vidros','prod_produtos','prod_lancamentos','prod_metas','prod_feriados',
-  'est_subgrupos','est_produtos','est_entradas','est_saidas','apr_producoes','apr_precos'];
-const BKP_OBRIG = ['fornecedores','lancamentos'];
-const BKP_DIAS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-const BKP_CFG_KEY = 'bds_backup_cfg', BKP_ULT_KEY = 'bds_backup_ultimo', BKP_LOCK_KEY = 'bds_backup_lock';
-const BKP_FS = typeof window.showDirectoryPicker === 'function';
-let bkpPasta = null, bkpRodando = false, bkpPendente = false;
-
-// ── IndexedDB (guarda a pasta escolhida) ──
-function bkpIdb(){ return new Promise((ok,er)=>{ const r = indexedDB.open('bds_backup',1); r.onupgradeneeded = ()=>r.result.createObjectStore('kv'); r.onsuccess = ()=>ok(r.result); r.onerror = ()=>er(r.error); }); }
-async function bkpIdbGet(k){ const db = await bkpIdb(); return new Promise((ok,er)=>{ const r = db.transaction('kv').objectStore('kv').get(k); r.onsuccess = ()=>ok(r.result); r.onerror = ()=>er(r.error); }); }
-async function bkpIdbSet(k,v){ const db = await bkpIdb(); return new Promise((ok,er)=>{ const t = db.transaction('kv','readwrite'); v===undefined ? t.objectStore('kv').delete(k) : t.objectStore('kv').put(v,k); t.oncomplete = ()=>ok(); t.onerror = ()=>er(t.error); }); }
-
-// ── configuração ──
-function bkpCfg(){
-  let c = {}; try{ c = JSON.parse(localStorage.getItem(BKP_CFG_KEY)||'{}'); }catch(e){}
-  return Object.assign({ ativo:false, dias:[1,2,3,4,5], hora:'18:00', manter:30, desde:0 }, c);
-}
-function bkpUltimo(){ return Number(localStorage.getItem(BKP_ULT_KEY))||0; }
-function bkpSalvarCfg(){
-  const ant = bkpCfg();
-  const dias = [...document.querySelectorAll('#bkp-dias input:checked')].map(i=>Number(i.value));
-  const c = { ativo:document.getElementById('bkp-ativo').checked, dias, hora:document.getElementById('bkp-hora').value||'18:00',
-              manter:Number(document.getElementById('bkp-manter').value)||0, desde:ant.desde };
-  // ao ligar ou mudar dia/horário, só vale a partir de agora (não dispara backup "atrasado" na hora)
-  if(c.ativo && (!ant.ativo || c.hora!==ant.hora || c.dias.join()!==ant.dias.join())) c.desde = Date.now();
-  localStorage.setItem(BKP_CFG_KEY, JSON.stringify(c));
-  if(c.ativo && !c.dias.length) notif('Marque ao menos um dia da semana', false);
-  if(c.ativo && !bkpPasta) notif(BKP_FS ? '📁 Escolha a pasta onde salvar os backups' : 'Sem suporte a pasta neste navegador: os backups irão para Downloads', false);
-  bkpRenderStatus();
-}
-// horário programado mais recente ≤ agora (ou null)
-function bkpSlotAnterior(c, agora){
-  if(!c.dias.length) return null;
-  const [h,m] = (c.hora||'18:00').split(':').map(Number);
-  for(let d=0; d<=7; d++){
-    const s = new Date(agora); s.setDate(s.getDate()-d); s.setHours(h,m,0,0);
-    if(s<=agora && c.dias.includes(s.getDay())) return s;
-  }
-  return null;
-}
-function bkpSlotProximo(c, agora){
-  if(!c.dias.length) return null;
-  const [h,m] = (c.hora||'18:00').split(':').map(Number);
-  for(let d=0; d<=7; d++){
-    const s = new Date(agora); s.setDate(s.getDate()+d); s.setHours(h,m,0,0);
-    if(s>agora && c.dias.includes(s.getDay())) return s;
-  }
-  return null;
-}
-function bkpFmtData(d){ return new Date(d).toLocaleString('pt-BR',{ weekday:'short', day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }); }
-
-// ── tela ──
-async function bkpAbrir(){
-  const c = bkpCfg();
-  document.getElementById('bkp-dias').innerHTML = BKP_DIAS.map((d,i)=>'<label class="'+(c.dias.includes(i)?'on':'')+'"><input type="checkbox" value="'+i+'" '+(c.dias.includes(i)?'checked':'')+' onchange="this.parentElement.classList.toggle(\'on\',this.checked); bkpSalvarCfg()">'+d+'</label>').join('');
-  document.getElementById('bkp-ativo').checked = c.ativo;
-  document.getElementById('bkp-hora').value = c.hora;
-  document.getElementById('bkp-manter').value = String(c.manter);
-  await bkpCarregarPasta();
-  bkpRenderPasta(); bkpRenderStatus();
-  document.getElementById('bkp-modal').classList.add('open');
-}
-function bkpFechar(){ document.getElementById('bkp-modal').classList.remove('open'); }
-function bkpRenderPasta(){
-  const el = document.getElementById('bkp-pasta'); if(!el) return;
-  el.textContent = bkpPasta ? '📂 '+bkpPasta.name : 'Nenhuma pasta escolhida';
-  el.classList.toggle('on', !!bkpPasta);
-  document.getElementById('bkp-btn-limpar-pasta').style.display = bkpPasta ? '' : 'none';
-  document.getElementById('bkp-pasta-nota').innerHTML = !BKP_FS
-    ? '⚠️ Este navegador não permite gravar direto numa pasta. Use <b>Google Chrome</b> ou <b>Microsoft Edge</b>; aqui os backups vão para a pasta <b>Downloads</b>.'
-    : 'Os arquivos são salvos como <code>backup_bomdosul_AAAA-MM-DD_HHMM.json</code>. Por segurança, o navegador pode pedir para autorizar a pasta de novo depois que for fechado (escolha <b>“Permitir em todas as visitas”</b> quando aparecer).';
-}
-function bkpRenderStatus(){
-  const el = document.getElementById('bkp-status'); if(!el) return;
-  const c = bkpCfg(), ult = bkpUltimo(), prox = c.ativo ? bkpSlotProximo(c, new Date()) : null;
-  el.innerHTML = '<div><span>Último backup</span><b>'+(ult ? bkpFmtData(ult) : '—')+'</b></div>'+
-    '<div><span>Próximo backup</span><b>'+(c.ativo ? (prox ? bkpFmtData(prox) : 'escolha os dias') : 'desligado')+'</b></div>';
-  const btn = document.getElementById('btn-backup');
-  if(btn) btn.title = 'Backup'+(c.ativo && prox ? ' · próximo: '+bkpFmtData(prox) : '')+(ult ? ' · último: '+bkpFmtData(ult) : '');
-}
-async function bkpCarregarPasta(){ if(!BKP_FS || bkpPasta) return; try{ bkpPasta = (await bkpIdbGet('pasta')) || null; }catch(e){ bkpPasta = null; } }
-async function bkpEscolherPasta(){
-  if(!BKP_FS) return notif('Use Google Chrome ou Microsoft Edge para escolher uma pasta', false);
-  try{
-    const h = await window.showDirectoryPicker({ id:'bds-backup', mode:'readwrite' });
-    bkpPasta = h; await bkpIdbSet('pasta', h);
-    bkpRenderPasta(); notif('📂 Pasta de backup: '+h.name);
-  }catch(e){ if(e.name!=='AbortError') notif('❌ Não foi possível usar a pasta: '+e.message, false); }
-}
-async function bkpLimparPasta(){
-  if(!confirm('Esquecer a pasta "'+(bkpPasta?bkpPasta.name:'')+'"? Os arquivos já salvos continuam lá.')) return;
-  bkpPasta = null; try{ await bkpIdbSet('pasta', undefined); }catch(e){}
-  bkpRenderPasta();
-}
-async function bkpPermissao(pedir){
-  if(!bkpPasta) return false;
-  const o = { mode:'readwrite' };
-  try{
-    if(await bkpPasta.queryPermission(o)==='granted') return true;
-    return pedir ? (await bkpPasta.requestPermission(o))==='granted' : false;
-  }catch(e){ return false; }
-}
-
-// ── gera o conteúdo do backup ──
-async function bkpGerarDados(){
-  const dados = {}, contagem = {}, avisos = [];
-  await Promise.all(BKP_TABELAS.map(async t=>{
-    try{
-      const r = await supaFetchTodos(SUPA_URL+'/rest/v1/'+t+'?select=*');
-      if(!r.ok) throw new Error((await r.text()).slice(0,160));
-      dados[t] = await r.json(); contagem[t] = dados[t].length;
-    }catch(e){
-      if(BKP_OBRIG.includes(t)) throw new Error(t+': '+e.message);
-      avisos.push(t+': '+e.message);   // tabela opcional que não existe/indisponível
-    }
-  }));
-  return { sistema:'Controle de Produtores', versao:2, geradoEm:new Date().toISOString(), origem:SUPA_URL, contagem, avisos, dados };
-}
-function bkpNomeArq(){ const d = new Date(), p = n=>String(n).padStart(2,'0'); return 'backup_bomdosul_'+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'_'+p(d.getHours())+p(d.getMinutes())+'.json'; }
-function bkpBaixar(nome, texto){
-  const url = URL.createObjectURL(new Blob([texto], { type:'application/json;charset=utf-8' }));
-  const a = document.createElement('a'); a.href = url; a.download = nome; document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url), 4000);
-}
-async function bkpGravarPasta(nome, texto){
-  const fh = await bkpPasta.getFileHandle(nome, { create:true });
-  const w = await fh.createWritable(); await w.write(texto); await w.close();
-  // mantém só os últimos N
-  const n = bkpCfg().manter;
-  if(n>0){
-    const arqs = [];
-    for await (const [nm, h] of bkpPasta.entries()){ if(h.kind==='file' && /^backup_bomdosul_\d{4}-\d{2}-\d{2}_\d{4}\.json$/.test(nm)) arqs.push(nm); }
-    arqs.sort().reverse().slice(n).forEach(nm=>bkpPasta.removeEntry(nm).catch(()=>{}));
-  }
-}
-// modo: 'download' (botão Baixar) · 'manual' (botão salvar na pasta) · 'auto' (agendado)
-async function bkpExecutar(modo){
-  if(bkpRodando) return;
-  const btn = document.getElementById('btn-backup'), txt = btn ? btn.innerHTML : '';
-  await bkpCarregarPasta();
-  let destino = 'download';
-  if(modo!=='download' && BKP_FS){
-    if(!bkpPasta){
-      if(modo==='manual'){ await bkpEscolherPasta(); if(!bkpPasta) return; }
-    }
-    if(bkpPasta){
-      if(await bkpPermissao(modo==='manual')) destino = 'pasta';
-      else if(modo==='auto'){ bkpPedirAutorizacao(); return; }   // precisa de um clique do usuário
-      else return notif('Permissão da pasta negada', false);
-    }
-  }
-  bkpRodando = true;
-  if(btn){ btn.disabled = true; btn.innerHTML = '⏳ Backup...'; }
-  barNuvem(true);
-  try{
-    const b = await bkpGerarDados();
-    const nome = bkpNomeArq(), texto = JSON.stringify(b, null, 2);
-    if(destino==='pasta') await bkpGravarPasta(nome, texto); else bkpBaixar(nome, texto);
-    localStorage.setItem(BKP_ULT_KEY, String(Date.now()));
-    bkpPendente = false; bkpAvisoFechar();
-    const tot = Object.values(b.contagem).reduce((a,v)=>a+v,0);
-    notif('✅ Backup '+(modo==='auto'?'programado ':'')+'salvo'+(destino==='pasta'?' em "'+bkpPasta.name+'"':' em Downloads')+' · '+tot+' registros'+(b.avisos.length?' · '+b.avisos.length+' tabela(s) ignorada(s)':''), true);
-  }catch(e){
-    console.error('Backup erro:', e);
-    notif('❌ Falha no backup: '+e.message.slice(0,160), false);
-  }finally{
-    bkpRodando = false; barNuvem(false);
-    if(btn){ btn.disabled = false; btn.innerHTML = txt; }
-    bkpRenderStatus();
-  }
-}
-// ── aviso quando a pasta precisa ser autorizada de novo ──
-function bkpPedirAutorizacao(){
-  bkpPendente = true;
-  document.getElementById('bkp-aviso-txt').innerHTML = '⏰ Hora do backup programado. Autorize a gravação na pasta <b>'+pdEsc(bkpPasta?bkpPasta.name:'')+'</b> para salvar.';
-  document.getElementById('bkp-aviso').classList.add('show');
-}
-function bkpAvisoFechar(){ document.getElementById('bkp-aviso')?.classList.remove('show'); }
-async function bkpAutorizarESalvar(){
-  if(await bkpPermissao(true)){ bkpAvisoFechar(); bkpExecutar('auto'); }
-  else notif('Permissão da pasta negada — o backup não foi salvo', false);
-}
-
-// ── relógio do agendamento (a cada 30 s) ──
-async function bkpTick(){
-  if(bkpRodando || bkpPendente) return;
-  if(!sessionStorage.getItem('bds_user')) return;             // só depois do login
-  const c = bkpCfg(); if(!c.ativo) return;
-  const slot = bkpSlotAnterior(c, new Date()); if(!slot) return;
-  if(slot.getTime() <= Math.max(bkpUltimo(), c.desde||0)) return;   // já feito
-  // evita duas abas fazendo o mesmo backup
-  const lock = Number(localStorage.getItem(BKP_LOCK_KEY))||0;
-  if(Date.now()-lock < 120000) return;
-  localStorage.setItem(BKP_LOCK_KEY, String(Date.now()));
-  try{ await bkpExecutar('auto'); } finally { localStorage.removeItem(BKP_LOCK_KEY); }
-}
-setInterval(bkpTick, 30000);
-setTimeout(bkpTick, 8000);   // ao abrir o sistema: faz o backup que ficou para trás
-setTimeout(bkpRenderStatus, 1000);
 </script>
 
 </body>
