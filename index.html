@@ -880,6 +880,55 @@
   .ap-fat { display:flex; flex-wrap:wrap; align-items:center; gap:4px; line-height:2; }
   .ap-fat .ap-fat-in { width:58px !important; display:inline-block; padding:3px 6px; text-align:center; font-weight:700; }
   @media (max-width:900px){ .ap-cab, .ap-cab2 { grid-template-columns:1fr 1fr; } .ap-grade-wrap { overflow-x:auto; } }
+
+  /* ═══════════ TABELA DE PRODUÇÃO FINAL: ORIGINAL + CÓPIA CONTROLADA (compacto) ═══════════ */
+  #ap-modal { padding:8px 10px; overflow:hidden; }
+  #ap-modal .ap-ficha { max-width:1340px; height:calc(100vh - 16px); display:flex; flex-direction:column; }
+  #ap-modal .ap-ficha-h { padding:6px 16px; gap:10px; }
+  #ap-modal .ap-ficha-h .ico, #ap-modal .ap-ficha-h .ico img { height:34px; }
+  #ap-modal .ap-ficha-h h3 { font-size:15px; }
+  #ap-modal .ap-ficha-h p { font-size:11px; margin-top:1px; }
+  #ap-modal .ap-ficha-b { padding:6px 10px; flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:6px; }
+  #ap-modal .ap-ficha-f { padding:6px 14px; }
+  #ap-modal .ap-ficha-f .btn, #ap-modal .ap-ficha-f .btn-save, #ap-modal .ap-ficha-f .btn-cancel { padding:7px 14px; }
+  .ap-pane { flex:1 1 0; min-height:0; overflow:auto; border:1px solid var(--border); border-radius:10px; padding:0 10px 6px; background:var(--surface); }
+  .ap-pane-t { position:sticky; top:0; z-index:3; display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:4px 0; margin-bottom:4px; background:var(--surface); border-bottom:1px solid var(--border); font-size:11.5px; font-weight:800; letter-spacing:.4px; color:#1e5959; }
+  .ap-pane-t small { font-size:11px; font-weight:500; letter-spacing:0; color:var(--text2); }
+  .ap-pane-t .sp { flex:1; }
+  .ap-pane-t { min-height:30px; flex-wrap:nowrap; white-space:nowrap; }
+  .ap-pane-t small { overflow:hidden; text-overflow:ellipsis; min-width:0; }
+  #ap-modal .ap-pane .ap-grade thead th { position:sticky; top:30px; z-index:2; }
+  .ap-cabs { display:grid; grid-template-columns:minmax(170px,2fr) minmax(80px,.8fr) minmax(120px,1fr) auto minmax(70px,.6fr) minmax(90px,.8fr) minmax(60px,.5fr); gap:6px 8px; align-items:end; }
+  #ap-modal .ap-cabs .ap-cab, #ap-modal .ap-cabs .ap-cab2 { display:contents; }
+  #ap-modal .field-label { font-size:9.5px; margin-bottom:2px; }
+  #ap-modal .form-input { padding:4px 8px; font-size:12.5px; border-radius:6px; }
+  #ap-modal .ap-mp { gap:4px; flex-wrap:nowrap; }
+  #ap-modal .ap-mp label { padding:4px 8px; font-size:12px; gap:4px; border-radius:6px; }
+  #ap-modal .ap-coef { padding:1px 10px; border-radius:6px; }
+  #ap-modal .ap-coef .l { font-size:9px; }
+  #ap-modal .ap-coef .v { font-size:16px; }
+  #ap-modal .ap-grade { margin-top:6px; }
+  #ap-modal .ap-grade th { padding:3px 6px; font-size:9.5px; }
+  #ap-modal .ap-grade td { padding:0 4px; font-size:12px; }
+  #ap-modal .ap-grade td.d { padding-left:8px; }
+  #ap-modal .ap-grade tfoot td { padding:3px 8px; font-size:12px; }
+  #ap-modal .ap-in { padding:2px 6px; font-size:12px; }
+  #ap-modal .ap-nota { margin-top:3px; font-size:10.5px; }
+  #ap-modal .ap-fat { line-height:1.6; }
+  #ap-modal .ap-fat .ap-fat-in { padding:1px 4px; width:50px !important; }
+  .ap-obs { display:flex; align-items:center; gap:8px; margin-top:4px; }
+  .ap-obs .field-label { margin:0 !important; white-space:nowrap; }
+  @media (max-width:1050px){ .ap-cabs { grid-template-columns:1fr 1fr; } #ap-modal .ap-mp { flex-wrap:wrap; } }
+  /* Cópia controlada: mesmas cores da original; só o que é digitado fica em vermelho */
+  .apc-sec { --apc:#c62828; }
+  .theme-dark .apc-sec { --apc:#ff6b6b; }
+  .apc-sec .form-input, .apc-sec .ap-in, .apc-sec .ap-in.moeda.auto, .apc-sec .ap-mp label.on { color:var(--apc) !important; }
+  .apc-sec .ap-mp input { accent-color:var(--apc); }
+  .apc-sec .corr { background:#fff1b8 !important; border:1.5px dashed var(--apc) !important; font-weight:800 !important; }
+  .theme-dark .apc-sec .corr { background:rgba(255,193,7,.16) !important; }
+  .apc-sec .ap-mp.corr { border-radius:7px; padding:2px; }
+  .apc-sec .apc-btn { padding:4px 10px; font-size:11.5px; }
+  .apc-info { font-size:11px; font-weight:700; padding:2px 8px; border-radius:20px; background:var(--surface2); color:var(--text2); }
 </style>
 <script>
 // Aplica o tema salvo (se houver) antes da renderização, evitando "flash".
@@ -2439,6 +2488,9 @@
       <button class="modal-close" onclick="apFechar()" title="Fechar">✕</button>
     </div>
     <div class="ap-ficha-b">
+     <div class="ap-pane" id="ap-pane-orig">
+      <div class="ap-pane-t">📄 ORIGINAL <small>lançamento oficial da produção</small></div>
+      <div class="ap-cabs">
       <div class="ap-cab">
         <div><label class="field-label">Nome do fornecedor <span class="req">*</span></label><select class="form-input" id="apf-forn" onchange="apCalc()"></select></div>
         <div><label class="field-label">Número da produção <span class="req">*</span></label><input class="form-input" id="apf-numero" style="font-family:'JetBrains Mono',monospace; font-weight:700;"></div>
@@ -2454,6 +2506,7 @@
         <div><label class="field-label">Qtd. cabeça <span class="req">*</span></label><input class="form-input" id="apf-cab" type="number" step="1" min="0" oninput="apCalc()" style="font-family:'JetBrains Mono',monospace; font-weight:700;"></div>
         <div class="ap-coef"><div class="l">Coeficiente</div><div class="v" id="apf-coef">—</div></div>
         <div><label class="field-label">Meta</label><input class="form-input" id="apf-meta" type="number" step="any" oninput="apCalc()" style="font-family:'JetBrains Mono',monospace;"></div>
+      </div>
       </div>
       <div class="ap-grade-wrap">
         <table class="ap-grade">
@@ -2472,11 +2525,55 @@ total</th>
         </table>
       </div>
       <div class="ap-nota ap-fat">⚙️ <b>Cálculo:</b> Caixa 0,300 kg = <input class="ap-in ap-fat-in" id="apf-f300" type="number" step="any" min="0" oninput="apCalc()" title="Vidros por caixa 0,300 kg"> vidros · Caixa 1,800 kg = <input class="ap-in ap-fat-in" id="apf-f1800a" type="number" step="any" min="0" oninput="apCalc()" title="1º fator da caixa 1,800 kg"> × <input class="ap-in ap-fat-in" id="apf-f1800b" type="number" step="any" min="0" oninput="apCalc()" title="2º fator da caixa 1,800 kg"> vidros <span id="apf-f1800t" style="font-weight:700;"></span> · Pote 1,800 kg = 6 vidros · Custo unitário automático = Tabela de Preços (fornecedor × matéria-prima × produto) ao preencher o fornecedor, a matéria-prima e a quantidade · se alterar à mão, ↺ volta ao automático</div>
-      <div style="margin-top:14px;"><label class="field-label">Observações</label><input class="form-input" id="apf-obs" placeholder="Opcional"></div>
+      <div class="ap-obs"><label class="field-label">Observações</label><input class="form-input" id="apf-obs" placeholder="Opcional"></div>
+     </div>
+     <!-- CÓPIA CONTROLADA: repete o original; correções feitas aqui não alteram o original -->
+     <div class="ap-pane apc-sec" id="apc-sec">
+      <div class="ap-pane-t">🔴 CÓPIA CONTROLADA <small>repete a original · corrija aqui · duplo clique num campo corrigido volta ao original</small><span class="sp"></span>
+        <span class="apc-info" id="apc-info">Igual à original</span>
+        <button type="button" class="btn apc-btn" onclick="apcRecopiar()" title="Desfaz todas as correções e copia de novo a original">↺ Recopiar da original</button>
+        <button type="button" class="btn apc-btn" onclick="apcPrintAbrir()" title="Imprimir / salvar em PDF a Cópia Controlada">🖨️ Imprimir PDF — Cópia Controlada</button></div>
+      <div class="ap-cabs">
+      <div class="ap-cab">
+        <div><label class="field-label">Nome do fornecedor</label><select class="form-input" id="apc-forn" data-ck="forn"></select></div>
+        <div><label class="field-label">Número da produção</label><input class="form-input" id="apc-numero" data-ck="numero" style="font-family:'JetBrains Mono',monospace; font-weight:700;"></div>
+        <div><label class="field-label">Data da produção</label><input class="form-input" id="apc-data" data-ck="data" type="date"></div>
+      </div>
+      <div class="ap-cab2">
+        <div><label class="field-label">Matéria-prima</label>
+          <div class="ap-mp" id="apc-mp" data-ck="mp">
+            <label><input type="radio" name="apc-mp" value="PUPUNHA"> Pupunha</label>
+            <label><input type="radio" name="apc-mp" value="JUÇARA"> Juçara</label>
+            <label><input type="radio" name="apc-mp" value="REAL"> Real</label>
+          </div></div>
+        <div><label class="field-label">Qtd. cabeça</label><input class="form-input" id="apc-cab" data-ck="cab" type="number" step="1" min="0" style="font-family:'JetBrains Mono',monospace; font-weight:700;"></div>
+        <div class="ap-coef"><div class="l">Coeficiente</div><div class="v" id="apc-coef">—</div></div>
+        <div><label class="field-label">Meta</label><input class="form-input" id="apc-meta" data-ck="meta" type="number" step="any" style="font-family:'JetBrains Mono',monospace;"></div>
+      </div>
+      </div>
+      <div class="ap-grade-wrap">
+        <table class="ap-grade">
+          <thead><tr>
+            <th style="width:18%;">Descrição do produto</th><th>Caixas
+0,300 kg</th><th>Vidros
+0,300 kg</th><th>Caixas
+1,800 kg</th><th>Potes
+1,800 kg</th><th>Unidade</th><th>Quantidade
+vidro 0,300 kg</th><th>Custo
+unitário</th><th style="width:12%;">Valor
+total</th>
+          </tr></thead>
+          <tbody id="apc-tbody"></tbody>
+          <tfoot><tr><td colspan="6" style="text-align:right;">TOTAL</td><td style="text-align:right; font-family:'JetBrains Mono',monospace;" id="apc-tot-vid">0</td><td style="text-align:right;">CUSTO TOTAL</td><td style="text-align:right; font-family:'JetBrains Mono',monospace;" id="apc-tot-custo" class="nw">R$ 0,00</td></tr></tfoot>
+        </table>
+      </div>
+      <div class="ap-nota ap-fat">⚙️ <b>Cálculo:</b> Caixa 0,300 kg = <input class="ap-in ap-fat-in" id="apc-f300" data-ck="f300" type="number" step="any" min="0"> vidros · Caixa 1,800 kg = <input class="ap-in ap-fat-in" id="apc-f1800a" data-ck="f1800a" type="number" step="any" min="0"> × <input class="ap-in ap-fat-in" id="apc-f1800b" data-ck="f1800b" type="number" step="any" min="0"> vidros <span id="apc-f1800t" style="font-weight:700;"></span> · Pote 1,800 kg = 6 vidros</div>
+      <div class="ap-obs"><label class="field-label">Observações</label><input class="form-input" id="apc-obs" data-ck="obs" placeholder="Opcional"></div>
+     </div>
     </div>
     <div class="ap-ficha-f">
       <button class="btn-cancel" onclick="apFechar()">Cancelar</button>
-      <button class="btn" onclick="apPrintAbrir(null)" title="Imprimir / gerar PDF desta tabela">🖨️ Imprimir / PDF</button>
+      <button class="btn" onclick="apPrintAbrir(null)" title="Imprimir / gerar PDF da tabela original">🖨️ Imprimir / PDF (original)</button>
       <button class="btn-save green" onclick="apSalvar()">💾 Salvar produção</button>
     </div>
   </div>
@@ -6547,6 +6644,7 @@ function apAbrir(id){
   document.getElementById('apf-f300').value = fat.c300;
   document.getElementById('apf-f1800a').value = fat.c1800a;
   document.getElementById('apf-f1800b').value = fat.c1800b;
+  apcMontar(p);
   apCalc();
   document.getElementById('ap-modal').classList.add('open');
   setTimeout(()=>document.getElementById(p?'apf-cab':'apf-forn').focus(), 60);
@@ -6575,6 +6673,7 @@ function apCalc(){
   document.getElementById('apf-tot-vid').textContent = pdN(vid,0);
   document.getElementById('apf-tot-custo').textContent = esR(custo);
   document.getElementById('apf-coef').textContent = cab>0 ? pdN(custo/cab,4) : '—';
+  apcSync();
 }
 async function apSalvar(){
   const fornecedor = document.getElementById('apf-forn').value;
@@ -6590,6 +6689,7 @@ async function apSalvar(){
   if(AP.lista.some(p=>String(p.numero)===numero && p.id!=apEdit.id) && !confirm('Já existe uma produção com o número '+numero+'. Salvar mesmo assim?')) return;
   const itens = apLinhas().map(x=>x.it).filter(i=>i.caixas_300||i.vidros_300||i.caixas_1800||i.potes_1800);
   if(!itens.length) return notif('Preencha ao menos um produto', false);
+  { const cc = apcCorrecoes(); if(Object.keys(cc).length) itens[0].copia_ctrl = cc; }   // correções da Cópia Controlada
   const total_vidros = itens.reduce((a,i)=>a+i.qtd_vidro,0);
   const custo_total = esR2(itens.reduce((a,i)=>a+i.valor_total,0));
   const metaV = document.getElementById('apf-meta').value;
@@ -6657,7 +6757,14 @@ function apPrintGerar(ori){
   const mp = v => (p.materia_prima===v?'☒':'☐')+' '+v;
   const logo = document.querySelector('.header .logo img')?.src || '';
   const emitido = new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-  const html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Produção Final nº '+pdEsc(p.numero)+' — '+pdEsc(p.fornecedor)+'</title><style>'+
+  const cc = !!p.copia;   // Cópia Controlada → tudo em vermelho
+  const R = '#c62828';
+  const cssCopia = !cc ? '' :
+    '.cab .v,td.n:not(.b),.obs{color:'+R+' !important}.cab .k .v{color:#1e5959 !important}.obs .l{color:#1e5959}'+
+    '.selo{display:inline-block;border:2px solid '+R+';color:'+R+';font-weight:800;font-size:12px;letter-spacing:1.5px;padding:3px 10px;border-radius:5px;margin-top:4px}'+
+    '.marca{position:fixed;top:45%;left:0;right:0;text-align:center;transform:rotate(-24deg);font-size:84px;font-weight:900;color:rgba(198,40,40,.06);letter-spacing:6px;pointer-events:none;z-index:0}'+
+    '.pg{position:relative;z-index:1}';
+  const html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>'+(cc?'CÓPIA CONTROLADA — ':'')+'Produção Final nº '+pdEsc(p.numero)+' — '+pdEsc(p.fornecedor)+'</title><style>'+
     '@page{size:'+tam+' '+ori+';margin:'+M+'mm}*{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
     'body{font-family:Arial,Helvetica,sans-serif;color:#1f2328;background:#fff;font-size:12px}'+
     '.bar{padding:12px;display:flex;gap:10px;background:#f6f8fa;border-bottom:1px solid #d0d7de}.bar button{padding:8px 16px;border-radius:7px;border:1px solid #d0d7de;background:#fff;font-weight:700;cursor:pointer}.bar .p{background:#1e5959;color:#fff;border-color:#1e5959}'+
@@ -6674,10 +6781,10 @@ function apPrintGerar(ori){
     'tfoot td{background:#1e5959;color:#fbf7ee;font-weight:800;font-size:12px}'+
     '.nota{font-size:9.5px;color:#59636e;margin-top:6px}.obs{margin-top:8px;border:1px solid #c9d8d5;border-radius:8px;padding:7px 12px;font-size:11px;min-height:34px}.obs .l{font-size:9px;font-weight:700;color:#1e5959;text-transform:uppercase}'+
     '.ass{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:26px}.ass div{border-top:1px solid #59636e;padding-top:4px;text-align:center;font-size:10px;color:#59636e}'+
-    '</style></head><body>'+
+    cssCopia+'</style></head><body>'+(cc?'<div class="marca">CÓPIA CONTROLADA</div>':'')+
     '<div class="bar"><button class="p" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button><button onclick="window.close()">✕ Fechar</button><span style="align-self:center;font-size:12px;color:#59636e;">'+tam+' · '+(ori==='landscape'?'Paisagem':'Retrato')+' · página única</span></div>'+
     '<div class="pg" id="pg">'+
-      '<div class="hd">'+(logo?'<img src="'+logo+'" alt="Bom do Sul">':'')+'<div><div class="emp">Bom do Sul · Aproveitamento de Produção</div><h1>TABELA DE PRODUÇÃO FINAL</h1></div>'+
+      '<div class="hd">'+(logo?'<img src="'+logo+'" alt="Bom do Sul">':'')+'<div><div class="emp">Bom do Sul · Aproveitamento de Produção</div><h1>TABELA DE PRODUÇÃO FINAL'+(cc?' — CÓPIA CONTROLADA':'')+'</h1>'+(cc?'<div class="selo">CÓPIA CONTROLADA · RASCUNHO</div>':'')+'</div>'+
         '<div class="r">Emitido em<br><b>'+emitido+'</b></div></div>'+
       '<div class="cab">'+
         '<div><div class="l">Nome do fornecedor</div><div class="v">'+pdEsc(p.fornecedor||'')+'</div></div>'+
@@ -6699,6 +6806,157 @@ function apPrintGerar(ori){
   if(!win) return notif('Permita pop-ups para gerar o PDF', false);
   win.document.write(html); win.document.close();
   apPrintFechar();
+}
+// ═══════════════ CÓPIA CONTROLADA (rascunho de correções da Tabela de Produção Final) ═══════════════
+// Repete tudo o que é lançado na original; um campo alterado na cópia fica "corrigido" (data-corr=1)
+// e deixa de acompanhar a original. Duplo clique no campo corrigido → volta ao original.
+// As correções são gravadas junto com a produção, em itens[0].copia_ctrl = { chave: valor }.
+const APC_TXT = ['forn','numero','data','mp','obs'];
+function apcEls(){ return [...document.querySelectorAll('#apc-sec [data-ck]')]; }
+function apcEl(ck){ return apcEls().find(e=>e.dataset.ck===ck) || null; }
+function apcLinhaOrig(desc){ return [...document.querySelectorAll('#apf-tbody tr')].find(tr=>tr.dataset.desc===desc) || null; }
+function apcMp(){ const r = document.querySelector('input[name="apc-mp"]:checked'); return r ? r.value : ''; }
+function apcFat(){ const g=id=>apNum(document.getElementById(id).value); return { c300:g('apc-f300'), c1800a:g('apc-f1800a'), c1800b:g('apc-f1800b') }; }
+function apcValor(el){ return el.id==='apc-mp' ? apcMp() : el.value; }
+function apcSet(el, v){
+  v = v==null ? '' : String(v);
+  if(el.id==='apc-mp'){ el.querySelectorAll('input').forEach(r=>{ r.checked = r.value===v; }); el.querySelectorAll('label').forEach(l=>l.classList.toggle('on', l.querySelector('input').checked)); return; }
+  if(el.tagName==='SELECT' && v && ![...el.options].some(o=>o.value===v)){ const o=document.createElement('option'); o.value=v; o.textContent=v; el.appendChild(o); }
+  el.value = v;
+}
+// custo unitário "automático" da cópia: valor manual da original, ou Tabela de Preços com os dados da cópia
+function apcAutoCusto(tr){
+  const desc = tr.dataset.desc, o = apcLinhaOrig(desc);
+  const oi = o && o.querySelector('[data-k="custo_unit"]');
+  if(oi && oi.dataset.man==='1') return oi.value;
+  const g = k => apNum(tr.querySelector('[data-k="'+k+'"]').value);
+  const qtd = apQtdVidro({ caixas_300:g('caixas_300'), vidros_300:g('vidros_300'), caixas_1800:g('caixas_1800'), potes_1800:g('potes_1800'), fat:apcFat() });
+  const preco = apPreco(document.getElementById('apc-forn').value, apcMp(), desc);
+  return (qtd>0 && preco!=null) ? apMoedaFmt(preco) : '';
+}
+// valor que a original tem para a chave (o que a cópia mostraria sem correção)
+function apcOrig(ck, el){
+  const ids = { forn:'apf-forn', numero:'apf-numero', data:'apf-data', cab:'apf-cab', meta:'apf-meta', f300:'apf-f300', f1800a:'apf-f1800a', f1800b:'apf-f1800b', obs:'apf-obs' };
+  if(ck==='mp') return apMpSel();
+  if(ids[ck]) return document.getElementById(ids[ck]).value;
+  const [, desc, k] = ck.split('|');
+  if(k==='custo_unit') return el ? apcAutoCusto(el.closest('tr')) : '';
+  const o = apcLinhaOrig(desc); const i = o && o.querySelector('[data-k="'+k+'"]');
+  return i ? i.value : '';
+}
+function apcIgual(ck, a, b){
+  const k = ck.split('|').pop();
+  if(APC_TXT.includes(ck)) return String(a||'').trim()===String(b||'').trim();
+  if(k==='custo_unit') return apMoedaParse(a)===apMoedaParse(b);
+  return String(a??'').trim()==='' && String(b??'').trim()==='' ? true : apNum(a)===apNum(b) && (String(a).trim()==='')===(String(b).trim()==='');
+}
+function apcMontar(p){
+  const sec = document.getElementById('apc-sec'); if(!sec) return;
+  document.getElementById('apc-forn').innerHTML = document.getElementById('apf-forn').innerHTML;
+  const descs = [...document.querySelectorAll('#apf-tbody tr')].map(tr=>tr.dataset.desc);
+  const inp = (d,k)=> k==='custo_unit'
+    ? '<td><input class="ap-in moeda" type="text" inputmode="numeric" placeholder="R$ 0,00" data-k="custo_unit" data-ck="r|'+pdEsc(d)+'|custo_unit"></td>'
+    : '<td><input class="ap-in" type="number" step="any" min="0" data-k="'+k+'" data-ck="r|'+pdEsc(d)+'|'+k+'"></td>';
+  document.getElementById('apc-tbody').innerHTML = descs.map(d=>'<tr data-desc="'+pdEsc(d)+'"><td class="d">'+pdEsc(d)+'</td>'+
+    inp(d,'caixas_300')+inp(d,'vidros_300')+inp(d,'caixas_1800')+inp(d,'potes_1800')+
+    '<td class="u">un</td><td class="calc" data-o="qtd">—</td>'+inp(d,'custo_unit')+'<td class="calc" data-o="valor">—</td></tr>').join('');
+  apcEls().forEach(e=>{ e.dataset.corr='0'; });
+  const cc = p ? ((p.itens||[]).find(i=>i && i.copia_ctrl)||{}).copia_ctrl : null;
+  if(cc) Object.keys(cc).forEach(ck=>{ const e = apcEl(ck); if(e){ apcSet(e, cc[ck]); e.dataset.corr='1'; } });
+  if(!sec.dataset.ok){
+    sec.dataset.ok = '1';
+    const editou = ev=>{
+      let el = ev.target; if(!el.closest) return;
+      if(el.type==='radio') el = document.getElementById('apc-mp');
+      if(!el.dataset || !el.dataset.ck) return;
+      if(el.classList.contains('moeda') && ev.type==='input'){ const d=el.value.replace(/\D/g,''); el.value = d ? apMoedaFmt(parseInt(d,10)/100) : ''; }
+      if(el.id==='apc-mp') apcSet(el, apcMp());
+      el.dataset.corr = apcIgual(el.dataset.ck, apcValor(el), apcOrig(el.dataset.ck, el)) ? '0' : '1';
+      apcCalc();
+    };
+    sec.addEventListener('input', editou);
+    sec.addEventListener('change', editou);
+    sec.addEventListener('dblclick', ev=>{
+      const el = ev.target.closest && ev.target.closest('[data-ck]');
+      if(!el || el.dataset.corr!=='1') return;
+      el.dataset.corr = '0';
+      if(el.dataset.k!=='custo_unit') apcSet(el, apcOrig(el.dataset.ck, el));
+      apcSync();
+    });
+    // campos da original que não chamam apCalc (número, data, observações)
+    const orig = document.getElementById('ap-pane-orig');
+    orig.addEventListener('input', ()=>apcSync());
+    orig.addEventListener('change', ()=>apcSync());
+  }
+}
+function apcSync(){
+  if(!document.querySelector('#apc-tbody tr')) return;
+  apcEls().forEach(el=>{
+    if(el.dataset.corr==='1' || el.dataset.k==='custo_unit') return;
+    if(document.activeElement===el) return;
+    apcSet(el, apcOrig(el.dataset.ck, el));
+  });
+  apcCalc();
+}
+function apcLinhas(){
+  const fat = apcFat();
+  return [...document.querySelectorAll('#apc-tbody tr')].map(tr=>{
+    const cu = tr.querySelector('[data-k="custo_unit"]');
+    if(cu.dataset.corr!=='1') cu.value = apcAutoCusto(tr);
+    const g = k => { const v = tr.querySelector('[data-k="'+k+'"]').value; return k==='custo_unit' ? apMoedaParse(v) : apNum(v); };
+    const it = { descricao:tr.dataset.desc, caixas_300:g('caixas_300'), vidros_300:g('vidros_300'), caixas_1800:g('caixas_1800'), potes_1800:g('potes_1800'), custo_unit:g('custo_unit'), fat:fat };
+    it.qtd_vidro = apQtdVidro(it);
+    it.valor_total = esR2(it.qtd_vidro * it.custo_unit);
+    return { tr, it };
+  });
+}
+function apcCalc(){
+  if(!document.querySelector('#apc-tbody tr')) return;
+  let vid = 0, custo = 0;
+  apcLinhas().forEach(({tr,it})=>{
+    tr.querySelector('[data-o="qtd"]').textContent = it.qtd_vidro ? pdN(it.qtd_vidro,0) : '—';
+    tr.querySelector('[data-o="valor"]').textContent = it.valor_total ? esR(it.valor_total) : '—';
+    vid += it.qtd_vidro; custo += it.valor_total;
+  });
+  const cab = apNum(document.getElementById('apc-cab').value);
+  const f = apcFat(); document.getElementById('apc-f1800t').textContent = '(= '+pdN(f.c1800a*f.c1800b,0)+')';
+  document.getElementById('apc-tot-vid').textContent = pdN(vid,0);
+  document.getElementById('apc-tot-custo').textContent = esR(custo);
+  document.getElementById('apc-coef').textContent = cab>0 ? pdN(custo/cab,4) : '—';
+  let n = 0;
+  apcEls().forEach(el=>{
+    const c = el.dataset.corr==='1'; if(c) n++;
+    el.classList.toggle('corr', c);
+    if(c){ let o = apcOrig(el.dataset.ck, el); if(el.dataset.ck==='mp') o = AP_MP_NOME[o]||o; el.title = 'Corrigido · na original: '+(String(o||'').trim()||'(vazio)')+' — duplo clique volta ao original'; }
+    else el.removeAttribute('title');
+  });
+  const info = document.getElementById('apc-info');
+  info.textContent = n ? '✏️ '+n+' campo'+(n>1?'s':'')+' corrigido'+(n>1?'s':'') : 'Igual à original';
+}
+function apcCorrecoes(){
+  const o = {};
+  apcEls().forEach(el=>{ if(el.dataset.corr==='1') o[el.dataset.ck] = apcValor(el); });
+  return o;
+}
+function apcRecopiar(){
+  const n = Object.keys(apcCorrecoes()).length;
+  if(n && !confirm('Desfazer as '+n+' correção(ões) da Cópia Controlada e copiar de novo a original?')) return;
+  apcEls().forEach(el=>{ el.dataset.corr='0'; });
+  apcSync();
+}
+function apcPrintAbrir(){
+  apcCalc();
+  const itens = apcLinhas().map(x=>x.it);
+  const cab = apNum(document.getElementById('apc-cab').value);
+  const custo = esR2(itens.reduce((a,i)=>a+i.valor_total,0));
+  const metaV = document.getElementById('apc-meta').value;
+  const p = { copia:true, numero:(document.getElementById('apc-numero').value||'').trim(), data:document.getElementById('apc-data').value,
+    fornecedor:document.getElementById('apc-forn').value, materia_prima:apcMp(), qtd_cabecas:cab,
+    meta: metaV===''?null:apNum(metaV), total_vidros:itens.reduce((a,i)=>a+i.qtd_vidro,0), custo_total:custo,
+    coeficiente: cab>0 ? custo/cab : null, itens, obs:(document.getElementById('apc-obs').value||'').trim() };
+  apPrintAlvo = p;
+  document.getElementById('ap-print-info').textContent = '🔴 CÓPIA CONTROLADA · Produção nº '+(p.numero||'—')+' · '+(p.fornecedor||'sem fornecedor')+' · '+(p.data?pdDataBR(p.data):'');
+  document.getElementById('ap-print-modal').classList.add('open');
 }
 // ═══════════════ TABELA DE PREÇOS (fornecedor × matéria-prima × produto) ═══════════════
 function aprFornecedores(){
